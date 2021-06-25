@@ -1,9 +1,15 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "paint-increment",
   "private": true,
   "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "description": "Paint a picture incrementally with your friends",
   "license": "MIT",
+  "homepage": "https://github.com/LoaderB0T/paint-increment",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LoaderB0T/paint-increment.git"
+  },
+  "author": "LoaderB0T",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
