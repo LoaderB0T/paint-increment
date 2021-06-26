@@ -1,10 +1,12 @@
 {
   "folders": [
     {
-      "path": "api"
+      "path": "api",
+      "name": "API"
     },
     {
-      "path": "app"
+      "path": "app",
+      "name": "APP"
     }
   ],
   "settings": {
