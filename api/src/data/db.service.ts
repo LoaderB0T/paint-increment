@@ -28,7 +28,12 @@ export class DbService {
     });
   }
 
-  async createLobby(request: CreateLobbyRequest, settings?: PaintLobbySettings) {
+  async createLobby(request: CreateLobbyRequest) {
+    const settings: PaintLobbySettings = {
+      height: request.settings?.height ?? 128,
+      width: request.settings?.height ?? 128
+    };
+
     const lobby: PaintLobby = {
       id: uuid(),
       name: request.name,
@@ -67,6 +72,7 @@ export class DbService {
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
     }
+
     if (lobby.increments.some(x => !x.confirmed)) {
       throw new Error('Cannot add new increment if unaccepted increment exists');
     }

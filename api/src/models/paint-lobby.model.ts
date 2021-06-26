@@ -4,6 +4,6 @@ import { PaintIncrement } from './paint-increment.model';
 export interface PaintLobby {
   name: string;
   id: string;
-  settings?: PaintLobbySettings;
+  settings: PaintLobbySettings;
   increments: PaintIncrement[];
 }

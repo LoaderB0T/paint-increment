@@ -1,5 +1,5 @@
 export interface PaintLobbySettings {
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
   maxPixels?: number;
 }
