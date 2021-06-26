@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "codegen": "yarn ng-openapi-gen --input ../api/swagger.json --output ./src/app/.api",
     "test": "ng test"
   },
   "private": true,
@@ -19,7 +20,6 @@
     "@angular/platform-browser": "~12.1.0",
     "@angular/platform-browser-dynamic": "~12.1.0",
     "@angular/router": "~12.1.0",
-    "@ngneat/tailwind": "7.0.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"
@@ -35,8 +35,6 @@
     "@awdware/eslint-config-angular": "^1.0.1",
     "@awdware/eslint-config-base": "^1.0.0",
     "@awdware/prettier-config": "^0.0.2",
-    "@tailwindcss/forms": "0.3.3",
-    "@tailwindcss/typography": "0.4.1",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
@@ -48,7 +46,7 @@
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
-    "tailwindcss": "2.2.4",
+    "ng-openapi-gen": "^0.17.1",
     "typescript": "~4.3.2"
   }
 }
