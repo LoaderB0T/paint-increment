@@ -1,0 +1,6 @@
+{
+  "extends": "@awdware/eslint-config-nodejs",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
