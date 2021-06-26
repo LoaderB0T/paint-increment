@@ -1,0 +1,22 @@
+#lobby-container,
+:host {
+  height: 100%;
+  width: 100%;
+}
+
+#lobby-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  #canvas-container {
+    width: 90%;
+    height: 90%;
+    overflow: hidden;
+    #paint-canvas {
+      height: 100%;
+      width: 100%;
+      image-rendering: pixelated;
+      transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
+    }
+  }
+}
