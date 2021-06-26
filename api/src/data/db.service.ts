@@ -64,8 +64,22 @@ export class DbService {
     };
 
     const lobby = await collection.findOne({ id: request.lobbyId });
-    if (lobby?.increments.some(x => !x.confirmed)) {
+    if (!lobby) {
+      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+    }
+    if (lobby.increments.some(x => !x.confirmed)) {
       throw new Error('Cannot add new increment if unaccepted increment exists');
+    }
+
+    const pixelConflict = request.pixels.some(newPixel => {
+      return lobby.increments.some(existingIncrement => {
+        return existingIncrement.pixels.some(
+          existingPixel => existingPixel[0] === newPixel[0] && existingPixel[1] === newPixel[1]
+        );
+      });
+    });
+    if (pixelConflict) {
+      throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
     await collection.updateOne(
