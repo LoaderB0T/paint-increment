@@ -6,7 +6,7 @@ import { CreateLobbyRequest } from './models/dtos/create-lobby-request.dto';
 import { LobbyResponse } from './models/dtos/lobby-response.dto';
 
 @Controller('lobby')
-export class AppController {
+export class LobbyController {
   private readonly _lobbyService: LobbyService;
 
   constructor(lobbyService: LobbyService) {
@@ -19,7 +19,7 @@ export class AppController {
   }
 
   @Post()
-  async postLobby(@Body() request: CreateLobbyRequest): Promise<void> {
+  async postLobby(@Body() request: CreateLobbyRequest): Promise<LobbyResponse> {
     return this._lobbyService.createLobby(request);
   }
 

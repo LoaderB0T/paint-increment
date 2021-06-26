@@ -30,7 +30,19 @@ export class LobbyService {
       increments: [],
       settings
     };
+
+    if (await this._dbService.lobbies.findOne({ name: request.name })) {
+      throw new Error('Lobby name already in use');
+    }
+
     await this._dbService.lobbies.insertOne(lobby);
+
+    const res: LobbyResponse = {
+      id: lobby.id,
+      name: lobby.name,
+      pixelMap: []
+    };
+    return res;
   }
 
   async getLobby(lobbyId: string): Promise<LobbyResponse> {
@@ -39,9 +51,16 @@ export class LobbyService {
       throw new Error(`Cannot find lobby with id ${lobbyId}`);
     }
     const res: LobbyResponse = {
+      id: lobby.id,
       name: lobby.name,
-      pixels: lobby.increments.map(x => x.pixels).flat()
+      pixelMap: new Array(lobby.settings.height).fill(false).map(() => new Array(lobby.settings.width).fill(false))
     };
+
+    lobby.increments.forEach(i => {
+      i.pixels.forEach(ip => {
+        res.pixelMap[ip[1]][ip[0]] = true;
+      });
+    });
     return res;
   }
 
@@ -49,7 +68,7 @@ export class LobbyService {
     const newIncrement: PaintIncrement = {
       name: request.name,
       email: request.email,
-      pixels: request.pixels,
+      pixels: request.pixels.map(p => [p.x, p.y]),
       confirmed: false,
       confirmCode: uuid()
     };
@@ -65,9 +84,7 @@ export class LobbyService {
 
     const pixelConflict = request.pixels.some(newPixel => {
       return lobby.increments.some(existingIncrement => {
-        return existingIncrement.pixels.some(
-          existingPixel => existingPixel[0] === newPixel[0] && existingPixel[1] === newPixel[1]
-        );
+        return existingIncrement.pixels.some(existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y);
       });
     });
     if (pixelConflict) {

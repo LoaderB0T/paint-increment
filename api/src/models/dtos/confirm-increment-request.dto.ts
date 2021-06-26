@@ -1,5 +1,5 @@
-export interface ConfirmIncrementRequest {
-  lobbyId: string;
-  confirmCode: string;
-  accept: boolean;
+export class ConfirmIncrementRequest {
+  lobbyId!: string;
+  confirmCode!: string;
+  accept!: boolean;
 }

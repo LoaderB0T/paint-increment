@@ -1,6 +1,10 @@
-import { PaintLobbySettings } from '../paint-lobby-settins.model';
+export class PaintLobbySettings {
+  width?: number;
+  height?: number;
+  maxPixels?: number;
+}
 
-export interface CreateLobbyRequest {
-  name: string;
-  settings?: Partial<PaintLobbySettings>;
+export class CreateLobbyRequest {
+  name!: string;
+  settings?: PaintLobbySettings;
 }
