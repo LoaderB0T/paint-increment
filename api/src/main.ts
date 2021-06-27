@@ -4,11 +4,12 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
+import { ConfigService } from './services/config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: '*'
+    origin: app.get(ConfigService).config.origins
   });
   const options = new DocumentBuilder()
     .setTitle('PaintIncrementApi')

@@ -8,4 +8,5 @@ export interface Config {
     address: string;
     database: string;
   };
+  origins: string[];
 }
