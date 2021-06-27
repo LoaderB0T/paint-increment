@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { IncrementPixel } from '../.api/models/increment-pixel';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
@@ -42,6 +43,12 @@ export class LobbyComponent implements AfterViewInit {
       icon: 'share-alt',
       action: () => this.createInvite(),
       visible: () => this.isCreator
+    },
+    {
+      text: 'Submit paint iteration',
+      icon: 'layer-plus',
+      action: () => this.commitIteration(),
+      visible: () => this.canPaint
     }
   ];
 
@@ -138,6 +145,30 @@ export class LobbyComponent implements AfterViewInit {
         const origin = window.location.origin;
         this.codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
       });
+  }
+
+  private commitIteration(): void {
+    const newPixels: IncrementPixel[] = [];
+    for (let x = 0; x < this._lobbyImg.length; x++) {
+      const row = this._lobbyImg[x];
+      for (let y = 0; y < row.length; y++) {
+        const element = row[y];
+        if (element) {
+          newPixels.push({ x, y });
+        }
+      }
+    }
+    this._apiService
+      .lobbyControllerAddPointsToLobby({
+        body: {
+          email: 'test@test.test',
+          inviteCode: this._inviteCode!,
+          lobbyId: this.lobby.id,
+          name: 'My Name',
+          pixels: newPixels
+        }
+      })
+      .subscribe();
   }
 
   public gotWheel(event: WheelEvent) {

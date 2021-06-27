@@ -6,15 +6,15 @@ import { LobbyCache } from '../models/lobby-cache.model';
 })
 export class LobbyCacheService {
   public getCache(lobbyId: string): LobbyCache {
-    const cache = JSON.parse(localStorage.getItem('lobby-' + lobbyId) ?? '{}');
+    const cache = JSON.parse(localStorage.getItem(`lobby-${lobbyId}`) ?? '{}');
     return cache;
   }
 
   private saveCache(lobbyId: string, cache: LobbyCache) {
     if (!cache) {
-      localStorage.removeItem('lobby-' + lobbyId);
+      localStorage.removeItem(`lobby-${lobbyId}`);
     } else {
-      localStorage.setItem('lobby-' + lobbyId, JSON.stringify(cache));
+      localStorage.setItem(`lobby-${lobbyId}`, JSON.stringify(cache));
     }
   }
 
@@ -22,13 +22,6 @@ export class LobbyCacheService {
     const cache = this.getCache(lobbyId);
     modifier(cache);
     this.saveCache(lobbyId, cache);
-  }
-
-  public usedInviteCode(lobbyId: string, code: string) {
-    this.modifyCache(lobbyId, c => {
-      c.usedInviteCodes ??= [];
-      c.usedInviteCodes.push(code);
-    });
   }
 
   public addCreatorToken(lobbyId: string, token: string) {
