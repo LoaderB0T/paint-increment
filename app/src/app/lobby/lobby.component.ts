@@ -179,9 +179,11 @@ export class LobbyComponent implements AfterViewInit {
     const newPixels: IncrementPixel[] = [];
     for (let x = 0; x < this._lobbyImg.length; x++) {
       const row = this._lobbyImg[x];
+      const originalRow = this._originalLobbyImg[x];
       for (let y = 0; y < row.length; y++) {
+        const originalElement = originalRow[y];
         const element = row[y];
-        if (element) {
+        if (element && !originalElement) {
           newPixels.push({ x, y });
         }
       }
@@ -199,8 +201,24 @@ export class LobbyComponent implements AfterViewInit {
       .subscribe();
   }
 
-  private acceptIteration() {}
-  private rejectIteration() {}
+  private acceptIteration() {
+    this.acceptOrRejectIteration(true);
+  }
+  private rejectIteration() {
+    this.acceptOrRejectIteration(false);
+  }
+
+  private acceptOrRejectIteration(accept: boolean) {
+    this._apiService
+      .lobbyControllerConfirmIncrement({
+        body: {
+          accept,
+          creatorToken: this._creatorToken!,
+          lobbyId: this.lobby.id
+        }
+      })
+      .subscribe();
+  }
 
   public gotWheel(event: WheelEvent) {
     if (event.deltaY > 0) {
@@ -220,10 +238,12 @@ export class LobbyComponent implements AfterViewInit {
 
   public mouseDown(event: MouseEvent) {
     this._dragging = event.button === 1;
-    this._drawing = event.button === 0;
-    this._erasing = event.button === 2;
-    if (this._drawing || this._erasing) {
-      this.draw(event.offsetX, event.offsetY, this._erasing);
+    if (this.canPaint) {
+      this._drawing = event.button === 0;
+      this._erasing = event.button === 2;
+      if (this._drawing || this._erasing) {
+        this.draw(event.offsetX, event.offsetY, this._erasing);
+      }
     }
     event.preventDefault();
   }

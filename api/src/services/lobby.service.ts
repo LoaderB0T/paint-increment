@@ -110,8 +110,7 @@ export class LobbyService {
       name: request.name,
       email: request.email,
       pixels: request.pixels.map(p => [p.x, p.y]),
-      confirmed: false,
-      confirmCode: uuid()
+      confirmed: false
     };
 
     if (!request.inviteCode) {
@@ -160,23 +159,23 @@ export class LobbyService {
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
     }
-    const increment = lobby.increments.find(x => x.confirmCode === request.confirmCode);
-    if (!increment) {
-      throw new Error(`Cannot find increment to confirm (invalid confirm code?)`);
+
+    if (lobby.creatorToken !== request.creatorToken) {
+      throw new Error('Invalid creator token');
     }
 
     if (request.accept) {
       await this._dbService.lobbies.updateOne(
-        { id: request.lobbyId, 'increments.confirmCode': request.confirmCode },
+        { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
+          $set: { 'increments.$.confirmed': true }
         }
       );
     } else {
       await this._dbService.lobbies.updateOne(
-        { id: request.lobbyId, 'increments.confirmCode': request.confirmCode },
+        { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $pull: { increments: { confirmCode: request.confirmCode } }
+          $pull: { increments: { confirmed: false } }
         }
       );
     }

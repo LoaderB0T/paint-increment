@@ -3,5 +3,4 @@ export interface PaintIncrement {
   email: string;
   pixels: [number, number][];
   confirmed: boolean;
-  confirmCode?: string;
 }
