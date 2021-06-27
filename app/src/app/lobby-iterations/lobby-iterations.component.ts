@@ -45,7 +45,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
 
   public scroll(event: WheelEvent) {
     if (event.shiftKey) {
-      this.zoomValue += Math.sign(event.deltaY) * 10;
+      this.zoomValue += Math.sign(event.deltaY) * -10;
       if (this.zoomValue > 1000) {
         this.zoomValue = 1000;
       } else if (this.zoomValue < 150) {
