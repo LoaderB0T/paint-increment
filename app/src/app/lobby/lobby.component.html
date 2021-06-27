@@ -11,9 +11,10 @@
               [height]="height"
               (wheel)="gotWheel($event)"
               (mousedown)="mouseDown($event)"
-              (mouseup)="mouseUp()"
+              (mouseup)="mouseUp($event)"
               (mouseleave)="mouseLeave()"
               (mousemove)="mouseMove($event)"
+              (contextmenu)="false"
               [style.--zoom]="zoom"
               [style.--offsetX]="offsetX + 'px'"
               [style.--offsetY]="offsetY + 'px'"></canvas>

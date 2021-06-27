@@ -15,7 +15,8 @@ export class LobbyComponent implements AfterViewInit {
   private readonly _lobbyCacheService: LobbyCacheService;
   private readonly _router: Router;
 
-  public lobby: LobbyResponse;
+  public readonly lobby: LobbyResponse;
+  private readonly _lobbyImg: boolean[][];
   private _inviteCode?: string;
   private readonly _creatorToken?: string;
 
@@ -51,6 +52,7 @@ export class LobbyComponent implements AfterViewInit {
     this._router = router;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
+    this._lobbyImg = JSON.parse(JSON.stringify(this.lobby.pixelMap)) as boolean[][];
 
     const inviteCode = activatedRoute.snapshot.queryParams.invite as string | undefined;
     if (inviteCode) {
@@ -157,13 +159,44 @@ export class LobbyComponent implements AfterViewInit {
   public mouseDown(event: MouseEvent) {
     this._dragging = event.button === 1;
     this._drawing = event.button === 0;
-    this._erasing = event.button === 0;
+    this._erasing = event.button === 2;
+    if (this._drawing || this._erasing) {
+      this.draw(event.offsetX, event.offsetY, this._erasing);
+    }
+    event.preventDefault();
   }
-  public mouseUp() {
+  public mouseUp(event: MouseEvent) {
     this._dragging = false;
+    this._drawing = false;
+    this._erasing = false;
+    event.preventDefault();
   }
   public mouseLeave() {
     this._dragging = false;
+    this._drawing = false;
+    this._erasing = false;
+  }
+
+  private draw(rawX: number, rawY: number, erase: boolean) {
+    this._ctx?.restore();
+    const x = Math.floor((rawX / this.canvas!.nativeElement.clientWidth) * this.width);
+    const y = Math.floor((rawY / this.canvas!.nativeElement.clientHeight) * this.height);
+
+    if (!this.lobby.pixelMap[x][y]) {
+      if (this._lobbyImg[x][y] !== !erase) {
+        this._lobbyImg[x][y] = !erase;
+        if (erase) {
+          if ((x + y) % 2 === 0) {
+            this._ctx!.fillStyle = '#a5a5a5';
+          } else {
+            this._ctx!.fillStyle = '#ffffff';
+          }
+        } else {
+          this._ctx!.fillStyle = 'black';
+        }
+        this._ctx?.fillRect(x, y, 1, 1);
+      }
+    }
   }
 
   public mouseMove(event: MouseEvent) {
@@ -171,10 +204,13 @@ export class LobbyComponent implements AfterViewInit {
       this.offsetX += event.movementX / this.zoom;
       this.offsetY += event.movementY / this.zoom;
       this.fixOffsets();
+    } else if (this._drawing || this._erasing) {
+      this.draw(event.offsetX, event.offsetY, this._erasing);
     }
   }
 
   private fixOffsets() {
+    this._ctx?.save();
     const canvasWidth = this.canvas!.nativeElement.clientWidth;
     const actualCanvasWidth = canvasWidth * this.zoom;
     const maxOffsetX = (actualCanvasWidth - canvasWidth) / 2 / this.zoom;
