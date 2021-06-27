@@ -8,8 +8,12 @@ import { ConfigService } from './services/config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const cfgService = app.get(ConfigService);
+  const origins = cfgService.config.origins;
+  console.info('Enables origins:');
+  console.info(origins);
   app.enableCors({
-    origin: app.get(ConfigService).config.origins
+    origin: cfgService.config.origins
   });
   const options = new DocumentBuilder()
     .setTitle('PaintIncrementApi')
