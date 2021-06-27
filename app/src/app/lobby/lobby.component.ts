@@ -247,7 +247,7 @@ export class LobbyComponent implements AfterViewInit {
   }
 
   public gotWheel(event: WheelEvent) {
-    if (event.deltaY > 0) {
+    if (event.deltaY < 0) {
       this.zoom *= 1.1;
     } else {
       this.zoom *= 0.9;
