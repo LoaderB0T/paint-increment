@@ -1,0 +1,7 @@
+{
+  "mail": {
+    "service": "gmail",
+    "account": "something@gmail.com",
+    "password": "password"
+  }
+}
