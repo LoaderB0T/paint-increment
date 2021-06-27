@@ -13,7 +13,7 @@
   "author": "LoaderB0T",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build && copy:assets",
+    "build": "nest build && yarn copy:assets",
     "copy:assets": "cpy config.json dist && cpy web.config dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
