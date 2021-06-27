@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && cpy src/environment.json ../dist",
     "watch": "ng build --watch --configuration development",
     "codegen": "yarn ng-openapi-gen --input ../api/swagger.json --output ./src/app/.api",
     "test": "ng test"
@@ -39,6 +39,7 @@
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
+    "cpy-cli": "^3.1.1",
     "eslint": "^7.29.0",
     "jasmine-core": "~3.7.0",
     "karma": "~6.3.0",
