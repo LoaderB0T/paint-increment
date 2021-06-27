@@ -16,7 +16,7 @@ export class LobbyComponent implements AfterViewInit {
   private readonly _lobbyCacheService: LobbyCacheService;
   private readonly _router: Router;
 
-  public readonly lobby: LobbyResponse;
+  public lobby: LobbyResponse;
   private readonly _lobbyImg: boolean[][];
   private readonly _originalLobbyImg: boolean[][];
   private _inviteCode?: string;
@@ -114,6 +114,10 @@ export class LobbyComponent implements AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
+    this.drawLobby();
+  }
+
+  private drawLobby() {
     if (!this.canvas || !this.canvasContainer) {
       throw new Error('Canvas or canvasContainer not initialized yet');
     }
@@ -129,8 +133,8 @@ export class LobbyComponent implements AfterViewInit {
       }
     }
     this.lobby.pixelIterations.forEach(x => {
+      this._ctx!.fillStyle = x.confirmed ? 'black' : 'green';
       x.pixels.forEach(p => {
-        this._ctx!.fillStyle = 'black';
         this._ctx?.fillRect(p.x, p.y, 1, 1);
       });
     });
@@ -217,7 +221,12 @@ export class LobbyComponent implements AfterViewInit {
           lobbyId: this.lobby.id
         }
       })
-      .subscribe();
+      .subscribe(() => {
+        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id }).subscribe(l => {
+          this.lobby = l;
+          this.drawLobby();
+        });
+      });
   }
 
   public gotWheel(event: WheelEvent) {
