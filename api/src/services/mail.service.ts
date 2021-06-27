@@ -13,17 +13,17 @@ export class MailService {
     this._configService = configService;
 
     this._mailTransporter = createTransport({
-      service: this._configService._config.mail.service,
+      service: this._configService.config.mail.service,
       auth: {
-        user: this._configService._config.mail.account,
-        pass: this._configService._config.mail.password
+        user: this._configService.config.mail.account,
+        pass: this._configService.config.mail.password
       }
     });
   }
 
   public sendMail(to: string, subject: string, body: string) {
     const mailOptions = {
-      from: this._configService._config.mail.account,
+      from: this._configService.config.mail.account,
       to,
       subject,
       text: body

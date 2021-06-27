@@ -3,5 +3,9 @@
     "service": "gmail",
     "account": "something@gmail.com",
     "password": "password"
+  },
+  "db": {
+    "address": "mongodb://localhost:27017",
+    "database": "paint-increment"
   }
 }

@@ -4,4 +4,8 @@ export interface Config {
     account: string;
     password: string;
   };
+  db: {
+    address: string;
+    database: string;
+  };
 }

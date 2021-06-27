@@ -4,9 +4,9 @@ import { Config } from '../models/config.model';
 
 @Injectable()
 export class ConfigService {
-  public readonly _config: Config;
+  public readonly config: Config;
 
   constructor() {
-    this._config = JSON.parse(readFileSync('config.json', 'utf8')) as Config;
+    this.config = JSON.parse(readFileSync('config.json', 'utf8')) as Config;
   }
 }
