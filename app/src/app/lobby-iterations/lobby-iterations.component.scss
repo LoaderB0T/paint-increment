@@ -7,7 +7,7 @@
   gap: 20px;
   height: 100%;
   flex-wrap: wrap;
-  overflow-y: scroll;
+  overflow-y: auto;
   justify-content: center;
   .lobby-iteration {
     width: var(--zoom);
