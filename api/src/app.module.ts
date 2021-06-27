@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LobbyController } from './lobby.controller';
-import { DbService } from './data/db.service';
-import { LobbyService } from './data/lobby.service';
+import { DbService } from './services/db.service';
+import { LobbyService } from './services/lobby.service';
 
 @Module({
   imports: [],

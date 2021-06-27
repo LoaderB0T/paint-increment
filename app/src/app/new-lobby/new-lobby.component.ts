@@ -25,6 +25,10 @@ export class NewLobbyComponent {
         }
       })
       .subscribe(lobby => {
+        if (!lobby.creatorToken) {
+          throw new Error('Did not receive creatorToken for own lobby');
+        }
+        localStorage.setItem(`lobby-${lobby.id}`, lobby.creatorToken);
         this._router.navigate(['lobby', lobby.id]);
       });
   }

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { LobbyService } from './data/lobby.service';
+import { LobbyService } from './services/lobby.service';
 import { AddPixelsRequest } from './models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from './models/dtos/confirm-increment-request.dto';
 import { CreateLobbyRequest } from './models/dtos/create-lobby-request.dto';

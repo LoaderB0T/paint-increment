@@ -13,4 +13,5 @@ export class LobbyResponse {
     }
   })
   pixelMap!: boolean[][];
+  creatorToken?: string;
 }
