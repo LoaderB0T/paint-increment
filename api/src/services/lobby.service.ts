@@ -28,7 +28,8 @@ export class LobbyService {
       id: uuid(),
       name: request.name,
       increments: [],
-      settings
+      settings,
+      creatorToken: uuid()
     };
 
     if (await this._dbService.lobbies.findOne({ name: request.name })) {
@@ -40,7 +41,8 @@ export class LobbyService {
     const res: LobbyResponse = {
       id: lobby.id,
       name: lobby.name,
-      pixelMap: []
+      pixelMap: [],
+      creatorToken: lobby.creatorToken
     };
     return res;
   }
