@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && cpy src/environment.json ../dist",
+    "build": "ng build && cpy src/environment.json dist",
     "watch": "ng build --watch --configuration development",
     "codegen": "yarn ng-openapi-gen --input ../api/swagger.json --output ./src/app/.api",
     "test": "ng test"
