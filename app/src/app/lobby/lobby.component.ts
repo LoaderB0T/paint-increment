@@ -241,7 +241,6 @@ export class LobbyComponent implements AfterViewInit {
       this.zoom = 20;
     }
     this.fixOffsets();
-    this._ctx?.scale(this.zoom, this.zoom);
     event.preventDefault();
   }
 
