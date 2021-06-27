@@ -4,6 +4,10 @@ import { AddPixelsRequest } from './models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from './models/dtos/confirm-increment-request.dto';
 import { CreateLobbyRequest } from './models/dtos/create-lobby-request.dto';
 import { LobbyResponse } from './models/dtos/lobby-response.dto';
+import { NewInviteCodeRequestDto } from './models/dtos/new-invite-code-request.dto';
+import { NewInviteCodeResponseDto } from './models/dtos/new-invite-code-response.dto';
+import { ValdiateInviteCodeRequestDto } from './models/dtos/valdiate-invite-code-request.dto';
+import { ValidateInviteCodeResponseDto } from './models/dtos/valdiate-invite-code-response.dto';
 
 @Controller('lobby')
 export class LobbyController {
@@ -16,6 +20,16 @@ export class LobbyController {
   @Get(':lobbyId')
   async getLobby(@Param('lobbyId') lobbyId: string): Promise<LobbyResponse> {
     return this._lobbyService.getLobby(lobbyId);
+  }
+
+  @Post('invite')
+  async generateInvite(@Body() request: NewInviteCodeRequestDto): Promise<NewInviteCodeResponseDto> {
+    return this._lobbyService.generateInvite(request);
+  }
+
+  @Post('invite/validate')
+  async validateInvite(@Body() request: ValdiateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
+    return this._lobbyService.inviteValid(request);
   }
 
   @Post()

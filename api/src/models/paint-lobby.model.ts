@@ -7,4 +7,5 @@ export interface PaintLobby {
   settings: PaintLobbySettings;
   increments: PaintIncrement[];
   creatorToken?: string;
+  inviteCodes: string[];
 }

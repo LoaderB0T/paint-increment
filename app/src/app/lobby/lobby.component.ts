@@ -1,6 +1,9 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '../.api/models/lobby-response';
+import { ApiService } from '../.api/services/api.service';
+import { ActionItem } from '../models/action-item.model';
+import { LobbyCacheService } from '../services/lobby-cache.service';
 
 @Component({
   templateUrl: './lobby.component.html',
@@ -8,22 +11,73 @@ import { LobbyResponse } from '../.api/models/lobby-response';
 })
 export class LobbyComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
+  private readonly _apiService: ApiService;
+  private readonly _lobbyCacheService: LobbyCacheService;
+  private readonly _router: Router;
+
   public lobby: LobbyResponse;
-  private _dragging: boolean = false;
+  private _inviteCode?: string;
+  private readonly _creatorToken?: string;
 
   @ViewChild('canvas', { static: true })
   canvas?: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasContainer', { static: true })
   canvasContainer?: ElementRef<HTMLDivElement>;
+
   private _ctx?: CanvasRenderingContext2D;
   public zoom: number = 1;
+  private _dragging: boolean = false;
+  private _drawing: boolean = false;
+  private _erasing: boolean = false;
   public offsetX: number = 0;
   public offsetY: number = 0;
 
-  constructor(activatedRoute: ActivatedRoute) {
+  public showCodeCopyPopup: boolean = false;
+  public codeToCopy?: string;
+
+  public actionItems: ActionItem[] = [
+    {
+      text: 'Create new invite link',
+      icon: 'share-alt',
+      action: () => this.createInvite(),
+      visible: () => this.isCreator
+    }
+  ];
+
+  constructor(activatedRoute: ActivatedRoute, apiService: ApiService, lobbyCacheService: LobbyCacheService, router: Router) {
     this._activatedRoute = activatedRoute;
+    this._apiService = apiService;
+    this._lobbyCacheService = lobbyCacheService;
+    this._router = router;
+
     this.lobby = this._activatedRoute.snapshot.data.lobby;
-    console.log(this.lobby);
+
+    const inviteCode = activatedRoute.snapshot.queryParams.invite as string | undefined;
+    if (inviteCode) {
+      this._apiService
+        .lobbyControllerValidateInvite({
+          body: {
+            inviteCode,
+            lobbyId: this.lobby.id
+          }
+        })
+        .subscribe(res => {
+          if (res.isValid) {
+            this._inviteCode = inviteCode;
+          } else {
+            this._router.navigate([], {
+              relativeTo: activatedRoute,
+              queryParams: { invite: null },
+              queryParamsHandling: 'merge' // remove to replace all query params by provided
+            });
+          }
+        });
+    }
+
+    const creatorToken = this._lobbyCacheService.getCache(this.lobby.id).creatorToken;
+    if (creatorToken) {
+      this._creatorToken = creatorToken;
+    }
   }
 
   public ngAfterViewInit(): void {
@@ -31,7 +85,7 @@ export class LobbyComponent implements AfterViewInit {
       throw new Error('Canvas or canvasContainer not initialized yet');
     }
     this._ctx = this.canvas.nativeElement.getContext('2d')!;
-    this._ctx.fillStyle = 'white';
+    this._ctx.fillStyle = '#ffffff';
     this._ctx.fillRect(0, 0, this.width, this.height);
     for (let x = 0; x < this.lobby.pixelMap.length; x++) {
       const row = this.lobby.pixelMap[x];
@@ -52,8 +106,36 @@ export class LobbyComponent implements AfterViewInit {
   public get width(): number {
     return this.lobby.pixelMap.length;
   }
+
   public get height(): number {
     return this.lobby.pixelMap[0].length;
+  }
+
+  public get isCreator(): boolean {
+    return !!this._creatorToken;
+  }
+
+  public get visibleActions(): ActionItem[] {
+    return this.actionItems.filter(x => x.visible());
+  }
+
+  private get canPaint(): boolean {
+    return !!this._inviteCode;
+  }
+
+  private createInvite() {
+    this.showCodeCopyPopup = true;
+    this._apiService
+      .lobbyControllerGenerateInvite({
+        body: {
+          creatorToken: this._creatorToken!,
+          lobbyId: this.lobby.id
+        }
+      })
+      .subscribe(code => {
+        const origin = window.location.origin;
+        this.codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
+      });
   }
 
   public gotWheel(event: WheelEvent) {
@@ -74,6 +156,8 @@ export class LobbyComponent implements AfterViewInit {
 
   public mouseDown(event: MouseEvent) {
     this._dragging = event.button === 1;
+    this._drawing = event.button === 0;
+    this._erasing = event.button === 0;
   }
   public mouseUp() {
     this._dragging = false;
