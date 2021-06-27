@@ -1,17 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { PaintLobbySettings } from './create-lobby-request.dto';
+import { IterationModel } from './iteration-model.dto';
 
 export class LobbyResponse {
   id!: string;
   name!: string;
-  @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'array',
-      items: {
-        type: 'boolean'
-      }
-    }
-  })
-  pixelMap!: boolean[][];
+  pixelIterations!: IterationModel[];
+  settings!: PaintLobbySettings;
   creatorToken?: string;
 }

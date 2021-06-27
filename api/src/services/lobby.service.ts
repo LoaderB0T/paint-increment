@@ -46,8 +46,9 @@ export class LobbyService {
     const res: LobbyResponse = {
       id: lobby.id,
       name: lobby.name,
-      pixelMap: [],
-      creatorToken: lobby.creatorToken
+      pixelIterations: [],
+      creatorToken: lobby.creatorToken,
+      settings: lobby.settings
     };
     return res;
   }
@@ -89,14 +90,18 @@ export class LobbyService {
     const res: LobbyResponse = {
       id: lobby.id,
       name: lobby.name,
-      pixelMap: new Array(lobby.settings.height).fill(false).map(() => new Array(lobby.settings.width).fill(false))
+      pixelIterations: lobby.increments.map(i => {
+        return {
+          confirmed: i.confirmed,
+          email: i.email,
+          name: i.name,
+          pixels: i.pixels.map(ip => {
+            return { x: ip[0], y: ip[1] };
+          })
+        };
+      }),
+      settings: lobby.settings
     };
-
-    lobby.increments.forEach(i => {
-      i.pixels.forEach(ip => {
-        res.pixelMap[ip[1]][ip[0]] = true;
-      });
-    });
     return res;
   }
 

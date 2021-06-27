@@ -18,6 +18,7 @@ export class LobbyComponent implements AfterViewInit {
 
   public readonly lobby: LobbyResponse;
   private readonly _lobbyImg: boolean[][];
+  private readonly _originalLobbyImg: boolean[][];
   private _inviteCode?: string;
   private readonly _creatorToken?: string;
 
@@ -49,6 +50,18 @@ export class LobbyComponent implements AfterViewInit {
       icon: 'layer-plus',
       action: () => this.commitIteration(),
       visible: () => this.canPaint
+    },
+    {
+      text: 'Accept paint iteration',
+      icon: 'check',
+      action: () => this.acceptIteration(),
+      visible: () => this.isCreator && this.hasUnconfirmedIteration
+    },
+    {
+      text: 'Reject paint iteration',
+      icon: 'xmark',
+      action: () => this.rejectIteration(),
+      visible: () => this.isCreator && this.hasUnconfirmedIteration
     }
   ];
 
@@ -59,7 +72,18 @@ export class LobbyComponent implements AfterViewInit {
     this._router = router;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
-    this._lobbyImg = JSON.parse(JSON.stringify(this.lobby.pixelMap)) as boolean[][];
+
+    this._lobbyImg = new Array(this.lobby.settings.height)
+      .fill(false)
+      .map(() => new Array(this.lobby.settings.width).fill(false));
+
+    this.lobby.pixelIterations.forEach(i => {
+      i.pixels.forEach(ip => {
+        this._lobbyImg[ip.x][ip.y] = true;
+      });
+    });
+
+    this._originalLobbyImg = JSON.parse(JSON.stringify(this._lobbyImg)) as boolean[][];
 
     const inviteCode = activatedRoute.snapshot.queryParams.invite as string | undefined;
     if (inviteCode) {
@@ -96,28 +120,28 @@ export class LobbyComponent implements AfterViewInit {
     this._ctx = this.canvas.nativeElement.getContext('2d')!;
     this._ctx.fillStyle = '#ffffff';
     this._ctx.fillRect(0, 0, this.width, this.height);
-    for (let x = 0; x < this.lobby.pixelMap.length; x++) {
-      const row = this.lobby.pixelMap[x];
-      for (let y = 0; y < row.length; y++) {
-        const p = row[y];
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
         if ((x + y) % 2 === 0) {
           this._ctx.fillStyle = '#a5a5a5';
           this._ctx?.fillRect(x, y, 1, 1);
         }
-        if (p) {
-          this._ctx.fillStyle = 'black';
-          this._ctx?.fillRect(x, y, 1, 1);
-        }
       }
     }
+    this.lobby.pixelIterations.forEach(x => {
+      x.pixels.forEach(p => {
+        this._ctx!.fillStyle = 'black';
+        this._ctx?.fillRect(p.x, p.y, 1, 1);
+      });
+    });
   }
 
   public get width(): number {
-    return this.lobby.pixelMap.length;
+    return this.lobby.settings.width!;
   }
 
   public get height(): number {
-    return this.lobby.pixelMap[0].length;
+    return this.lobby.settings.height!;
   }
 
   public get isCreator(): boolean {
@@ -130,6 +154,10 @@ export class LobbyComponent implements AfterViewInit {
 
   private get canPaint(): boolean {
     return !!this._inviteCode;
+  }
+
+  private get hasUnconfirmedIteration(): boolean {
+    return this.lobby.pixelIterations.some(x => !x.confirmed);
   }
 
   private createInvite() {
@@ -170,6 +198,9 @@ export class LobbyComponent implements AfterViewInit {
       })
       .subscribe();
   }
+
+  private acceptIteration() {}
+  private rejectIteration() {}
 
   public gotWheel(event: WheelEvent) {
     if (event.deltaY > 0) {
@@ -213,7 +244,7 @@ export class LobbyComponent implements AfterViewInit {
     const x = Math.floor((rawX / this.canvas!.nativeElement.clientWidth) * this.width);
     const y = Math.floor((rawY / this.canvas!.nativeElement.clientHeight) * this.height);
 
-    if (!this.lobby.pixelMap[x][y]) {
+    if (!this._originalLobbyImg[x][y]) {
       if (this._lobbyImg[x][y] !== !erase) {
         this._lobbyImg[x][y] = !erase;
         if (erase) {
