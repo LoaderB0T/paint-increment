@@ -10,16 +10,11 @@ import { HomeComponent } from './home/home.component';
 import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    FormsModule,
-    ApiModule.forRoot({ rootUrl: 'http://localhost:3000' })
-  ],
+  imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule, ApiModule.forRoot({ rootUrl: environment.apiUrl })],
   providers: [],
   bootstrap: [AppComponent]
 })
