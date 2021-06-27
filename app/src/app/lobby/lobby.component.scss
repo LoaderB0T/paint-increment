@@ -8,15 +8,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  #canvas-container {
+  resize: both;
+  .square-container {
+    position: relative;
     width: 90%;
-    height: 90%;
-    overflow: hidden;
-    #paint-canvas {
-      height: 100%;
-      width: 100%;
-      image-rendering: pixelated;
-      transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 90%;
+    &:after {
+      content: '';
+      display: block;
+      padding-bottom: 100%;
+    }
+    #canvas-container {
+      position: absolute;
+      width: 70vmin;
+      overflow: hidden;
+      #paint-canvas {
+        height: 100%;
+        width: 100%;
+        image-rendering: pixelated;
+        transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
+      }
     }
   }
 }

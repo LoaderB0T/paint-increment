@@ -2,21 +2,22 @@
 
   <span>{{lobby.name}}</span>
 
-  <div #canvasContainer
-       id="canvas-container">
-    <canvas #canvas
-            id="paint-canvas"
-            [width]="width"
-            [height]="height"
-            (wheel)="gotWheel($event)"
-            (mousedown)="mouseDown($event)"
-            (mouseup)="mouseUp()"
-            (mouseleave)="mouseLeave()"
-            (mousemove)="mouseMove($event)"
-            [style.--zoom]="zoom"
-            [style.--offsetX]="offsetX + 'px'"
-            [style.--offsetY]="offsetY + 'px'"></canvas>
+  <div class="square-container">
+    <div #canvasContainer
+         id="canvas-container">
+      <canvas #canvas
+              id="paint-canvas"
+              [width]="width"
+              [height]="height"
+              (wheel)="gotWheel($event)"
+              (mousedown)="mouseDown($event)"
+              (mouseup)="mouseUp()"
+              (mouseleave)="mouseLeave()"
+              (mousemove)="mouseMove($event)"
+              [style.--zoom]="zoom"
+              [style.--offsetX]="offsetX + 'px'"
+              [style.--offsetY]="offsetY + 'px'"></canvas>
+    </div>
   </div>
-
 
 </div>

@@ -38,7 +38,7 @@ export class LobbyComponent implements AfterViewInit {
       for (let y = 0; y < row.length; y++) {
         const p = row[y];
         if ((x + y) % 2 === 0) {
-          this._ctx.fillStyle = 'gray';
+          this._ctx.fillStyle = '#a5a5a5';
           this._ctx?.fillRect(x, y, 1, 1);
         }
         if (p) {
