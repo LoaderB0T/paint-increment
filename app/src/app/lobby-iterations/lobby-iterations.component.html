@@ -1,6 +1,8 @@
-<div id="lobby-iterations">
+<div id="lobby-iterations"
+     (wheel)="scroll($event)">
   <div *ngFor="let iteration of lobby.pixelIterations"
-       class="lobby-iteration">
+       class="lobby-iteration"
+       [style.--zoom]="zoomValue + 'px'">
     <canvas #canvas
             [width]="width"
             [height]="height">

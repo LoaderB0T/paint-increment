@@ -13,6 +13,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
 
   @ViewChildren('canvas')
   canvas!: QueryList<ElementRef<HTMLCanvasElement>>;
+  public zoomValue: number = 300;
 
   constructor(activatedRoute: ActivatedRoute, router: Router) {
     this._activatedRoute = activatedRoute;
@@ -39,6 +40,18 @@ export class LobbyIterationsComponent implements AfterViewInit {
           ctx.fillRect(p.x, p.y, 1, 1);
         });
       }
+    }
+  }
+
+  public scroll(event: WheelEvent) {
+    if (event.shiftKey) {
+      this.zoomValue += Math.sign(event.deltaY) * 10;
+      if (this.zoomValue > 1000) {
+        this.zoomValue = 1000;
+      } else if (this.zoomValue < 150) {
+        this.zoomValue = 150;
+      }
+      event.preventDefault();
     }
   }
 }
