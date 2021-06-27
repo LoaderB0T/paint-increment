@@ -9,9 +9,10 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { LobbyComponent } from './lobby/lobby.component';
+import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent],
+  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

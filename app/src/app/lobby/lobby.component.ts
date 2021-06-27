@@ -62,6 +62,12 @@ export class LobbyComponent implements AfterViewInit {
       icon: 'xmark',
       action: () => this.rejectIteration(),
       visible: () => this.isCreator && this.hasUnconfirmedIteration
+    },
+    {
+      text: 'View iterations',
+      icon: 'layer-group',
+      action: () => this.viewIterations(),
+      visible: () => true
     }
   ];
 
@@ -98,11 +104,7 @@ export class LobbyComponent implements AfterViewInit {
           if (res.isValid) {
             this._inviteCode = inviteCode;
           } else {
-            this._router.navigate([], {
-              relativeTo: activatedRoute,
-              queryParams: { invite: null },
-              queryParamsHandling: 'merge' // remove to replace all query params by provided
-            });
+            this.invalidateInviteCode();
           }
         });
     }
@@ -111,6 +113,19 @@ export class LobbyComponent implements AfterViewInit {
     if (creatorToken) {
       this._creatorToken = creatorToken;
     }
+  }
+
+  private viewIterations(): void {
+    this._router.navigate(['lobby', this.lobby.id, 'iterations']);
+  }
+
+  private invalidateInviteCode() {
+    this._inviteCode = undefined;
+    this._router.navigate([], {
+      relativeTo: this._activatedRoute,
+      queryParams: { invite: null },
+      queryParamsHandling: 'merge' // remove to replace all query params by provided
+    });
   }
 
   public ngAfterViewInit(): void {
@@ -203,6 +218,8 @@ export class LobbyComponent implements AfterViewInit {
         }
       })
       .subscribe();
+
+    this.invalidateInviteCode();
   }
 
   private acceptIteration() {

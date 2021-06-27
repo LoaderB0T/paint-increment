@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
+import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { LobbyResolver } from './services/lobby-resolver.service';
@@ -16,10 +17,23 @@ const routes: Routes = [
   },
   {
     path: 'lobby/:id',
-    component: LobbyComponent,
-    resolve: {
-      lobby: LobbyResolver
-    }
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        component: LobbyComponent,
+        resolve: {
+          lobby: LobbyResolver
+        }
+      },
+      {
+        path: 'iterations',
+        component: LobbyIterationsComponent,
+        resolve: {
+          lobby: LobbyResolver
+        }
+      }
+    ]
   }
 ];
 

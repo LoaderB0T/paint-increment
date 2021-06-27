@@ -1,0 +1,10 @@
+<div id="lobby-iterations">
+  <div *ngFor="let iteration of lobby.pixelIterations"
+       class="lobby-iteration">
+    <canvas #canvas
+            [width]="width"
+            [height]="height">
+
+    </canvas>
+  </div>
+</div>

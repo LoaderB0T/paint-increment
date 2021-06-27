@@ -1,0 +1,22 @@
+:host {
+  height: 100%;
+}
+
+#lobby-iterations {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  justify-content: center;
+  .lobby-iteration {
+    width: 300px;
+    height: 300px;
+    canvas {
+      height: 100%;
+      width: 100%;
+      image-rendering: pixelated;
+      background-color: white;
+    }
+  }
+}
