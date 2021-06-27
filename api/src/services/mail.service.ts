@@ -4,7 +4,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ConfigService } from './config.service';
 
 @Injectable()
-export class DbService {
+export class MailService {
   private readonly _configService: ConfigService;
 
   private readonly _mailTransporter: Transporter<SMTPTransport.SentMessageInfo>;
