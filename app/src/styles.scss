@@ -1,11 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+@import './vars.scss';
+
 html,
 body {
   height: 100%;
-  font-family: Montserrat, sans-serif;
-  font-size: 1.4em;
   margin: 0;
-  color: #ffffff;
+  font-size: 1.4em;
+}
+* {
+  font-family: Montserrat, sans-serif;
+  color: $dark;
 }
 
 .card-content {
@@ -29,14 +32,40 @@ body {
       border-top-right-radius: 25%;
       border-bottom-right-radius: 25%;
     }
-    background-color: #292929;
+    background-color: $dark;
     cursor: pointer;
     padding: 25px;
     .action-button-icon {
       font-size: 64px;
     }
     &:hover {
-      background-color: #3f3f3f;
+      background-color: $dark;
     }
+  }
+}
+
+.button {
+  font-family: Montserrat, sans-serif;
+  font-size: 1.4em;
+  margin: 0;
+  color: $dark;
+  background-color: #fff;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  box-shadow: 0 0 5px $dark;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.25s;
+  &:hover,
+  &:active {
+    background-color: $dark;
+    color: #fff;
+  }
+  &:focus {
+    border: 2px solid $dark;
+  }
+  &:active {
+    transition: all 0s;
+    background-color: $lighDark;
   }
 }

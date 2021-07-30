@@ -1,3 +1,21 @@
 <div class="card-content">
-  <span><strong>Welcome to Paint Increment</strong></span>
+  <h2>Welcome to Paint Increment</h2>
+
+  <span id="how-to">
+    <p>
+      Paint Increment allows you and your friends to collaborate on a drawing.
+      The main idea is to put the result, including the whole history, on a t-shirt.
+    </p>
+    <p>
+      You start by creating a lobby with the initial drawing. Then send a link to all your friends for them to
+      contribute.
+      Only one person can draw at a time, they have to reserve the canvas to start drawing. This ensures a clean history
+      with each individual increment (hence the name).
+    </p>
+  </span>
+
+  <button class="button"
+          (click)="navigateToNewLobby()">
+    Create Lobby
+  </button>
 </div>

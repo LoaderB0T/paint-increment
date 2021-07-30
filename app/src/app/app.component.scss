@@ -4,12 +4,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ff0042;
+  background-color: #ffffff;
   #app-root-card {
-    width: 80%;
-    height: 80%;
-    background-color: #1b1b1f;
-    border-radius: 50px;
+    width: 60%;
+    min-width: 800px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 0 20px 0px black;
     padding: 25px;
     display: flex;
     flex-direction: column;
