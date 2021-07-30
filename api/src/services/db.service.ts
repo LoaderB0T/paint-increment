@@ -11,10 +11,10 @@ export class DbService {
   constructor(configService: ConfigService) {
     const dbAddress = configService.config.db.address;
     const dbName = configService.config.db.database;
-    const client = new MongoClient(dbAddress, { useUnifiedTopology: true });
+    const client = new MongoClient(dbAddress);
 
     client.connect(err => {
-      assert.strictEqual(null, err);
+      assert.strictEqual(undefined, err);
       console.log('MongoDb: Connected successfullys to server');
 
       this._db = client.db(dbName);
