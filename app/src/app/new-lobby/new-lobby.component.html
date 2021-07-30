@@ -1,10 +1,29 @@
-<div>
-  <span>new-lobby works!</span>
-  <input type="text"
-         id="lobby-name"
-         [(ngModel)]="lobbyName" />
+<div class="card-content">
+  <h2>Create a new lobby</h2>
 
-  <input type="submit"
-         id="lobby-name"
-         (click)="createLobby()" />
+  <span id="new-lobby-how-to">
+    <p>
+      Create a new lobby to start a new drawing with your friends.
+    </p>
+    <p>
+      Enter a name for the new lobby below and click the 'Create Lobby' button to get started.
+    </p>
+  </span>
+
+  <div class="side-by-side">
+    <div class="textbox-icon"
+         tabindex="99999">
+      <input type="text"
+             class="textbox"
+             id="lobby-name"
+             [(ngModel)]="lobbyName" />
+      <i class="fa-solid fa-pen"></i>
+    </div>
+
+    <input type="submit"
+           class="button"
+           id="lobby-name"
+           value="Create Lobby"
+           (click)="createLobby()" />
+  </div>
 </div>

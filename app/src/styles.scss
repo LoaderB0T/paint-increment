@@ -9,6 +9,7 @@ body {
 * {
   font-family: Montserrat, sans-serif;
   color: $dark;
+  outline: none;
 }
 
 .card-content {
@@ -44,18 +45,30 @@ body {
   }
 }
 
-.button {
+.side-by-side {
+  display: flex;
+  gap: 10px;
+  width: 90%;
+}
+
+.button,
+.textbox,
+.textbox-icon {
   font-family: Montserrat, sans-serif;
-  font-size: 1.4em;
+  font-size: 35px;
   margin: 0;
   color: $dark;
   background-color: #fff;
-  border: 2px solid transparent;
   border-radius: 5px;
-  box-shadow: 0 0 5px $dark;
+  box-shadow: 0 0 15px $dark;
+  transition: all 0.25s;
+  padding: 18px;
+}
+
+.button {
   padding: 18px;
   cursor: pointer;
-  transition: all 0.25s;
+  border: 2px solid transparent;
   &:hover,
   &:active {
     background-color: $dark;
@@ -67,5 +80,46 @@ body {
   &:active {
     transition: all 0s;
     background-color: $lighDark;
+  }
+}
+
+.textbox,
+.textbox-icon {
+  border: 4px solid transparent;
+  svg {
+    padding-left: 15px;
+    path {
+      transition: all 0.25s;
+    }
+  }
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: $dark;
+    color: #fff;
+    svg path {
+      color: #fff;
+    }
+  }
+  &:focus {
+    border: 4px solid #fff;
+  }
+  width: inherit;
+}
+
+.textbox-icon {
+  display: flex;
+  align-items: center;
+  .textbox {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: unset;
+    color: unset;
+    background-color: unset;
+    transition: unset;
+  }
+  svg {
+    font-size: 40px;
   }
 }
