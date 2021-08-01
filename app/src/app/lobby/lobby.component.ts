@@ -5,6 +5,7 @@ import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
 import { LobbyCacheService } from '../services/lobby-cache.service';
+import { PopupService } from '../services/popup.service';
 
 @Component({
   templateUrl: './lobby.component.html',
@@ -15,6 +16,7 @@ export class LobbyComponent implements AfterViewInit {
   private readonly _apiService: ApiService;
   private readonly _lobbyCacheService: LobbyCacheService;
   private readonly _router: Router;
+  private readonly _popupService: PopupService;
 
   public lobby: LobbyResponse;
   private readonly _lobbyImg: boolean[][];
@@ -32,11 +34,9 @@ export class LobbyComponent implements AfterViewInit {
   private _dragging: boolean = false;
   private _drawing: boolean = false;
   private _erasing: boolean = false;
+  private _canvasPattern: boolean = true;
   public offsetX: number = 0;
   public offsetY: number = 0;
-
-  public showCodeCopyPopup: boolean = false;
-  public codeToCopy?: string;
 
   public actionItems: ActionItem[] = [
     {
@@ -64,6 +64,12 @@ export class LobbyComponent implements AfterViewInit {
       visible: () => this.isCreator && this.hasUnconfirmedIteration
     },
     {
+      text: 'Toggle Canvas Pattern',
+      icon: 'game-board',
+      action: () => this.toggleCanvasPattern(),
+      visible: () => true
+    },
+    {
       text: 'View iterations',
       icon: 'layer-group',
       action: () => this.viewIterations(),
@@ -71,11 +77,18 @@ export class LobbyComponent implements AfterViewInit {
     }
   ];
 
-  constructor(activatedRoute: ActivatedRoute, apiService: ApiService, lobbyCacheService: LobbyCacheService, router: Router) {
+  constructor(
+    activatedRoute: ActivatedRoute,
+    apiService: ApiService,
+    lobbyCacheService: LobbyCacheService,
+    router: Router,
+    popupService: PopupService
+  ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
     this._lobbyCacheService = lobbyCacheService;
     this._router = router;
+    this._popupService = popupService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
 
@@ -139,11 +152,13 @@ export class LobbyComponent implements AfterViewInit {
     this._ctx = this.canvas.nativeElement.getContext('2d')!;
     this._ctx.fillStyle = '#ffffff';
     this._ctx.fillRect(0, 0, this.width, this.height);
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if ((x + y) % 2 === 0) {
-          this._ctx.fillStyle = '#a5a5a5';
-          this._ctx?.fillRect(x, y, 1, 1);
+    if (this._canvasPattern) {
+      for (let x = 0; x < this.width; x++) {
+        for (let y = 0; y < this.height; y++) {
+          if ((x + y) % 2 === 0) {
+            this._ctx.fillStyle = '#a5a5a5';
+            this._ctx?.fillRect(x, y, 1, 1);
+          }
         }
       }
     }
@@ -153,6 +168,19 @@ export class LobbyComponent implements AfterViewInit {
         this._ctx?.fillRect(p.x, p.y, 1, 1);
       });
     });
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (this._lobbyImg[x][y]) {
+          this._ctx.fillStyle = 'black';
+          this._ctx?.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+  }
+
+  toggleCanvasPattern(): void {
+    this._canvasPattern = !this._canvasPattern;
+    this.drawLobby();
   }
 
   public get width(): number {
@@ -172,7 +200,7 @@ export class LobbyComponent implements AfterViewInit {
   }
 
   private get canPaint(): boolean {
-    return !!this._inviteCode;
+    return !!this._inviteCode || (!!this._creatorToken && this.lobby.pixelIterations.length === 0);
   }
 
   private get hasUnconfirmedIteration(): boolean {
@@ -180,7 +208,7 @@ export class LobbyComponent implements AfterViewInit {
   }
 
   private createInvite() {
-    this.showCodeCopyPopup = true;
+    const popup = this._popupService.show();
     this._apiService
       .lobbyControllerGenerateInvite({
         body: {
@@ -190,7 +218,10 @@ export class LobbyComponent implements AfterViewInit {
       })
       .subscribe(code => {
         const origin = window.location.origin;
-        this.codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
+        const codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
+        popup.setText(
+          `Copy and share this code with only one of your friends:\n\n${codeToCopy}\n\nThis code is only usable once!`
+        );
       });
   }
 
@@ -211,10 +242,11 @@ export class LobbyComponent implements AfterViewInit {
       .lobbyControllerAddPointsToLobby({
         body: {
           email: 'test@test.test',
-          inviteCode: this._inviteCode!,
+          inviteCode: this._inviteCode,
           lobbyId: this.lobby.id,
           name: 'My Name',
-          pixels: newPixels
+          pixels: newPixels,
+          creatorToken: this._creatorToken
         }
       })
       .subscribe();

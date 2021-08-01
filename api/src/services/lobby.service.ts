@@ -113,16 +113,22 @@ export class LobbyService {
       confirmed: false
     };
 
-    if (!request.inviteCode) {
-      throw new Error('create increment without invite code');
-    }
-
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
     }
 
-    if (!lobby.inviteCodes.some(x => x === request.inviteCode)) {
+    if (!request.inviteCode && request.creatorToken !== lobby.creatorToken) {
+      throw new Error('create increment without invite code or valid creator token');
+    }
+
+    if (request.creatorToken && lobby.increments.length > 0) {
+      throw new Error('Creator token can only be used when no iterations have been added');
+    } else {
+      newIncrement.confirmed = true;
+    }
+
+    if (!request.creatorToken && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
       throw new Error('Invalid or used invite code');
     }
 
