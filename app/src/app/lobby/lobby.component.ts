@@ -1,22 +1,24 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IncrementPixel } from '../.api/models/increment-pixel';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
 import { LobbyCacheService } from '../services/lobby-cache.service';
+import { LobbyLockService } from '../services/lobby-lock.service';
 import { PopupService } from '../services/popup.service';
 
 @Component({
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.scss']
 })
-export class LobbyComponent implements AfterViewInit {
+export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _apiService: ApiService;
   private readonly _lobbyCacheService: LobbyCacheService;
   private readonly _router: Router;
   private readonly _popupService: PopupService;
+  private readonly _lobbyLockService: LobbyLockService;
 
   public lobby: LobbyResponse;
   private readonly _lobbyImg: boolean[][];
@@ -82,13 +84,15 @@ export class LobbyComponent implements AfterViewInit {
     apiService: ApiService,
     lobbyCacheService: LobbyCacheService,
     router: Router,
-    popupService: PopupService
+    popupService: PopupService,
+    lobbyLockService: LobbyLockService
   ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
     this._lobbyCacheService = lobbyCacheService;
     this._router = router;
     this._popupService = popupService;
+    this._lobbyLockService = lobbyLockService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
 
@@ -127,6 +131,13 @@ export class LobbyComponent implements AfterViewInit {
       this._creatorToken = creatorToken;
     }
   }
+  public ngOnInit() {
+    this._lobbyLockService.lookingAtLobby(this.lobby.id);
+  }
+
+  public ngAfterViewInit(): void {
+    this.drawLobby();
+  }
 
   private viewIterations(): void {
     this._router.navigate(['lobby', this.lobby.id, 'iterations']);
@@ -139,10 +150,6 @@ export class LobbyComponent implements AfterViewInit {
       queryParams: { invite: null },
       queryParamsHandling: 'merge' // to replace all query params by provided ones (invite = null)
     });
-  }
-
-  public ngAfterViewInit(): void {
-    this.drawLobby();
   }
 
   private drawLobby() {
