@@ -137,7 +137,7 @@ export class LobbyComponent implements AfterViewInit {
     this._router.navigate([], {
       relativeTo: this._activatedRoute,
       queryParams: { invite: null },
-      queryParamsHandling: 'merge' // remove to replace all query params by provided
+      queryParamsHandling: 'merge' // to replace all query params by provided ones (invite = null)
     });
   }
 

@@ -122,7 +122,7 @@ export class LobbyService {
       throw new Error('create increment without invite code or valid creator token');
     }
 
-    if (request.creatorToken && lobby.increments.length > 0) {
+    if (!request.inviteCode && request.creatorToken && lobby.increments.length > 0) {
       throw new Error('Creator token can only be used when no iterations have been added');
     } else {
       newIncrement.confirmed = true;
