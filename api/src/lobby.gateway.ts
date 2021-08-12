@@ -1,16 +1,9 @@
-import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer
-} from '@nestjs/websockets';
+import { OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { WsState } from './models/ws-state.model';
 
 @WebSocketGateway(Number.parseInt(process.env.WSPORT ?? '0') || 3001, { cors: true })
-export class LobbyGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class LobbyGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer() server!: Server;
 
   @SubscribeMessage('lookingAtLobby')
@@ -42,6 +35,4 @@ export class LobbyGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     console.log(WsState.userState);
     console.log(WsState.lockState);
   }
-
-  handleConnection(client: Socket, ...args: any[]) {}
 }
