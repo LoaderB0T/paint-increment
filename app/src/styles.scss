@@ -7,6 +7,8 @@ body {
   font-size: 1.4em;
   font-family: Montserrat, sans-serif;
   color: $dark;
+  --tooltipFontSize: 32px;
+  --tooltipPadding: 10px;
 }
 
 input {
@@ -42,7 +44,7 @@ input {
       font-size: 64px;
     }
     &:hover {
-      background-color: $dark;
+      background-color: $lighDark;
     }
   }
 }
@@ -118,5 +120,41 @@ input {
   }
   svg {
     font-size: 40px;
+  }
+}
+
+.tooltip,
+.tooltip::before,
+.tooltip::after {
+  position: absolute;
+  background-color: $dark;
+  font-size: var(--tooltipFontSize);
+  padding: var(--tooltipPadding);
+}
+
+.tooltip {
+  background-color: $dark;
+  color: white;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 250ms;
+  z-index: 3;
+  &.visible {
+    opacity: 1;
+  }
+  &::before,
+  &::after {
+    content: '!';
+    color: $dark;
+    top: 0;
+    transform: skewX(-12deg);
+    z-index: -1;
+  }
+  &::before {
+    left: -8px;
+  }
+  &::after {
+    right: -8px;
   }
 }
