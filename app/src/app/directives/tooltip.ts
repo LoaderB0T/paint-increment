@@ -1,10 +1,10 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from '@angular/core';
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[tooltip]'
 })
-export class TooltipDirective {
+export class TooltipDirective implements OnDestroy {
   public shown: boolean = false;
   private readonly _renderer: Renderer2;
   private readonly _el: ElementRef<any>;
@@ -24,6 +24,12 @@ export class TooltipDirective {
   }
 
   @HostListener('mouseleave') onMouseLeave() {
+    if (this.shown) {
+      this.hide();
+    }
+  }
+
+  public ngOnDestroy(): void {
     if (this.shown) {
       this.hide();
     }
