@@ -9,6 +9,7 @@
   flex-wrap: wrap;
   overflow-y: auto;
   justify-content: center;
+  max-height: 90vh;
   .lobby-iteration {
     width: var(--zoom);
     height: var(--zoom);
