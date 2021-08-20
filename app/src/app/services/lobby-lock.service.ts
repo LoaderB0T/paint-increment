@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { LockLobbyAction, LookingAtLobbyAction } from '../models/ws-events';
 import { WsService } from './ws.service';
 
 @Injectable({ providedIn: 'root' })
@@ -11,10 +10,13 @@ export class LobbyLockService {
   }
 
   public lock(lobbyId: string): void {
-    this._wsService.send(new LockLobbyAction(lobbyId));
+    this._wsService.send('lockLobby', { lobbyId });
   }
 
   public lookingAtLobby(lobbyId: string) {
-    this._wsService.send(new LookingAtLobbyAction(lobbyId));
+    this._wsService.send('lookAtLobby', { lobbyId });
+    this._wsService.listen('lobbyLocked').subscribe(data => {
+      data;
+    });
   }
 }

@@ -8,5 +8,6 @@
     "address": "mongodb://localhost:27017",
     "database": "paint-increment"
   },
-  "origins": ["localhost"]
+  "origins": ["localhost"],
+  "debug": "false"
 }

@@ -1,38 +1,15 @@
-export class WsPayload<T> {
-  public endpoint: string;
-  public payload: T;
+export type WsCommunicationDefinitionsClientToServer =
+  | { name: 'lockLobby'; payload: { lobbyId: string } }
+  | { name: 'unlockLobby'; payload: { lobbyId: string } }
+  | { name: 'lookAtLobby'; payload: { lobbyId: string } };
 
-  constructor(endpoint: string, payload: T) {
-    this.endpoint = endpoint;
-    this.payload = payload;
-  }
-}
+export type WsCommunicationDefinitionsServerToClient =
+  | { name: 'lobbyLocked'; payload: { isLocked: boolean } }
+  | { name: 'lobbyReserved'; payload: { isReserved: boolean } };
 
-export class WsAction<T> extends WsPayload<T> {
-  constructor(action: string, payload: T) {
-    super(action, payload);
-  }
-}
-export class WsEvent<T> extends WsPayload<T> {
-  constructor(event: string, payload: T) {
-    super(event, payload);
-  }
-}
+export type WsCommunication = WsCommunicationDefinitionsClientToServer | WsCommunicationDefinitionsServerToClient;
 
-export class LockLobbyAction extends WsAction<string> {
-  public constructor(lobbyId: string) {
-    super('lockLobby', lobbyId);
-  }
-}
+export type WsSendMessage = WsCommunicationDefinitionsClientToServer['name'];
+export type WsReceiveMessage = WsCommunicationDefinitionsServerToClient['name'];
 
-export class LookingAtLobbyAction extends WsAction<string> {
-  public constructor(lobbyId: string) {
-    super('lookingAtLobby', lobbyId);
-  }
-}
-
-export class LobbyLockedEvent extends WsEvent<null> {
-  public constructor() {
-    super('lobbyLocked', null);
-  }
-}
+export type ExtractPayload<A extends WsCommunication, T> = A extends { name: T } ? A['payload'] : never;
