@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+
 import { IncrementPixel } from '../.api/models/increment-pixel';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
@@ -8,6 +10,7 @@ import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
 import { PopupService } from '../services/popup.service';
 
+@UntilDestroy()
 @Component({
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.scss']
@@ -124,6 +127,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
             lobbyId: this.lobby.id
           }
         })
+        .pipe(untilDestroyed(this))
         .subscribe(res => {
           if (res.isValid) {
             this._inviteCode = inviteCode;
@@ -136,16 +140,25 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   public ngOnInit() {
     this._lobbyLockService.lookingAtLobby(this.lobby.id);
-    this._lobbyLockService.lobbyLocked().subscribe(data => {
-      this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).subscribe(l => {
-        this._isLockedBySomebodyElse = data.isLocked;
-        this.lobby = l;
-        this.drawLobby();
+    this._lobbyLockService
+      .lobbyLocked()
+      .pipe(untilDestroyed(this))
+      .subscribe(data => {
+        this._apiService
+          .lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id })
+          .pipe(untilDestroyed(this))
+          .subscribe(l => {
+            this._isLockedBySomebodyElse = data.isLocked;
+            this.lobby = l;
+            this.drawLobby();
+          });
       });
-    });
-    this._lobbyLockService.lobbyReserved().subscribe(data => {
-      this._isLockedByMe = data.isReserved;
-    });
+    this._lobbyLockService
+      .lobbyReserved()
+      .pipe(untilDestroyed(this))
+      .subscribe(data => {
+        this._isLockedByMe = data.isReserved;
+      });
   }
 
   public ngAfterViewInit(): void {
@@ -240,6 +253,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           lobbyId: this.lobby.id
         }
       })
+      .pipe(untilDestroyed(this))
       .subscribe(code => {
         const origin = window.location.origin;
         const codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
@@ -273,6 +287,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           uid: this._idService.id
         }
       })
+      .pipe(untilDestroyed(this))
       .subscribe(() => {
         if (this.lobby.isCreator) {
           this._lobbyLockService.unlock(this.lobby.id);
@@ -280,6 +295,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       });
 
     this.invalidateInviteCode();
+    this._lobbyLockService.unlock(this.lobby.id);
     this._isLockedByMe = false;
   }
 
@@ -306,12 +322,16 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           lobbyId: this.lobby.id
         }
       })
+      .pipe(untilDestroyed(this))
       .subscribe(() => {
-        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).subscribe(l => {
-          this.lobby = l;
-          this.drawLobby();
-          this._lobbyLockService.unlock(this.lobby.id);
-        });
+        this._apiService
+          .lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id })
+          .pipe(untilDestroyed(this))
+          .subscribe(l => {
+            this.lobby = l;
+            this.drawLobby();
+            this._lobbyLockService.unlock(this.lobby.id);
+          });
       });
   }
 
