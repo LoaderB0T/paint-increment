@@ -6,7 +6,6 @@ import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from
 import { WsGateway } from '../models/ws-gateway.model';
 import { WsState } from '../models/ws-state.model';
 import { ConfigService } from './config.service';
-import { IoAdapter } from '@nestjs/platform-socket.io';
 
 @Injectable()
 export class WsService {
