@@ -24,8 +24,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _lobbyLockService: LobbyLockService;
 
   public lobby: LobbyResponse;
-  private readonly _lobbyImg: boolean[][];
-  private readonly _originalLobbyImg: boolean[][];
+  private _lobbyImg!: boolean[][];
+  private _originalLobbyImg!: boolean[][];
   private _inviteCode?: string;
   private _isLockedBySomebodyElse: boolean = false;
   private _isLockedByMe: boolean = false;
@@ -106,17 +106,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
 
-    this._lobbyImg = new Array(this.lobby.settings.height)
-      .fill(false)
-      .map(() => new Array(this.lobby.settings.width).fill(false));
-
-    this.lobby.pixelIterations.forEach(i => {
-      i.pixels.forEach(ip => {
-        this._lobbyImg[ip.x][ip.y] = true;
-      });
-    });
-
-    this._originalLobbyImg = JSON.parse(JSON.stringify(this._lobbyImg)) as boolean[][];
+    this.prepareLobbyFields();
 
     const inviteCode = activatedRoute.snapshot.queryParams.invite as string | undefined;
     if (inviteCode) {
@@ -138,6 +128,20 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     }
   }
 
+  private prepareLobbyFields() {
+    this._lobbyImg = new Array(this.lobby.settings.height)
+      .fill(false)
+      .map(() => new Array(this.lobby.settings.width).fill(false));
+
+    this.lobby.pixelIterations.forEach(i => {
+      i.pixels.forEach(ip => {
+        this._lobbyImg[ip.x][ip.y] = true;
+      });
+    });
+
+    this._originalLobbyImg = JSON.parse(JSON.stringify(this._lobbyImg)) as boolean[][];
+  }
+
   public ngOnInit() {
     this._lobbyLockService.lookingAtLobby(this.lobby.id);
     this._lobbyLockService
@@ -150,6 +154,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           .subscribe(l => {
             this._isLockedBySomebodyElse = data.isLocked;
             this.lobby = l;
+            this.prepareLobbyFields();
             this.drawLobby();
           });
       });
@@ -195,12 +200,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         }
       }
     }
-    this.lobby.pixelIterations.forEach(x => {
-      this._ctx!.fillStyle = x.confirmed ? 'black' : 'green';
-      x.pixels.forEach(p => {
-        this._ctx?.fillRect(p.x, p.y, 1, 1);
-      });
-    });
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         if (this._lobbyImg[x][y]) {
@@ -209,9 +208,15 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         }
       }
     }
+    this.lobby.pixelIterations.forEach(x => {
+      this._ctx!.fillStyle = x.confirmed ? 'black' : 'green';
+      x.pixels.forEach(p => {
+        this._ctx?.fillRect(p.x, p.y, 1, 1);
+      });
+    });
   }
 
-  toggleCanvasPattern(): void {
+  private toggleCanvasPattern(): void {
     this._canvasPattern = !this._canvasPattern;
     this.drawLobby();
   }
@@ -237,7 +242,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private get canStartToPaint(): boolean {
-    return !this._isLockedByMe && !!this._inviteCode && !this._isLockedBySomebodyElse;
+    return !this._isLockedByMe && !!this._inviteCode && !this._isLockedBySomebodyElse && !this.hasUnconfirmedIteration;
   }
 
   private get hasUnconfirmedIteration(): boolean {
@@ -289,13 +294,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       })
       .pipe(untilDestroyed(this))
       .subscribe(() => {
-        if (this.lobby.isCreator) {
-          this._lobbyLockService.unlock(this.lobby.id);
-        }
+        this._lobbyLockService.unlock(this.lobby.id);
       });
 
     this.invalidateInviteCode();
-    this._lobbyLockService.unlock(this.lobby.id);
     this._isLockedByMe = false;
   }
 
@@ -329,6 +331,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           .pipe(untilDestroyed(this))
           .subscribe(l => {
             this.lobby = l;
+            this.prepareLobbyFields();
             this.drawLobby();
             this._lobbyLockService.unlock(this.lobby.id);
           });
