@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { WsGateway } from '../models/ws-gateway.model';
-import { WsState } from '../models/ws-state.model';
-import { LobbyService } from './lobby.service';
-import { WsService } from './ws.service';
+import { WsGateway } from './models/ws-gateway.model';
+import { WsState } from './models/ws-state.model';
+import { LobbyService } from './services/lobby.service';
+import { WsService } from './services/ws.service';
 
 @Injectable()
-export class LobbyWsService implements WsGateway {
+export class LobbyGateway implements WsGateway {
   private readonly _wsService: WsService;
   private readonly _lobbyService: LobbyService;
 

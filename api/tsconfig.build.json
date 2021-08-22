@@ -3,7 +3,8 @@
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"],
   "compilerOptions": {
     "baseUrl": "./src",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist/tsbuildinfo"
   },
   "include": ["src/**/*.ts"]
 }

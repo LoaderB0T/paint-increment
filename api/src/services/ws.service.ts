@@ -6,6 +6,7 @@ import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from
 import { WsGateway } from '../models/ws-gateway.model';
 import { WsState } from '../models/ws-state.model';
 import { ConfigService } from './config.service';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 @Injectable()
 export class WsService {
@@ -30,8 +31,6 @@ export class WsService {
       console.log(err.message); // the error message, for example "Session ID unknown"
       console.log(err.context); // some additional error context
     });
-
-    httpServer.listen(Number.parseInt(process.env.PORT ?? '0') || 3001);
 
     this._io.on('connection', (socket: Socket) => {
       this._registeredGateways.forEach(gateway => {
