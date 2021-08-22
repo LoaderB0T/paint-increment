@@ -53,9 +53,12 @@ export class LobbyWsService implements WsGateway {
       this._wsService.sendToRoom(client, data.lobbyId, 'lobbyLocked', { isLocked: true });
     });
 
-    this._wsService.listen(client, 'unlockLobby').subscribe(data => {
+    this._wsService.listen(client, 'unlockLobby').subscribe(async data => {
       WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
-      if (WsState.lockState[data.lobbyId].lockedBy === data.uid) {
+      if (
+        WsState.lockState[data.lobbyId].lockedBy === data.uid ||
+        (await this._lobbyService.getLobby(data.lobbyId, data.uid)).isCreator
+      ) {
         WsState.lockState[data.lobbyId].lockedBy = null;
         this._wsService.sendToRoom(client, data.lobbyId, 'lobbyLocked', { isLocked: false });
       }
