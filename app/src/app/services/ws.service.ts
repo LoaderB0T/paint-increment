@@ -15,7 +15,7 @@ export class WsService {
 
   constructor(idService: IdService) {
     this._idService = idService;
-    this._socket = io(environment.wsUrl);
+    this._socket = io(environment.apiUrl);
 
     this._socket.on('connect', () => {
       console.log('WS connected');
