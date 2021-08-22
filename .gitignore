@@ -1,3 +1,6 @@
 apiswagger.json
 api/config.json
 app/src/environment.json
+
+# This file is linked
+api/src/models/ws-event-definitions.model.ts

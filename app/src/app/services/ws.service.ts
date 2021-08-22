@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
-import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../models/ws-events';
+import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../models/ws-event-types.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +26,7 @@ export class WsService {
 
   public send<T extends WsSendMessage>(method: T, payload: ExtractPayload<WsCommunication, T>): void {
     this._socket.emit(method, payload);
+    console.log(`WS sent: ${method}`, payload);
   }
 
   public listen<T extends WsReceiveMessage>(method: T): Observable<ExtractPayload<WsCommunication, T>> {
