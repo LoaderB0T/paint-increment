@@ -137,7 +137,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   public ngOnInit() {
     this._lobbyLockService.lookingAtLobby(this.lobby.id);
     this._lobbyLockService.lobbyLocked().subscribe(data => {
-      this._isLockedBySomebodyElse = data.isLocked;
+      this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).subscribe(l => {
+        this._isLockedBySomebodyElse = data.isLocked;
+        this.lobby = l;
+        this.drawLobby();
+      });
     });
     this._lobbyLockService.lobbyReserved().subscribe(data => {
       this._isLockedByMe = data.isReserved;
@@ -269,9 +273,14 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           uid: this._idService.id
         }
       })
-      .subscribe();
+      .subscribe(() => {
+        if (this.lobby.isCreator) {
+          this._lobbyLockService.unlock(this.lobby.id);
+        }
+      });
 
     this.invalidateInviteCode();
+    this._isLockedByMe = false;
   }
 
   private startToPaint() {
@@ -301,6 +310,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).subscribe(l => {
           this.lobby = l;
           this.drawLobby();
+          this._lobbyLockService.unlock(this.lobby.id);
         });
       });
   }

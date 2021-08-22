@@ -13,6 +13,10 @@ export class LobbyLockService {
     this._wsService.send('lockLobby', { lobbyId });
   }
 
+  public unlock(lobbyId: string) {
+    this._wsService.send('unlockLobby', { lobbyId });
+  }
+
   public lookingAtLobby(lobbyId: string) {
     this._wsService.send('lookAtLobby', { lobbyId });
   }
