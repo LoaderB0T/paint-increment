@@ -15,8 +15,13 @@ export class LobbyLockService {
 
   public lookingAtLobby(lobbyId: string) {
     this._wsService.send('lookAtLobby', { lobbyId });
-    this._wsService.listen('lobbyLocked').subscribe(data => {
-      data;
-    });
+  }
+
+  public lobbyLocked() {
+    return this._wsService.listen('lobbyLocked');
+  }
+
+  public lobbyReserved() {
+    return this._wsService.listen('lobbyReserved');
   }
 }

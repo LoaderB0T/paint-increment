@@ -1,5 +1,5 @@
 export class ConfirmIncrementRequest {
   lobbyId!: string;
-  creatorToken!: string;
+  uid!: string;
   accept!: boolean;
 }

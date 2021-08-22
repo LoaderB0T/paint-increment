@@ -5,7 +5,9 @@ import { v4 as uuid } from 'uuid';
 export class IdService {
   private readonly _id: string;
   constructor() {
-    this._id = uuid();
+    const uid = localStorage.getItem('uid') ?? uuid();
+    this._id = uid;
+    localStorage.setItem('uid', uid);
   }
 
   get id(): string {

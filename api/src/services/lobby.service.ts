@@ -33,7 +33,7 @@ export class LobbyService {
       name: request.name,
       increments: [],
       settings,
-      creatorToken: uuid(),
+      creatorUid: request.uid,
       inviteCodes: []
     };
 
@@ -47,8 +47,8 @@ export class LobbyService {
       id: lobby.id,
       name: lobby.name,
       pixelIterations: [],
-      creatorToken: lobby.creatorToken,
-      settings: lobby.settings
+      settings: lobby.settings,
+      isCreator: true
     };
     return res;
   }
@@ -58,7 +58,7 @@ export class LobbyService {
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    if (lobby.creatorToken !== request.creatorToken) {
+    if (lobby.creatorUid !== request.uid) {
       throw new Error('Invalid creator token');
     }
     const newCode = uuid();
@@ -82,7 +82,7 @@ export class LobbyService {
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
   }
 
-  async getLobby(lobbyId: string): Promise<LobbyResponse> {
+  async getLobby(lobbyId: string, uid: string): Promise<LobbyResponse> {
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${lobbyId}`);
@@ -100,7 +100,8 @@ export class LobbyService {
           })
         };
       }),
-      settings: lobby.settings
+      settings: lobby.settings,
+      isCreator: uid === lobby.creatorUid
     };
     return res;
   }
@@ -118,17 +119,17 @@ export class LobbyService {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
     }
 
-    if (!request.inviteCode && request.creatorToken !== lobby.creatorToken) {
+    if (!request.inviteCode && request.uid !== lobby.creatorUid) {
       throw new Error('create increment without invite code or valid creator token');
     }
 
-    if (!request.inviteCode && request.creatorToken && lobby.increments.length > 0) {
+    if (!request.inviteCode && request.uid && lobby.increments.length > 0) {
       throw new Error('Creator token can only be used when no iterations have been added');
     } else {
       newIncrement.confirmed = true;
     }
 
-    if (!request.creatorToken && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
+    if (!request.uid && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
       throw new Error('Invalid or used invite code');
     }
 
@@ -166,7 +167,7 @@ export class LobbyService {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
     }
 
-    if (lobby.creatorToken !== request.creatorToken) {
+    if (lobby.creatorUid !== request.uid) {
       throw new Error('Invalid creator token');
     }
 

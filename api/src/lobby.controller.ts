@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { LobbyService } from './services/lobby.service';
 import { AddPixelsRequest } from './models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from './models/dtos/confirm-increment-request.dto';
@@ -18,8 +18,8 @@ export class LobbyController {
   }
 
   @Get(':lobbyId')
-  async getLobby(@Param('lobbyId') lobbyId: string): Promise<LobbyResponse> {
-    return this._lobbyService.getLobby(lobbyId);
+  async getLobby(@Param('lobbyId') lobbyId: string, @Query('uid') uid: string): Promise<LobbyResponse> {
+    return this._lobbyService.getLobby(lobbyId, uid);
   }
 
   @Post('invite')

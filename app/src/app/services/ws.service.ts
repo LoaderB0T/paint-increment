@@ -3,14 +3,17 @@ import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
 import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../models/ws-event-types.model';
+import { IdService } from './id.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
   private readonly _socket: Socket;
+  private readonly _idService: IdService;
 
-  constructor() {
+  constructor(idService: IdService) {
+    this._idService = idService;
     this._socket = io(environment.wsUrl);
 
     this._socket.on('connect', () => {
@@ -25,6 +28,7 @@ export class WsService {
   }
 
   public send<T extends WsSendMessage>(method: T, payload: ExtractPayload<WsCommunication, T>): void {
+    payload.uid = this._idService.id;
     this._socket.emit(method, payload);
     console.log(`WS sent: ${method}`, payload);
   }

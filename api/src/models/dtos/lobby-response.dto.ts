@@ -6,5 +6,5 @@ export class LobbyResponse {
   name!: string;
   pixelIterations!: IterationModel[];
   settings!: PaintLobbySettings;
-  creatorToken?: string;
+  isCreator!: boolean;
 }

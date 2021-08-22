@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from '../.api/services/api.service';
-import { LobbyCacheService } from '../services/lobby-cache.service';
+import { IdService } from '../services/id.service';
 
 @Component({
   templateUrl: './new-lobby.component.html',
@@ -11,27 +11,27 @@ import { LobbyCacheService } from '../services/lobby-cache.service';
 export class NewLobbyComponent {
   public lobbyName: string = '';
   private readonly _apiService: ApiService;
+  private readonly _idService: IdService;
   private readonly _router: Router;
-  private readonly _lobbyCacheService: LobbyCacheService;
 
-  constructor(apiService: ApiService, router: Router, lobbyCacheService: LobbyCacheService) {
+  constructor(apiService: ApiService, router: Router, idService: IdService) {
     this._apiService = apiService;
+    this._idService = idService;
     this._router = router;
-    this._lobbyCacheService = lobbyCacheService;
   }
 
   createLobby() {
     this._apiService
       .lobbyControllerPostLobby({
         body: {
-          name: this.lobbyName
+          name: this.lobbyName,
+          uid: this._idService.id
         }
       })
       .subscribe(lobby => {
-        if (!lobby.creatorToken) {
-          throw new Error('Did not receive creatorToken for own lobby');
+        if (!lobby.isCreator) {
+          throw new Error('Something went wrong, you should be the owner');
         }
-        this._lobbyCacheService.addCreatorToken(lobby.id, lobby.creatorToken);
         this._router.navigate(['lobby', lobby.id]);
       });
   }

@@ -1,4 +1,4 @@
 export class NewInviteCodeRequestDto {
   public lobbyId!: string;
-  public creatorToken!: string;
+  public uid!: string;
 }

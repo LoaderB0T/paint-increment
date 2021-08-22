@@ -4,7 +4,7 @@ import { IncrementPixel } from '../.api/models/increment-pixel';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
-import { LobbyCacheService } from '../services/lobby-cache.service';
+import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
 import { PopupService } from '../services/popup.service';
 
@@ -15,7 +15,7 @@ import { PopupService } from '../services/popup.service';
 export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _apiService: ApiService;
-  private readonly _lobbyCacheService: LobbyCacheService;
+  private readonly _idService: IdService;
   private readonly _router: Router;
   private readonly _popupService: PopupService;
   private readonly _lobbyLockService: LobbyLockService;
@@ -24,7 +24,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _lobbyImg: boolean[][];
   private readonly _originalLobbyImg: boolean[][];
   private _inviteCode?: string;
-  private readonly _creatorToken?: string;
+  private _isLockedBySomebodyElse: boolean = false;
+  private _isLockedByMe: boolean = false;
 
   @ViewChild('canvas', { static: true })
   canvas?: ElementRef<HTMLCanvasElement>;
@@ -52,6 +53,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       icon: 'layer-plus',
       action: () => this.commitIteration(),
       visible: () => this.canPaint
+    },
+    {
+      text: 'Start Painting',
+      icon: 'paint-brush-fine',
+      action: () => this.startToPaint(),
+      visible: () => this.canStartToPaint
     },
     {
       text: 'Accept paint iteration',
@@ -82,14 +89,14 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   constructor(
     activatedRoute: ActivatedRoute,
     apiService: ApiService,
-    lobbyCacheService: LobbyCacheService,
+    idService: IdService,
     router: Router,
     popupService: PopupService,
     lobbyLockService: LobbyLockService
   ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
-    this._lobbyCacheService = lobbyCacheService;
+    this._idService = idService;
     this._router = router;
     this._popupService = popupService;
     this._lobbyLockService = lobbyLockService;
@@ -125,14 +132,16 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           }
         });
     }
-
-    const creatorToken = this._lobbyCacheService.getCache(this.lobby.id).creatorToken;
-    if (creatorToken) {
-      this._creatorToken = creatorToken;
-    }
   }
+
   public ngOnInit() {
     this._lobbyLockService.lookingAtLobby(this.lobby.id);
+    this._lobbyLockService.lobbyLocked().subscribe(data => {
+      this._isLockedBySomebodyElse = data.isLocked;
+    });
+    this._lobbyLockService.lobbyReserved().subscribe(data => {
+      this._isLockedByMe = data.isReserved;
+    });
   }
 
   public ngAfterViewInit(): void {
@@ -199,7 +208,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public get isCreator(): boolean {
-    return !!this._creatorToken;
+    return !!this.lobby.isCreator;
   }
 
   public get visibleActions(): ActionItem[] {
@@ -207,7 +216,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private get canPaint(): boolean {
-    return !!this._inviteCode || (!!this._creatorToken && this.lobby.pixelIterations.length === 0);
+    return !!this._isLockedByMe;
+  }
+
+  private get canStartToPaint(): boolean {
+    return !this._isLockedByMe && !!this._inviteCode && !this._isLockedBySomebodyElse;
   }
 
   private get hasUnconfirmedIteration(): boolean {
@@ -219,7 +232,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._apiService
       .lobbyControllerGenerateInvite({
         body: {
-          creatorToken: this._creatorToken!,
+          uid: this._idService.id,
           lobbyId: this.lobby.id
         }
       })
@@ -253,7 +266,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           lobbyId: this.lobby.id,
           name: 'My Name',
           pixels: newPixels,
-          creatorToken: this._creatorToken
+          uid: this._idService.id
         }
       })
       .subscribe();
@@ -261,9 +274,16 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this.invalidateInviteCode();
   }
 
+  private startToPaint() {
+    if (!this._isLockedBySomebodyElse) {
+      this._lobbyLockService.lock(this.lobby.id);
+    }
+  }
+
   private acceptIteration() {
     this.acceptOrRejectIteration(true);
   }
+
   private rejectIteration() {
     this.acceptOrRejectIteration(false);
   }
@@ -273,12 +293,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .lobbyControllerConfirmIncrement({
         body: {
           accept,
-          creatorToken: this._creatorToken!,
+          uid: this._idService.id,
           lobbyId: this.lobby.id
         }
       })
       .subscribe(() => {
-        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id }).subscribe(l => {
+        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).subscribe(l => {
           this.lobby = l;
           this.drawLobby();
         });
