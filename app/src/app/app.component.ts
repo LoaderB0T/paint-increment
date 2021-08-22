@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef } from '@angular/core';
+import { Component, HostListener, ViewContainerRef } from '@angular/core';
 import { PopupService } from './services/popup.service';
 import { WsService } from './services/ws.service';
 
@@ -8,8 +8,15 @@ import { WsService } from './services/ws.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  private readonly _wsService: WsService;
+
+  @HostListener('window:unload')
+  unloadHandler() {
+    this._wsService.close();
+  }
+
   constructor(popupService: PopupService, viewContainerRef: ViewContainerRef, wsService: WsService) {
-    wsService.init();
+    this._wsService = wsService;
     popupService.setRootViewContainerRef(viewContainerRef);
   }
 }

@@ -26,6 +26,10 @@ export class WsService {
 
   public init() {}
 
+  public close() {
+    this._socket.close();
+  }
+
   public send<T extends WsSendMessage>(method: T, payload: ExtractPayload<WsCommunication, T>): void {
     payload.uid = this._idService.id;
     this._socket.emit(method, payload);
