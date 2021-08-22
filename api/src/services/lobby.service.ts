@@ -123,10 +123,12 @@ export class LobbyService {
       throw new Error('create increment without invite code or valid creator token');
     }
 
-    if (!request.inviteCode && request.uid && lobby.increments.length > 0) {
-      throw new Error('Creator token can only be used when no iterations have been added');
-    } else {
-      newIncrement.confirmed = true;
+    if (!request.inviteCode && request.uid) {
+      if (lobby.increments.length > 0) {
+        throw new Error('Creator token can only be used when no iterations have been added');
+      } else {
+        newIncrement.confirmed = true;
+      }
     }
 
     if (!request.uid && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
