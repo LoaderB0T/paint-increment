@@ -22,7 +22,8 @@ export class WsService {
       cors: {
         origin: this._configService.config.origins
       },
-      transports: ['websocket']
+      transports: ['websocket'],
+      serveClient: false
     });
 
     this._io.engine.on('connection_error', (err: any) => {
