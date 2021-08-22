@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { createServer } from 'http';
 import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
+import { Server as HttpServer } from 'http';
 import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../models/ws-event-types.model';
 import { WsGateway } from '../models/ws-gateway.model';
 import { WsState } from '../models/ws-state.model';
@@ -10,13 +10,14 @@ import { ConfigService } from './config.service';
 @Injectable()
 export class WsService {
   private readonly _configService: ConfigService;
-  private readonly _io: Server;
+  private _io!: Server;
   private readonly _registeredGateways: WsGateway[] = [];
 
   constructor(configService: ConfigService) {
     this._configService = configService;
+  }
 
-    const httpServer = createServer();
+  init(httpServer: HttpServer) {
     this._io = new Server(httpServer, {
       cors: {
         origin: this._configService.config.origins
@@ -30,14 +31,14 @@ export class WsService {
       console.log(err.context); // some additional error context
     });
 
-    httpServer.listen(Number.parseInt(process.env.WSPORT ?? '0') || 3001);
+    httpServer.listen(Number.parseInt(process.env.PORT ?? '0') || 3001);
 
     this._io.on('connection', (socket: Socket) => {
       this._registeredGateways.forEach(gateway => {
         gateway.addSocket(socket);
       });
 
-      if (configService.config.debug) {
+      if (this._configService.config.debug) {
         socket.onAny((...data) => {
           console.log(data);
         });

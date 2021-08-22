@@ -5,10 +5,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { ConfigService } from './services/config.service';
+import { WsService } from './services/ws.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const cfgService = app.get(ConfigService);
+  const wsService = app.get(WsService);
   const origins = cfgService.config.origins;
   console.info('Enabled origins:');
   console.info(origins);
@@ -26,6 +28,8 @@ async function bootstrap() {
   writeFileSync(outputPath, JSON.stringify(document), { encoding: 'utf8' });
   SwaggerModule.setup('api', app, document);
 
+  const s = app.getHttpServer();
+  wsService.init(s);
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
