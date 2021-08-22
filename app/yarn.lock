@@ -1222,6 +1222,13 @@
   dependencies:
     openapi3-ts "^1.3.0"
 
+"@ngneat/until-destroy@^8.1.3":
+  version "8.1.3"
+  resolved "https://registry.yarnpkg.com/@ngneat/until-destroy/-/until-destroy-8.1.3.tgz#ee1c0c95b6a045b1a0576f569c94687171dddca3"
+  integrity sha512-jpaHqfMdWeqBYV49FikKuxSSeVWMdp2IxP2jKn9UTGK7DpTLYFdhft+jPP5DF5Osd1f3zxVJzuHvQfwTFKQC+Q==
+  dependencies:
+    tslib "^2.2.0"
+
 "@ngtools/webpack@12.1.0":
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-12.1.0.tgz#f65684c7e3eaaaea915ee35fe5f1c6e3d434754d"
