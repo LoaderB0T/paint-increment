@@ -10,8 +10,8 @@ import { WsService } from './services/ws.service';
 export class AppComponent {
   private readonly _wsService: WsService;
 
-  @HostListener('window:unload')
-  unloadHandler() {
+  @HostListener('window:beforeunload')
+  beforeunloadHandler() {
     this._wsService.close();
   }
 
