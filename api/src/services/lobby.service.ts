@@ -131,7 +131,7 @@ export class LobbyService {
       }
     }
 
-    if (!request.uid && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
+    if (!newIncrement.confirmed && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
       throw new Error('Invalid or used invite code');
     }
 
