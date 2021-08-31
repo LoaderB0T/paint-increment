@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
+import Mail from 'nodemailer/lib/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ConfigService } from './config.service';
 
@@ -27,7 +28,7 @@ export class MailService {
       to,
       subject,
       text: body
-    };
+    } as Mail.Options;
 
     this._mailTransporter.sendMail(mailOptions, (error, info) => {
       if (error) {
