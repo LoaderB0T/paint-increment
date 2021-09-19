@@ -6,9 +6,10 @@ import { IncrementPixel } from '../.api/models/increment-pixel';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
+import { InviteCodeComponent } from '../dialogs/invite-code/invite-code.component';
+import { DialogService } from '../services/dialog.service';
 import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
-import { PopupService } from '../services/popup.service';
 
 @UntilDestroy()
 @Component({
@@ -20,7 +21,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _apiService: ApiService;
   private readonly _idService: IdService;
   private readonly _router: Router;
-  private readonly _popupService: PopupService;
+  private readonly _dialogService: DialogService;
   private readonly _lobbyLockService: LobbyLockService;
 
   public lobby: LobbyResponse;
@@ -48,7 +49,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     {
       text: 'Create new invite link',
       icon: 'share-alt',
-      action: () => this.createInvite(),
+      action: () => this.showInviteDialog(),
       visible: () => this.isCreator
     },
     {
@@ -94,14 +95,14 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     apiService: ApiService,
     idService: IdService,
     router: Router,
-    popupService: PopupService,
+    dialogService: DialogService,
     lobbyLockService: LobbyLockService
   ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
     this._idService = idService;
     this._router = router;
-    this._popupService = popupService;
+    this._dialogService = dialogService;
     this._lobbyLockService = lobbyLockService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
@@ -249,8 +250,15 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     return this.lobby.pixelIterations.some(x => !x.confirmed);
   }
 
-  private createInvite() {
-    const popup = this._popupService.show();
+  private showInviteDialog() {
+    const dialog = this._dialogService.showComponentDialog(InviteCodeComponent);
+    this.generateInvite(dialog);
+    dialog.newInviteCode.subscribe(() => {
+      this.generateInvite(dialog, true);
+    });
+  }
+
+  private generateInvite(dialog: InviteCodeComponent, copyCode: boolean = false) {
     this._apiService
       .lobbyControllerGenerateInvite({
         body: {
@@ -262,9 +270,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .subscribe(code => {
         const origin = window.location.origin;
         const codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
-        popup.setText(
-          `Copy and share this code with only one of your friends:\n\n${codeToCopy}\n\nThis code is only usable once!`
-        );
+        dialog.setCopyText(codeToCopy, copyCode);
       });
   }
 

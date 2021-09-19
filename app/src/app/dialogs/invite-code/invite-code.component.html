@@ -1,0 +1,27 @@
+<div class="dialog-bg">
+  <div class="dialog-container">
+    Copy and share this code with only one of your friends:
+
+    <div id="copy-code-container">
+      <input type="text"
+             class="textbox"
+             [class.new-code]="newCode"
+             [class.copy-code]="isCopySuccess"
+             [value]="copyText"
+             (click)="inputClicked()"
+             #copyInput />
+      <div>
+        <button class="button "
+                (click)="copy()"
+                #copyButton>Copy</button>
+        <button class="button "
+                (click)="generateNewInviteCode()"
+                #newButton>New</button>
+      </div>
+    </div>
+
+    This code is only usable once!
+    <button class="button close-button"
+            (click)="close()">Close</button>
+  </div>
+</div>

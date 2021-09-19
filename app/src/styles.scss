@@ -158,3 +158,29 @@ input {
     right: -8px;
   }
 }
+
+.dialog-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .dialog-container {
+    position: relative;
+    width: max(50vw, 500px);
+    height: max(30vh, 400px);
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 0 20px 0px black;
+    padding: 25px;
+    .close-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+    }
+  }
+}

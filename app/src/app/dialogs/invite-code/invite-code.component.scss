@@ -1,0 +1,24 @@
+#copy-code-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+  div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 20px;
+    button {
+      width: 100%;
+    }
+  }
+  input {
+    transition: box-shadow 0.2s ease;
+  }
+  .new-code {
+    box-shadow: 0 0 15px #00c800;
+  }
+  .copy-code {
+    box-shadow: 0 0 15px #004dc8;
+  }
+}

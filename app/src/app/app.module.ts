@@ -11,20 +11,19 @@ import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
 import { environment } from '../environments/environment';
-import { PopupComponent } from './popup/popup.component';
 import { TooltipDirective } from './directives/tooltip';
+import { DialogsModule } from './dialogs/dialogs.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    NewLobbyComponent,
-    LobbyComponent,
-    LobbyIterationsComponent,
-    PopupComponent,
-    TooltipDirective
+  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, TooltipDirective],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    AppRoutingModule,
+    FormsModule,
+    ApiModule.forRoot({ rootUrl: environment.apiUrl }),
+    DialogsModule
   ],
-  imports: [BrowserModule, HttpClientModule, AppRoutingModule, FormsModule, ApiModule.forRoot({ rootUrl: environment.apiUrl })],
   providers: [],
   bootstrap: [AppComponent]
 })

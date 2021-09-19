@@ -1,5 +1,5 @@
 import { Component, ViewContainerRef } from '@angular/core';
-import { PopupService } from './services/popup.service';
+import { DialogService } from './services/dialog.service';
 import { WsService } from './services/ws.service';
 
 @Component({
@@ -8,8 +8,8 @@ import { WsService } from './services/ws.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(popupService: PopupService, viewContainerRef: ViewContainerRef, wsService: WsService) {
+  constructor(dialogService: DialogService, viewContainerRef: ViewContainerRef, wsService: WsService) {
     wsService.init();
-    popupService.setRootViewContainerRef(viewContainerRef);
+    dialogService.setRootViewContainerRef(viewContainerRef);
   }
 }
