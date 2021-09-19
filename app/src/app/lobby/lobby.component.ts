@@ -382,6 +382,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._ctx?.restore();
     const x = Math.floor((rawX / this.canvas!.nativeElement.clientWidth) * this.width);
     const y = Math.floor((rawY / this.canvas!.nativeElement.clientHeight) * this.height);
+    if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
+      return;
+    }
 
     if (!this._originalLobbyImg[x][y]) {
       if (this._lobbyImg[x][y] !== !erase) {
