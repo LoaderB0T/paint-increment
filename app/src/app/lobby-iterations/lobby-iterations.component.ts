@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '../.api/models/lobby-response';
+import { ActionItem } from '../models/action-item.model';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -14,6 +15,15 @@ export class LobbyIterationsComponent implements AfterViewInit {
   @ViewChildren('canvas')
   canvas!: QueryList<ElementRef<HTMLCanvasElement>>;
   public zoomValue: number = 300;
+
+  public actionItems: ActionItem[] = [
+    {
+      text: 'Back to lobby',
+      icon: 'left',
+      action: () => this.back(),
+      visible: () => true
+    }
+  ];
 
   constructor(activatedRoute: ActivatedRoute, router: Router) {
     this._activatedRoute = activatedRoute;
@@ -53,5 +63,9 @@ export class LobbyIterationsComponent implements AfterViewInit {
       }
       event.preventDefault();
     }
+  }
+
+  private back() {
+    this._router.navigate(['lobby', this.lobby.id]);
   }
 }
