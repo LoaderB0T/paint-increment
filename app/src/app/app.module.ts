@@ -13,9 +13,10 @@ import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.co
 import { environment } from '../environments/environment';
 import { TooltipDirective } from './directives/tooltip';
 import { DialogsModule } from './dialogs/dialogs.module';
+import { ActionsComponent } from './actions/actions.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, TooltipDirective],
+  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, TooltipDirective, ActionsComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

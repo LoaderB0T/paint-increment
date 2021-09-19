@@ -234,10 +234,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     return !!this.lobby.isCreator;
   }
 
-  public get visibleActions(): ActionItem[] {
-    return this.actionItems.filter(x => x.visible());
-  }
-
   private get canPaint(): boolean {
     return !!this._isLockedByMe;
   }

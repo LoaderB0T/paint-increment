@@ -21,34 +21,6 @@ input {
   align-items: center;
 }
 
-.action-button-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  color: #fff;
-
-  .action-button {
-    &:first-child {
-      border-top-left-radius: 25%;
-      border-bottom-left-radius: 25%;
-    }
-    &:last-child {
-      border-top-right-radius: 25%;
-      border-bottom-right-radius: 25%;
-    }
-    background-color: $dark;
-    cursor: pointer;
-    padding: 25px;
-    .action-button-icon {
-      font-size: 64px;
-    }
-    &:hover {
-      background-color: $lighDark;
-    }
-  }
-}
-
 .side-by-side {
   display: flex;
   gap: 10px;
