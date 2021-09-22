@@ -1,6 +1,7 @@
 <div id="lobby-container">
   <span>{{lobby.name}}</span>
-  <div class="pixels-left">
+  <div *ngIf="canPaint"
+       class="pixels-left">
     <div class="progres-bar"
          [style.width.%]="pixelsLeft / (lobby.settings.maxPixels ?? 100) * 100"></div>
   </div>

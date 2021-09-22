@@ -243,7 +243,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     return !!this.lobby.isCreator;
   }
 
-  private get canPaint(): boolean {
+  public get canPaint(): boolean {
     return !!this._isLockedByMe;
   }
 
