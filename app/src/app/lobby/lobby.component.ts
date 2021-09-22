@@ -11,6 +11,8 @@ import { DialogService } from '../services/dialog.service';
 import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
 
+const canvasPatternColor = '#e3e3e3';
+
 @UntilDestroy()
 @Component({
   templateUrl: './lobby.component.html',
@@ -41,6 +43,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _dragging: boolean = false;
   private _drawing: boolean = false;
   private _erasing: boolean = false;
+  private _lastDrawX: number = 0;
+  private _lastDrawY: number = 0;
   private _canvasPattern: boolean = true;
   public offsetX: number = 0;
   public offsetY: number = 0;
@@ -195,7 +199,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       for (let x = 0; x < this.width; x++) {
         for (let y = 0; y < this.height; y++) {
           if ((x + y) % 2 === 0) {
-            this._ctx.fillStyle = '#a5a5a5';
+            this._ctx.fillStyle = canvasPatternColor;
             this._ctx?.fillRect(x, y, 1, 1);
           }
         }
@@ -361,7 +365,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       this._drawing = event.button === 0;
       this._erasing = event.button === 2;
       if (this._drawing || this._erasing) {
-        this.draw(event.offsetX, event.offsetY, this._erasing);
+        this.draw(event.offsetX, event.offsetY, this._erasing, true);
       }
     }
     event.preventDefault();
@@ -378,20 +382,41 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._erasing = false;
   }
 
-  private draw(rawX: number, rawY: number, erase: boolean) {
+  private draw(rawX: number, rawY: number, erase: boolean, startPoint: boolean) {
     this._ctx?.restore();
     const x = Math.floor((rawX / this.canvas!.nativeElement.clientWidth) * this.width);
     const y = Math.floor((rawY / this.canvas!.nativeElement.clientHeight) * this.height);
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
       return;
     }
+    this.drawPixel(x, y, erase);
 
+    if (startPoint) {
+      this._lastDrawX = x;
+      this._lastDrawY = y;
+      return;
+    }
+    const deltaX = x - this._lastDrawX;
+    const deltaY = y - this._lastDrawY;
+
+    const largerDelta = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+
+    for (let i = 0; i < largerDelta; i++) {
+      const x_ = this._lastDrawX + Math.floor((deltaX / largerDelta) * i);
+      const y_ = this._lastDrawY + Math.floor((deltaY / largerDelta) * i);
+      this.drawPixel(x_, y_, erase);
+    }
+    this._lastDrawX = x;
+    this._lastDrawY = y;
+  }
+
+  private drawPixel(x: number, y: number, erase: boolean) {
     if (!this._originalLobbyImg[x][y]) {
       if (this._lobbyImg[x][y] !== !erase) {
         this._lobbyImg[x][y] = !erase;
         if (erase) {
           if ((x + y) % 2 === 0) {
-            this._ctx!.fillStyle = '#a5a5a5';
+            this._ctx!.fillStyle = canvasPatternColor;
           } else {
             this._ctx!.fillStyle = '#ffffff';
           }
@@ -409,7 +434,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       this.offsetY += event.movementY / this.zoom;
       this.fixOffsets();
     } else if (this._drawing || this._erasing) {
-      this.draw(event.offsetX, event.offsetY, this._erasing);
+      this.draw(event.offsetX, event.offsetY, this._erasing, false);
     }
   }
 
