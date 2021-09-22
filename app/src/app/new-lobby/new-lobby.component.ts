@@ -10,6 +10,7 @@ import { IdService } from '../services/id.service';
 })
 export class NewLobbyComponent {
   public lobbyName: string = '';
+  public maxPixels: number = 250;
   private readonly _apiService: ApiService;
   private readonly _idService: IdService;
   private readonly _router: Router;
@@ -25,7 +26,10 @@ export class NewLobbyComponent {
       .lobbyControllerPostLobby({
         body: {
           name: this.lobbyName,
-          uid: this._idService.id
+          uid: this._idService.id,
+          settings: {
+            maxPixels: this.maxPixels
+          }
         }
       })
       .subscribe(lobby => {

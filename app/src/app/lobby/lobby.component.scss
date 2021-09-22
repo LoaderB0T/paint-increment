@@ -9,6 +9,14 @@
   flex-direction: column;
   align-items: center;
   resize: both;
+  .pixels-left {
+    width: 90%;
+    padding-top: 15px;
+    .progres-bar {
+      height: 20px;
+      background-color: black;
+    }
+  }
   .square-container {
     position: relative;
     width: 90%;
@@ -23,6 +31,7 @@
     }
     #canvas-container {
       position: absolute;
+      display: flex;
       width: 80vmin;
       max-width: 100%;
       overflow: hidden;

@@ -1,7 +1,9 @@
 <div id="lobby-container">
-
   <span>{{lobby.name}}</span>
-
+  <div class="pixels-left">
+    <div class="progres-bar"
+         [style.width.%]="pixelsLeft / (lobby.settings.maxPixels ?? 100) * 100"></div>
+  </div>
   <div class="square-container">
     <div #canvasContainer
          id="canvas-container">
@@ -20,7 +22,6 @@
               [style.--offsetY]="offsetY + 'px'"></canvas>
     </div>
   </div>
-
 </div>
 
 

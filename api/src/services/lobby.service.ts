@@ -10,7 +10,7 @@ import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-respons
 import { ValdiateInviteCodeRequestDto } from '../models/dtos/valdiate-invite-code-request.dto';
 import { ValidateInviteCodeResponseDto } from '../models/dtos/valdiate-invite-code-response.dto';
 import { PaintIncrement } from '../models/paint-increment.model';
-import { PaintLobbySettings } from '../models/paint-lobby-settins.model';
+import { PaintLobbySettings } from '../models/paint-lobby-settings.model';
 import { PaintLobby } from '../models/paint-lobby.model';
 import { DbService } from './db.service';
 
@@ -24,9 +24,14 @@ export class LobbyService {
 
   async createLobby(request: CreateLobbyRequest) {
     const settings: PaintLobbySettings = {
-      height: request.settings?.height ?? 128,
-      width: request.settings?.height ?? 128
+      height: request.settings.height ?? 128,
+      width: request.settings.height ?? 128,
+      maxPixels: request.settings.maxPixels
     };
+
+    if (!settings.maxPixels || settings.maxPixels < 1) {
+      throw new Error('Max pixels must be greater than 0');
+    }
 
     const lobby: PaintLobby = {
       id: uuid(),
@@ -146,6 +151,14 @@ export class LobbyService {
     });
     if (pixelConflict) {
       throw new Error('Cannot add increment because some pixels are already occupied.');
+    }
+
+    if (request.pixels.length > lobby.settings.maxPixels) {
+      throw new Error('Cannot add increment because it contains too many pixels');
+    }
+
+    if (request.pixels.some(p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height)) {
+      throw new Error('Cannot add increment because it contains pixels outside of the bounds of the lobby');
     }
 
     await this._dbService.lobbies.updateOne(

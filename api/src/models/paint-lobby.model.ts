@@ -1,4 +1,4 @@
-import { PaintLobbySettings } from './paint-lobby-settins.model';
+import { PaintLobbySettings } from './paint-lobby-settings.model';
 import { PaintIncrement } from './paint-increment.model';
 
 export interface PaintLobby {

@@ -1,11 +1,11 @@
 export class PaintLobbySettings {
   width?: number;
   height?: number;
-  maxPixels?: number;
+  maxPixels!: number;
 }
 
 export class CreateLobbyRequest {
   name!: string;
-  settings?: PaintLobbySettings;
+  settings!: PaintLobbySettings;
   uid!: string;
 }

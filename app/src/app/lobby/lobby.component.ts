@@ -46,6 +46,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _lastDrawX: number = 0;
   private _lastDrawY: number = 0;
   private _canvasPattern: boolean = true;
+  private _drawnCount: number = 0;
   public offsetX: number = 0;
   public offsetY: number = 0;
 
@@ -131,6 +132,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           }
         });
     }
+  }
+
+  public get pixelsLeft() {
+    return (this.lobby.settings.maxPixels ?? 100) - this._drawnCount;
   }
 
   private prepareLobbyFields() {
@@ -411,9 +416,13 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private drawPixel(x: number, y: number, erase: boolean) {
+    if (!erase && this.pixelsLeft <= 0) {
+      return;
+    }
     if (!this._originalLobbyImg[x][y]) {
       if (this._lobbyImg[x][y] !== !erase) {
         this._lobbyImg[x][y] = !erase;
+        this._drawnCount += erase ? -1 : 1;
         if (erase) {
           if ((x + y) % 2 === 0) {
             this._ctx!.fillStyle = canvasPatternColor;
