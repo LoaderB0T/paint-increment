@@ -25,16 +25,25 @@
       <i class="fa-solid fa-pen"></i>
     </div>
 
+    <input type="email"
+           class="textbox"
+           id="email"
+           placeholder="Email Address"
+           [(ngModel)]="emailAddress" />
+
     <input type="number"
            class="textbox"
-           id="lobby-name"
+           id="max-pixels"
+           min="1"
+           max="99999"
            placeholder="Max Pixels"
            [(ngModel)]="maxPixels" />
 
     <input type="submit"
            class="button"
-           id="lobby-name"
+           id="submit-lobby"
            value="Create Lobby"
-           (click)="createLobby()" />
+           (click)="createLobby()"
+           [disabled]="!validInputs" />
   </div>
 </div>

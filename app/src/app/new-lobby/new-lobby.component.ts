@@ -11,6 +11,7 @@ import { IdService } from '../services/id.service';
 export class NewLobbyComponent {
   public lobbyName: string = '';
   public maxPixels: number = 250;
+  public emailAddress: string = '';
   private readonly _apiService: ApiService;
   private readonly _idService: IdService;
   private readonly _router: Router;
@@ -21,11 +22,23 @@ export class NewLobbyComponent {
     this._router = router;
   }
 
-  createLobby() {
+  public get validInputs(): boolean {
+    return (
+      this.lobbyName.length > 0 &&
+      this.maxPixels > 0 &&
+      this.maxPixels <= 99999 &&
+      this.emailAddress.length > 0 &&
+      this.emailAddress.includes('@') &&
+      this.emailAddress.includes('.')
+    );
+  }
+
+  public createLobby() {
     this._apiService
       .lobbyControllerPostLobby({
         body: {
           name: this.lobbyName,
+          email: this.emailAddress,
           uid: this._idService.id,
           settings: {
             maxPixels: this.maxPixels
