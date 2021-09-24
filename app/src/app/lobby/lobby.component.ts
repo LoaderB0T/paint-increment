@@ -10,6 +10,7 @@ import { InviteCodeComponent } from '../dialogs/invite-code/invite-code.componen
 import { DialogService } from '../services/dialog.service';
 import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
+import { IncrementDetailsComponent } from '../dialogs/increment-details/increment-details.component';
 
 const canvasPatternColor = '#e3e3e3';
 
@@ -280,6 +281,19 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private commitIteration(): void {
+    const dialog = this._dialogService.showComponentDialog(IncrementDetailsComponent);
+
+    dialog.result.then(result => {
+      if (result) {
+        const contributorName = dialog.name;
+        const contributorEmail = dialog.email;
+
+        this.sendIncrementToServer(contributorEmail, contributorName);
+      }
+    });
+  }
+
+  private sendIncrementToServer(contributorEmail: string, contributorName: string) {
     const newPixels: IncrementPixel[] = [];
     for (let x = 0; x < this._lobbyImg.length; x++) {
       const row = this._lobbyImg[x];
@@ -295,10 +309,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._apiService
       .lobbyControllerAddPointsToLobby({
         body: {
-          email: 'test@test.test',
+          email: contributorEmail,
           inviteCode: this._inviteCode,
           lobbyId: this.lobby.id,
-          name: 'My Name',
+          name: contributorName,
           pixels: newPixels,
           uid: this._idService.id
         }
