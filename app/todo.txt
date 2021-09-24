@@ -1,0 +1,3 @@
+Fix: Invite Code gets lost on navigation (increments eg)
+Fix: View Iterations should not instantly discard the painting (not possible to navigate while painting)
+   -> show warning when starting to paint that you cannot look at the iterations
