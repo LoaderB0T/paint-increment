@@ -36,26 +36,32 @@ input {
   color: $dark;
   background-color: #fff;
   border-radius: 5px;
-  box-shadow: 0 0 15px $dark;
+  box-shadow: $shadow;
   transition: all 0.25s;
   padding: 18px;
 }
 
 .button {
   padding: 18px;
-  cursor: pointer;
   border: 2px solid transparent;
-  &:hover,
-  &:active {
-    background-color: $dark;
-    color: #fff;
+  &:not(:disabled) {
+    cursor: pointer;
+    &:hover,
+    &:active {
+      background-color: $dark;
+      color: #fff;
+    }
+    &:focus {
+      border: 2px solid $dark;
+    }
+    &:active {
+      transition: all 0s;
+      background-color: $lighDark;
+    }
   }
-  &:focus {
-    border: 2px solid $dark;
-  }
-  &:active {
-    transition: all 0s;
-    background-color: $lighDark;
+  &:disabled {
+    box-shadow: $shadow inset;
+    color: gray;
   }
 }
 
@@ -147,7 +153,7 @@ input {
     height: max(30vh, 400px);
     background-color: #ffffff;
     border-radius: 20px;
-    box-shadow: 0 0 20px 0px black;
+    box-shadow: $shadow;
     padding: 25px;
     .close-button {
       position: absolute;
