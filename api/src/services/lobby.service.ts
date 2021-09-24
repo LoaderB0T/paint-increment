@@ -13,13 +13,16 @@ import { PaintIncrement } from '../models/paint-increment.model';
 import { PaintLobbySettings } from '../models/paint-lobby-settings.model';
 import { PaintLobby } from '../models/paint-lobby.model';
 import { DbService } from './db.service';
+import { MailService } from './mail.service';
 
 @Injectable()
 export class LobbyService {
   private readonly _dbService: DbService;
+  private readonly _mailService: MailService;
 
-  constructor(dbService: DbService) {
+  constructor(dbService: DbService, mailService: MailService) {
     this._dbService = dbService;
+    this._mailService = mailService;
   }
 
   async createLobby(request: CreateLobbyRequest) {
@@ -174,6 +177,12 @@ export class LobbyService {
       {
         $push: { increments: newIncrement }
       }
+    );
+
+    this._mailService.sendMail(
+      lobby.creatorEmail,
+      'New iteration added to lobby',
+      `${request.name} has added a new iteration to ${lobby.name}`
     );
   }
 
