@@ -1,0 +1,27 @@
+<div class="dialog-bg">
+  <div class="dialog-container">
+    Please enter your contact details to submit the increment:
+
+    <div id="increment-details-container">
+      <input type="text"
+             id="contributor-name"
+             class="textbox"
+             placeholder="Your Name"
+             [(ngModel)]="name" />
+
+      <input type="email"
+             id="contributor-email"
+             class="textbox"
+             placeholder="Your Email"
+             [(ngModel)]="email" />
+    </div>
+
+    <div class="actions">
+      <button class="button"
+              (click)="cancel()">Cancel</button>
+      <button class="button"
+              [disabled]="!validInputs"
+              (click)="submit()">Submit</button>
+    </div>
+  </div>
+</div>
