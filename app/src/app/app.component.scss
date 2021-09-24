@@ -1,3 +1,5 @@
+@import '../vars.scss';
+
 #app-root-container {
   width: 100%;
   height: 100%;
@@ -11,7 +13,7 @@
     min-width: 800px;
     background-color: #ffffff;
     border-radius: 20px;
-    box-shadow: 0 0 20px 0px black;
+    box-shadow: $shadow;
     padding: 25px;
     display: flex;
     flex-direction: column;
