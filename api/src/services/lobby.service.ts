@@ -39,6 +39,7 @@ export class LobbyService {
       increments: [],
       settings,
       creatorUid: request.uid,
+      creatorEmail: request.email,
       inviteCodes: []
     };
 
