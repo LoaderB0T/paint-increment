@@ -13,9 +13,6 @@ export class EqualWidthDirective implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.equalWidth) {
-      // setTimeout(() => {
-      //   this._el.nativeElement.style.width = `${this.equalWidth!.clientWidth}px`;
-      // }, 1000);
       new ResizeObserver(() => {
         this._el.nativeElement.style.width = `${this.equalWidth!.clientWidth}px`;
       }).observe(this.equalWidth);
