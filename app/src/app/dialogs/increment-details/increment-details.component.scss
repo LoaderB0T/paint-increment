@@ -7,7 +7,12 @@
   #increment-details-container {
     margin-top: 50px;
     display: flex;
+    justify-content: stretch;
     gap: 20px;
+    width: 100%;
+    > * {
+      width: 100%;
+    }
   }
 
   .actions {
