@@ -1,0 +1,144 @@
+@import '../../../vars.scss';
+
+.input-container {
+  text-align: start;
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  box-shadow: $shadow;
+  transition: all 0.25s;
+  padding: 18px;
+  margin-bottom: calc(var(--font-size) * 0.9 + 12px); // To ensure there is enough space for the moved label
+
+  &.disabled {
+    box-shadow: $shadow-inset;
+  }
+
+  .icon-container {
+    display: flex;
+    justify-content: center;
+    width: calc(var(--font-size) * 2);
+    clip-path: inset(0 0);
+    .icon,
+    .icon2 {
+      transition: transform cubic-bezier(0.26, 0.14, 0.01, 0.98) 500ms;
+      padding: 0 2px 2px 0;
+      font-size: calc(var(--font-size) * 1.25);
+    }
+    .icon2 {
+      position: absolute;
+      transform: translateY(calc(var(--font-size) * -2));
+    }
+  }
+  &:hover,
+  &.focus {
+    border: 2px solid $dark;
+
+    .icon-container.has-second-icon {
+      .icon {
+        transform: translateY(calc(var(--font-size) * 2));
+      }
+      .icon2 {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  &.focus {
+    background-color: $dark;
+    color: white;
+    .input-label-container {
+      input {
+        color: white;
+      }
+      label.moved {
+        color: $dark;
+      }
+    }
+  }
+
+  .input-label-container {
+    display: flex;
+    padding: 2px 10px 2px 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    &.no-icon {
+      padding-left: 10px;
+    }
+
+    label {
+      position: absolute;
+      font-size: var(--font-size);
+      pointer-events: none;
+      white-space: nowrap;
+      user-select: none;
+      transition: all cubic-bezier(0.26, 0.14, 0.01, 0.98) 300ms;
+      transition-property: font-size, transform;
+
+      &.moved {
+        transform: translateY(calc(48px + (var(--font-size) - 16px) * 1.2)); // very nice magic numbers
+        transition-property: font-size, transform, color;
+        font-size: calc(var(--font-size) * 0.9);
+      }
+
+      &.hide {
+        display: none;
+      }
+
+      &.placeholder {
+        opacity: 0;
+        height: 0;
+        width: fit-content;
+      }
+    }
+
+    input {
+      border: none;
+      background: transparent;
+      font-size: var(--font-size);
+      min-width: 0;
+      color: $dark;
+      flex-grow: 1;
+      flex-shrink: 1;
+
+      &[type='password'] {
+        letter-spacing: 2px;
+        font-family: 'Aleo', serif;
+      }
+
+      &.has-error {
+        margin-right: 15px;
+      }
+    }
+  }
+
+  .validation-error {
+    position: absolute;
+    right: 5px;
+
+    .error-description {
+      display: none;
+      position: absolute;
+      transform: translateX(-325px) translateY(-20px);
+      background: $dark;
+      border: $colorError 2px solid;
+      padding: 10px;
+      width: 300px;
+      white-space: pre-line;
+      z-index: 1;
+    }
+
+    .error-icon {
+      font-size: 20px;
+      color: $colorError;
+
+      &:hover ~ .error-description {
+        display: block;
+      }
+    }
+  }
+}
