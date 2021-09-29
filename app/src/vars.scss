@@ -1,4 +1,9 @@
 $dark: #212024;
 $lighDark: lighten($dark, 15);
+$colorError: rgb(240, 80, 59);
 
 $shadow: 0 0 6px $dark;
+$shadow-inset: 0 0 6px $dark inset;
+$shadow-green: 0 0 15px #00c800;
+$shadow-blue: 0 0 15px #004dc8;
+$shadow-red: 0 0 15px $colorError;
