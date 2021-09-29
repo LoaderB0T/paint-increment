@@ -14,16 +14,26 @@ import { environment } from '../environments/environment';
 import { TooltipDirective } from './directives/tooltip';
 import { DialogsModule } from './dialogs/dialogs.module';
 import { ActionsComponent } from './actions/actions.component';
+import { ControlsModule } from './controls/controls.module';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, TooltipDirective, ActionsComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    NewLobbyComponent,
+    LobbyComponent,
+    LobbyIterationsComponent,
+    TooltipDirective,
+    ActionsComponent
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
     ApiModule.forRoot({ rootUrl: environment.apiUrl }),
-    DialogsModule
+    DialogsModule,
+    ControlsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
