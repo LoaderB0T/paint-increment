@@ -25,11 +25,15 @@ input {
   display: flex;
   gap: 10px;
   width: 90%;
+  flex-wrap: wrap;
+  align-items: center;
+  > * {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
 }
 
-.button,
-.textbox,
-.textbox-icon {
+.button {
   font-family: Montserrat, sans-serif;
   font-size: 35px;
   margin: 0;
@@ -39,6 +43,10 @@ input {
   box-shadow: $shadow;
   transition: all 0.25s;
   padding: 18px;
+  &.invalid.ng-touched,
+  &.ng-invalid.ng-touched {
+    box-shadow: $shadow-red;
+  }
 }
 
 .button {
@@ -62,42 +70,6 @@ input {
   &:disabled {
     box-shadow: $shadow inset;
     color: gray;
-  }
-}
-
-.textbox,
-.textbox-icon {
-  border: 4px solid transparent;
-  svg {
-    padding-left: 15px;
-  }
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: $dark;
-    color: #fff;
-  }
-  &:focus {
-    border: 4px solid #fff;
-  }
-  width: inherit;
-}
-
-.textbox-icon {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  .textbox {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    box-shadow: unset;
-    color: unset;
-    background-color: unset;
-    transition: unset;
-  }
-  svg {
-    font-size: 40px;
   }
 }
 
