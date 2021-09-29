@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { NewLobbyComponent } from './new-lobby/new-lobby.component';
+import { IsPaintingGuard } from './services/is-painting.guard';
 import { LobbyResolver } from './services/lobby-resolver.service';
 
 const routes: Routes = [
@@ -24,7 +25,8 @@ const routes: Routes = [
         component: LobbyComponent,
         resolve: {
           lobby: LobbyResolver
-        }
+        },
+        canDeactivate: [IsPaintingGuard]
       },
       {
         path: 'iterations',
