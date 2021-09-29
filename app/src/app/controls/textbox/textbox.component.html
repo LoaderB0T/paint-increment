@@ -31,7 +31,7 @@
            [min]="minValue"
            [max]="maxValue"
            [equalWidth]="placeHolderLabel"
-           [attr.readonly]="readonly" />
+           [attr.readonly]="readonly ? '' : null" />
     <label for="{{ name }}"
            [class.hide]="showLabel && hidePlaceholderOnInput"
            [class.moved]="showLabel"
