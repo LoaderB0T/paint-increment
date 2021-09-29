@@ -14,36 +14,42 @@
     </p>
   </span>
 
-  <div class="side-by-side">
-    <div class="textbox-icon"
-         tabindex="99999">
-      <input type="text"
-             class="textbox"
-             id="lobby-name"
-             placeholder="Lobby Name"
-             [(ngModel)]="lobbyName" />
-      <i class="fa-solid fa-pen"></i>
-    </div>
+  <form class="side-by-side"
+        #newLobby="ngForm"
+        (ngSubmit)="createLobby()">
+    <awd-textbox inputType="TEXT"
+                 placeholder="Lobby Name"
+                 required
+                 [fontSize]="35"
+                 icon="home"
+                 name="lobbyName"
+                 [minLength]="3"
+                 [maxLength]="100"
+                 [(ngModel)]="lobbyName"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <input type="email"
-           class="textbox"
-           id="email"
-           placeholder="Email Address"
-           [(ngModel)]="emailAddress" />
+    <awd-textbox inputType="EMAIL"
+                 placeholder="Email Address"
+                 required
+                 [fontSize]="35"
+                 name="ownerEmail"
+                 [(ngModel)]="emailAddress"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <input type="number"
-           class="textbox"
-           id="max-pixels"
-           min="1"
-           max="99999"
-           placeholder="Max Pixels"
-           [(ngModel)]="maxPixels" />
+    <awd-textbox inputType="TEXT"
+                 placeholder="Max Pixels"
+                 required
+                 [fontSize]="35"
+                 name="maxPixels"
+                 [minValue]="1"
+                 [maxValue]="99999"
+                 [(ngModel)]="maxPixels"
+                 [disabled]="clickedButton"></awd-textbox>
 
     <input type="submit"
            class="button"
            id="submit-lobby"
            value="Create Lobby"
-           (click)="createLobby()"
-           [disabled]="!validInputs" />
-  </div>
+           [disabled]="formDisabled" />
+  </form>
 </div>

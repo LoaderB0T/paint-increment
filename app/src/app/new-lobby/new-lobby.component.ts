@@ -1,39 +1,69 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { BehaviorSubject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 import { ApiService } from '../.api/services/api.service';
 import { IdService } from '../services/id.service';
 
+@UntilDestroy()
 @Component({
   templateUrl: './new-lobby.component.html',
   styleUrls: ['./new-lobby.component.scss']
 })
 export class NewLobbyComponent {
-  public lobbyName: string = '';
-  public maxPixels: number = 250;
-  public emailAddress: string = '';
   private readonly _apiService: ApiService;
   private readonly _idService: IdService;
   private readonly _router: Router;
+
+  private readonly _lobbyName = new BehaviorSubject('');
+  private readonly $lobbyName = this._lobbyName.asObservable().pipe(debounceTime(150), untilDestroyed(this));
+  private _checkingLobbyName = false;
+  public lobbyNameAvailable: boolean = true;
+  public maxPixels: number = 250;
+  public emailAddress: string = '';
+  public clickedButton: boolean = false;
+
+  @ViewChild('newLobby', { static: true })
+  private readonly _formElement!: NgForm;
 
   constructor(apiService: ApiService, router: Router, idService: IdService) {
     this._apiService = apiService;
     this._idService = idService;
     this._router = router;
+
+    this.$lobbyName.subscribe(name => {
+      this._apiService
+        .lobbyControllerLobbyNameAvailable({ body: { name } })
+        .toPromise()
+        .then(available => {
+          this.lobbyNameAvailable = available;
+          this._checkingLobbyName = false;
+        });
+    });
   }
 
-  public get validInputs(): boolean {
-    return (
-      this.lobbyName.length > 0 &&
-      this.maxPixels > 0 &&
-      this.maxPixels <= 99999 &&
-      this.emailAddress.length > 0 &&
-      this.emailAddress.includes('@') &&
-      this.emailAddress.includes('.')
-    );
+  public get lobbyName(): string {
+    return this._lobbyName.value;
+  }
+
+  public set lobbyName(value: string) {
+    this._checkingLobbyName = true;
+    this._lobbyName.next(value);
+  }
+
+  public get formDisabled(): boolean {
+    if (this.clickedButton || this._checkingLobbyName || !this.lobbyNameAvailable) {
+      return true;
+    }
+
+    return !this._formElement.valid ?? false;
   }
 
   public createLobby() {
+    this.clickedButton = true;
     this._apiService
       .lobbyControllerPostLobby({
         body: {
