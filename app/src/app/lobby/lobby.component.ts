@@ -56,7 +56,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       text: 'Create new invite link',
       icon: 'share-alt',
       action: () => this.showInviteDialog(),
-      visible: () => this.isCreator
+      visible: () => this.isCreator && !this.canPaint
     },
     {
       text: 'Submit paint iteration',
@@ -92,7 +92,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       text: 'View iterations',
       icon: 'layer-group',
       action: () => this.viewIterations(),
-      visible: () => true
+      visible: () => !this.canPaint
     }
   ];
 
