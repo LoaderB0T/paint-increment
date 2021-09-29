@@ -1,3 +1,5 @@
+@import '../../../vars.scss';
+
 #copy-code-container {
   display: flex;
   flex-direction: column;
@@ -16,9 +18,9 @@
     transition: box-shadow 0.2s ease;
   }
   .new-code {
-    box-shadow: 0 0 15px #00c800;
+    box-shadow: $shadow-green;
   }
   .copy-code {
-    box-shadow: 0 0 15px #004dc8;
+    box-shadow: $shadow-blue;
   }
 }

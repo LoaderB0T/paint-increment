@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, ViewChild } from '@angular/core';
+import { TextboxComponent } from '../../controls/textbox/textbox.component';
 import { BaseDialog } from '../../models/base-dialog.model';
 
 @Component({
@@ -11,7 +12,7 @@ export class InviteCodeComponent extends BaseDialog {
   public newCode = false;
   public newInviteCode = new EventEmitter<void>();
 
-  @ViewChild('copyInput') copyInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('copyInput') copyInput!: TextboxComponent;
   @ViewChild('copyButton') copyButton!: ElementRef<HTMLButtonElement>;
   @ViewChild('newButton') newButton!: ElementRef<HTMLButtonElement>;
 
@@ -32,13 +33,17 @@ export class InviteCodeComponent extends BaseDialog {
     }
   }
 
+  private get inputElement() {
+    return this.copyInput['inputElement']!.nativeElement;
+  }
+
   public inputClicked(): void {
-    this.copyInput.nativeElement.setSelectionRange(0, this.copyInput.nativeElement.value.length);
+    this.inputElement.setSelectionRange(0, this.inputElement.value.length);
   }
 
   private doCopy(usedButton: HTMLButtonElement) {
-    this.copyInput.nativeElement.focus();
-    this.copyInput.nativeElement.setSelectionRange(0, this.copyInput.nativeElement.value.length);
+    this.inputElement.focus();
+    this.inputElement.setSelectionRange(0, this.inputElement.value.length);
     document.execCommand('copy');
     usedButton.focus();
   }
