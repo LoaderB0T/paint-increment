@@ -31,7 +31,7 @@
            [min]="minValue"
            [max]="maxValue"
            [equalWidth]="placeHolderLabel"
-           readonly="{{readonly}}" />
+           [attr.readonly]="readonly" />
     <label for="{{ name }}"
            [class.hide]="showLabel && hidePlaceholderOnInput"
            [class.moved]="showLabel"
