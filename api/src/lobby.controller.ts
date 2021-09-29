@@ -8,6 +8,7 @@ import { NewInviteCodeRequestDto } from './models/dtos/new-invite-code-request.d
 import { NewInviteCodeResponseDto } from './models/dtos/new-invite-code-response.dto';
 import { ValdiateInviteCodeRequestDto } from './models/dtos/valdiate-invite-code-request.dto';
 import { ValidateInviteCodeResponseDto } from './models/dtos/valdiate-invite-code-response.dto';
+import { LobbyNameAvailableRequestDto } from './models/dtos/lobby-name-available-request.dto';
 
 @Controller('lobby')
 export class LobbyController {
@@ -20,6 +21,11 @@ export class LobbyController {
   @Get(':lobbyId')
   async getLobby(@Param('lobbyId') lobbyId: string, @Query('uid') uid: string): Promise<LobbyResponse> {
     return this._lobbyService.getLobby(lobbyId, uid);
+  }
+
+  @Post('available')
+  async lobbyNameAvailable(@Body() request: LobbyNameAvailableRequestDto): Promise<boolean> {
+    return this._lobbyService.lobbyNameAvailable(request);
   }
 
   @Post('invite')

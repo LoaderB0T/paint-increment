@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { AddPixelsRequest } from '../models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from '../models/dtos/confirm-increment-request.dto';
 import { CreateLobbyRequest } from '../models/dtos/create-lobby-request.dto';
+import { LobbyNameAvailableRequestDto } from '../models/dtos/lobby-name-available-request.dto';
 import { LobbyResponse } from '../models/dtos/lobby-response.dto';
 import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto';
 import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto';
@@ -60,6 +61,10 @@ export class LobbyService {
       isCreator: true
     };
     return res;
+  }
+
+  async lobbyNameAvailable(request: LobbyNameAvailableRequestDto): Promise<boolean> {
+    return !(await this._dbService.lobbies.findOne({ name: request.name }));
   }
 
   async generateInvite(request: NewInviteCodeRequestDto): Promise<NewInviteCodeResponseDto> {
