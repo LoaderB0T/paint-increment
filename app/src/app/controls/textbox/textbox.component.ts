@@ -1,4 +1,13 @@
-import { Component, Input, ViewChild, ElementRef, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  Input,
+  ViewChild,
+  ElementRef,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
 import { InputType } from '../models/input-type';
 import {
   NG_VALUE_ACCESSOR,
@@ -59,10 +68,12 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
   private onChangeCallback: (_: any) => void = noop;
   private shouldMatchValue?: string;
   private _control?: AbstractControl;
+  private readonly _cd: ChangeDetectorRef;
   private readonly _sanitizer: DomSanitizer;
 
-  constructor(sanitizer: DomSanitizer) {
+  constructor(sanitizer: DomSanitizer, cd: ChangeDetectorRef) {
     this._sanitizer = sanitizer;
+    this._cd = cd;
   }
 
   public inputEvent() {
@@ -185,6 +196,7 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
   writeValue(value: any) {
     if (value !== this.innerValue) {
       this.innerValue = value;
+      this._cd.detectChanges(); // Needed to move the label down when an initial value is set
     }
   }
 
