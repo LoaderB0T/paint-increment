@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { ApiService } from '../.api/services/api.service';
+import { validityTexts } from '../controls/models/validity-texts.model';
 import { IdService } from '../services/id.service';
 
 @UntilDestroy()
@@ -25,6 +26,7 @@ export class NewLobbyComponent {
   public maxPixels: number = 250;
   public emailAddress: string = '';
   public clickedButton: boolean = false;
+  public validityTexts = validityTexts;
 
   @ViewChild('newLobby', { static: true })
   private readonly _formElement!: NgForm;

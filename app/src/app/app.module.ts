@@ -11,21 +11,12 @@ import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { LobbyComponent } from './lobby/lobby.component';
 import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
 import { environment } from '../environments/environment';
-import { TooltipDirective } from './directives/tooltip';
 import { DialogsModule } from './dialogs/dialogs.module';
 import { ActionsComponent } from './actions/actions.component';
 import { ControlsModule } from './controls/controls.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    NewLobbyComponent,
-    LobbyComponent,
-    LobbyIterationsComponent,
-    TooltipDirective,
-    ActionsComponent
-  ],
+  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, ActionsComponent],
   imports: [
     BrowserModule,
     HttpClientModule,

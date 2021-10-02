@@ -21,29 +21,37 @@
                  placeholder="Lobby Name"
                  required
                  [fontSize]="35"
-                 icon="home"
+                 icon="pencil"
+                 icon2="input-text"
                  name="lobbyName"
                  [minLength]="3"
                  [maxLength]="100"
                  [(ngModel)]="lobbyName"
+                 [validationDefinitions]="validityTexts"
                  [disabled]="clickedButton"></awd-textbox>
 
     <awd-textbox inputType="EMAIL"
                  placeholder="Email Address"
                  required
                  [fontSize]="35"
+                 icon="pencil"
+                 icon2="at"
                  name="ownerEmail"
                  [(ngModel)]="emailAddress"
+                 [validationDefinitions]="validityTexts"
                  [disabled]="clickedButton"></awd-textbox>
 
-    <awd-textbox inputType="TEXT"
+    <awd-textbox inputType="NUMERIC"
                  placeholder="Max Pixels"
                  required
                  [fontSize]="35"
+                 icon="pencil"
+                 icon2="tally"
                  name="maxPixels"
                  [minValue]="1"
                  [maxValue]="99999"
                  [(ngModel)]="maxPixels"
+                 [validationDefinitions]="validityTexts"
                  [disabled]="clickedButton"></awd-textbox>
 
     <input type="submit"

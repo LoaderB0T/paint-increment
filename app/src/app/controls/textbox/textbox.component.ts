@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { InputType } from '../models/input-type';
 import {
   NG_VALUE_ACCESSOR,
@@ -20,7 +20,8 @@ import { DomSanitizer } from '@angular/platform-browser';
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: TextboxComponent, multi: true },
     { provide: NG_VALIDATORS, useExisting: TextboxComponent, multi: true }
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TextboxComponent implements ControlValueAccessor, Validator {
   @Input() public validationDefinitions: ValidationDefinition[] = new Array<ValidationDefinition>();
@@ -113,7 +114,7 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
       if (this.value !== this.shouldMatchValue) {
         isInvalid = true;
         const valDef = this.validationDefinitions.find(x => x.type === ValidationErrorType.EQUALITY_MISMATCH);
-        reason = valDef && valDef.translationKey;
+        reason = valDef?.translationKey;
       }
     }
 
@@ -122,22 +123,7 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
     }
 
     if (isInvalid) {
-      if (this.inputElement?.nativeElement.validity.tooShort) {
-        const valDef = this.validationDefinitions.find(x => x.type === ValidationErrorType.TOO_SHORT);
-        reason = valDef && valDef.translationKey;
-      }
-      if (this.inputElement?.nativeElement.validity.tooLong) {
-        const valDef = this.validationDefinitions.find(x => x.type === ValidationErrorType.TOO_LONG);
-        reason = valDef && valDef.translationKey;
-      }
-      if (this.inputElement?.nativeElement.validity.patternMismatch) {
-        const valDef = this.validationDefinitions.find(x => x.type === ValidationErrorType.PATTERN_MISMATCH);
-        reason = valDef && valDef.translationKey;
-      }
-      if (this.shouldMatchValue && this.shouldMatchValue !== this.value) {
-        const valDef = this.validationDefinitions.find(x => x.type === ValidationErrorType.EQUALITY_MISMATCH);
-        reason = valDef && valDef.translationKey;
-      }
+      reason = this.getInvalidityReason()?.translationKey;
 
       return {
         error: {
@@ -148,6 +134,28 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
     } else {
       return null;
     }
+  }
+
+  private getInvalidityReason() {
+    if (this.inputElement?.nativeElement.validity.valueMissing) {
+      return this.validationDefinitions.find(x => x.type === ValidationErrorType.REQUIRED);
+    }
+    if (this.inputElement?.nativeElement.validity.tooShort) {
+      return this.validationDefinitions.find(x => x.type === ValidationErrorType.TOO_SHORT);
+    }
+    if (this.inputElement?.nativeElement.validity.tooLong) {
+      return this.validationDefinitions.find(x => x.type === ValidationErrorType.TOO_LONG);
+    }
+    if (this.inputElement?.nativeElement.validity.typeMismatch) {
+      return this.validationDefinitions.find(x => x.type === ValidationErrorType.TYPE_MISMATCH);
+    }
+    if (this.inputElement?.nativeElement.validity.patternMismatch) {
+      return this.validationDefinitions.find(x => x.type === ValidationErrorType.PATTERN_MISMATCH);
+    }
+    if (this.shouldMatchValue && this.shouldMatchValue !== this.value) {
+      return this.validationDefinitions.find(x => x.type === ValidationErrorType.EQUALITY_MISMATCH);
+    }
+    return undefined;
   }
 
   public get cssVariablesStyle() {

@@ -73,6 +73,9 @@ input {
   }
 }
 
+$tooltipBorderSize: 5px;
+$tooltipBorder: $tooltipBorderSize white solid;
+
 .tooltip,
 .tooltip::before,
 .tooltip::after {
@@ -80,6 +83,8 @@ input {
   background-color: $dark;
   font-size: var(--tooltipFontSize);
   padding: var(--tooltipPadding);
+  border-top: $tooltipBorder;
+  border-bottom: $tooltipBorder;
 }
 
 .tooltip {
@@ -97,15 +102,17 @@ input {
   &::after {
     content: '!';
     color: $dark;
-    top: 0;
+    top: -$tooltipBorderSize;
     transform: skewX(-12deg);
     z-index: -1;
   }
   &::before {
     left: -8px;
+    border-left: $tooltipBorder;
   }
   &::after {
     right: -8px;
+    border-right: $tooltipBorder;
   }
 }
 
