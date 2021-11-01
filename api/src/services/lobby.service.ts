@@ -108,7 +108,6 @@ export class LobbyService {
       pixelIterations: lobby.increments.map(i => {
         return {
           confirmed: i.confirmed,
-          email: i.email,
           name: i.name,
           pixels: i.pixels.map(ip => {
             return { x: ip[0], y: ip[1] };
