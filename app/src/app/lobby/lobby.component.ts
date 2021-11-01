@@ -117,8 +117,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
     this.prepareLobbyFields();
 
-    const inviteCode = activatedRoute.snapshot.queryParams.invite as string | undefined;
+    const inviteCode = (activatedRoute.snapshot.queryParams.invite ?? localStorage.getItem(`invite_${this.lobby.id}`)) as
+      | string
+      | undefined;
     if (inviteCode) {
+      localStorage.setItem(`invite_${this.lobby.id}`, inviteCode);
       this._apiService
         .lobbyControllerValidateInvite({
           body: {
@@ -212,6 +215,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   private invalidateInviteCode() {
     this._inviteCode = undefined;
+    localStorage.removeItem(`invite_${this.lobby.id}`);
     this._router.navigate([], {
       relativeTo: this._activatedRoute,
       queryParams: { invite: null },
