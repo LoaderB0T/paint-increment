@@ -16,7 +16,10 @@ export class WsService {
   constructor(idService: IdService) {
     this._idService = idService;
     this._socket = io(environment.apiUrl, {
-      transports: ['websocket']
+      transports: ['websocket'],
+      auth: {
+        'client-id': this._idService.id
+      }
     });
 
     this._socket.on('connect', () => {

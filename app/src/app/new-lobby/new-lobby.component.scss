@@ -5,12 +5,13 @@
   }
   .side-by-side {
     margin: 58px 0;
+    align-items: flex-start;
 
     #max-pixels {
       width: 100px;
     }
   }
   #submit-lobby {
-    height: 130px;
+    height: 86px;
   }
 }

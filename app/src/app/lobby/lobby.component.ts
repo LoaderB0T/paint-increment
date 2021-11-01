@@ -50,6 +50,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _drawnCount: number = 0;
   public offsetX: number = 0;
   public offsetY: number = 0;
+  public editTimeLeftLabel: string = '';
+  private _editTimeLeft: number = 0;
 
   public actionItems: ActionItem[] = [
     {
@@ -174,7 +176,29 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .pipe(untilDestroyed(this))
       .subscribe(data => {
         this._isLockedByMe = data.isReserved;
+        if (!this._isLockedByMe) {
+          this.resetLobby();
+        }
       });
+
+    this._lobbyLockService
+      .reservationTime()
+      .pipe(untilDestroyed(this))
+      .subscribe(data => {
+        this._editTimeLeft = data.timeLeft;
+        if (this._editTimeLeft > 0) {
+          const editMinutes = Math.floor(this._editTimeLeft / 60);
+          const editSeconds = this._editTimeLeft % 60;
+          this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
+        } else {
+          this.editTimeLeftLabel = '';
+        }
+      });
+  }
+
+  private resetLobby() {
+    this._lobbyImg = JSON.parse(JSON.stringify(this._originalLobbyImg)) as boolean[][];
+    this.drawLobby();
   }
 
   public ngAfterViewInit(): void {

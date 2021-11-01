@@ -39,6 +39,7 @@ input {
   margin: 0;
   color: $dark;
   background-color: #fff;
+  border: 2px solid transparent;
   border-radius: 5px;
   box-shadow: $shadow;
   transition: all 0.25s;
@@ -47,11 +48,6 @@ input {
   &.ng-invalid.ng-touched {
     box-shadow: $shadow-red;
   }
-}
-
-.button {
-  padding: 18px;
-  border: 2px solid transparent;
   &:not(:disabled) {
     cursor: pointer;
     &:hover,

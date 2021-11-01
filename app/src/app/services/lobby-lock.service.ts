@@ -28,4 +28,8 @@ export class LobbyLockService {
   public lobbyReserved() {
     return this._wsService.listen('lobbyReserved');
   }
+
+  public reservationTime() {
+    return this._wsService.listen('reservationTime');
+  }
 }

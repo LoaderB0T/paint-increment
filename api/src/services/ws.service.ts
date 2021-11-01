@@ -17,7 +17,7 @@ export class WsService {
     this._configService = configService;
   }
 
-  init(httpServer: HttpServer) {
+  public init(httpServer: HttpServer) {
     this._io = new Server(httpServer, {
       cors: {
         origin: this._configService.config.origins
@@ -34,8 +34,11 @@ export class WsService {
     });
 
     this._io.on('connection', (socket: Socket) => {
+      const clientId = socket.handshake.auth['client-id'] as string;
+      WsState.clientState[clientId] = socket;
+
       this._registeredGateways.forEach(gateway => {
-        gateway.addSocket(socket);
+        gateway.addSocket(socket, clientId);
       });
 
       if (this._configService.config.debug) {
@@ -68,16 +71,18 @@ export class WsService {
     }
   }
 
-  public sendToClient<T extends WsSendMessage>(socket: Socket, method: T, payload: ExtractPayload<WsCommunication, T>): void {
+  public sendToClient<T extends WsSendMessage>(clientId: string, method: T, payload: ExtractPayload<WsCommunication, T>): void {
+    const socket = WsState.getClientByUserId(clientId);
     socket.emit(method as string, payload);
   }
 
   public sendToRoom<T extends WsSendMessage>(
-    socket: Socket,
+    clientId: string,
     room: string,
     method: T,
     payload: ExtractPayload<WsCommunication, T>
   ): void {
+    const socket = WsState.getClientByUserId(clientId);
     socket.to(room).emit(method as string, payload);
   }
 

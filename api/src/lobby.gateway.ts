@@ -16,51 +16,69 @@ export class LobbyGateway implements WsGateway {
     this._wsService.addGateway(this);
   }
 
-  public addSocket(client: Socket): void {
+  public addSocket(client: Socket, clientId: string): void {
     this._wsService.listen(client, 'lookAtLobby').subscribe(async data => {
       this._wsService.joinRoom(client, data.lobbyId);
       WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
-      WsState.lockState[data.lobbyId].lookingAtLobby.push(data.uid);
+      const lockData = WsState.lockState[data.lobbyId];
+      lockData.lookingAtLobby.push(data.uid);
       WsState.userState[data.uid] ??= { lobbies: [] };
       WsState.userState[data.uid].lobbies.push(data.lobbyId);
 
       const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
       if (lobby.pixelIterations.length === 0) {
         if (lobby.isCreator) {
-          WsState.lockState[data.lobbyId].lockedBy = data.uid;
-          this._wsService.sendToClient(client, 'lobbyReserved', { isReserved: true });
+          lockData.lockedBy = data.uid;
+          this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
         } else {
-          this._wsService.sendToClient(client, 'lobbyLocked', { isLocked: true });
+          this._wsService.sendToClient(clientId, 'lobbyLocked', { isLocked: true });
         }
         return;
       }
 
-      if (WsState.lockState[data.lobbyId].lockedBy === data.uid) {
-        this._wsService.sendToClient(client, 'lobbyReserved', { isReserved: true });
+      if (lockData.lockedBy === data.uid) {
+        this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
       } else {
-        this._wsService.sendToClient(client, 'lobbyLocked', { isLocked: !!WsState.lockState[data.lobbyId].lockedBy });
+        this._wsService.sendToClient(clientId, 'lobbyLocked', { isLocked: !!lockData.lockedBy });
       }
     });
 
     this._wsService.listen(client, 'lockLobby').subscribe(data => {
       WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
-      if (WsState.lockState[data.lobbyId].lockedBy) {
-        this._wsService.sendToClient(client, 'lobbyReserved', { isReserved: false });
+      const lockData = WsState.lockState[data.lobbyId];
+      if (lockData.lockedBy) {
+        this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
         return;
       }
-      WsState.lockState[data.lobbyId].lockedBy = data.uid;
-      this._wsService.sendToClient(client, 'lobbyReserved', { isReserved: true });
-      this._wsService.sendToRoom(client, data.lobbyId, 'lobbyLocked', { isLocked: true });
+      lockData.lockedBy = data.uid;
+      lockData.timeoutTime = 15 * 60; // 15 minutes
+      lockData.interval = setInterval(() => {
+        if (lockData.timeoutTime === undefined) {
+          WsState.deleteTimeout(lockData);
+          return;
+        }
+        lockData.timeoutTime--;
+        if (lockData.timeoutTime <= 0) {
+          WsState.deleteTimeout(lockData);
+          this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: false });
+          this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
+          lockData.lockedBy = null;
+        } else {
+          this._wsService.sendToClient(clientId, 'reservationTime', { timeLeft: lockData.timeoutTime });
+        }
+      }, 1000) as any as number;
+      this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
+      this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: true });
     });
 
     this._wsService.listen(client, 'unlockLobby').subscribe(async data => {
       WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
-      if (
-        WsState.lockState[data.lobbyId].lockedBy === data.uid ||
-        (await this._lobbyService.getLobby(data.lobbyId, data.uid)).isCreator
-      ) {
-        WsState.lockState[data.lobbyId].lockedBy = null;
-        this._wsService.sendToRoom(client, data.lobbyId, 'lobbyLocked', { isLocked: false });
+      const lockData = WsState.lockState[data.lobbyId];
+      if (lockData.lockedBy === data.uid || (await this._lobbyService.getLobby(data.lobbyId, data.uid)).isCreator) {
+        WsState.deleteTimeout(lockData);
+        lockData.interval = undefined;
+        lockData.lockedBy = null;
+        this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: false });
       }
     });
   }

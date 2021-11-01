@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
 
 export interface WsGateway {
-  addSocket(socket: Socket): void;
+  addSocket(socket: Socket, clientId: string): void;
 }

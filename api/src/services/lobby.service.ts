@@ -13,6 +13,7 @@ import { ValidateInviteCodeResponseDto } from '../models/dtos/valdiate-invite-co
 import { PaintIncrement } from '../models/paint-increment.model';
 import { PaintLobbySettings } from '../models/paint-lobby-settings.model';
 import { PaintLobby } from '../models/paint-lobby.model';
+import { WsState } from '../models/ws-state.model';
 import { DbService } from './db.service';
 import { MailService } from './mail.service';
 
@@ -183,6 +184,9 @@ export class LobbyService {
         $push: { increments: newIncrement }
       }
     );
+
+    const lockData = WsState.lockState[request.lobbyId];
+    WsState.deleteTimeout(lockData);
 
     this._mailService.sendMail(
       lobby.creatorEmail,
