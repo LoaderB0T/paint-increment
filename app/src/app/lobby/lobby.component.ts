@@ -234,7 +234,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private viewIterations(): void {
-    // TODO fix removal of invite code
     this._router.navigate(['lobby', this.lobby.id, 'iterations']);
   }
 
