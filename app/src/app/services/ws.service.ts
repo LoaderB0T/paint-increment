@@ -23,7 +23,9 @@ export class WsService {
     });
 
     this._socket.on('connect', () => {
-      console.log('WS connected');
+      if (!environment.production) {
+        console.log('WS connected');
+      }
     });
   }
 
@@ -36,7 +38,9 @@ export class WsService {
   public send<T extends WsSendMessage>(method: T, payload: ExtractPayload<WsCommunication, T>): void {
     payload.uid = this._idService.id;
     this._socket.emit(method, payload);
-    console.log(`WS sent: ${method}`, payload);
+    if (!environment.production) {
+      console.log(`WS sent: ${method}`, payload);
+    }
   }
 
   public listen<T extends WsReceiveMessage>(method: T): Observable<ExtractPayload<WsCommunication, T>> {
@@ -46,7 +50,9 @@ export class WsService {
     }
     const subject = new Subject<ExtractPayload<WsCommunication, T>>();
     this._socket.on(method as string, (data: ExtractPayload<WsCommunication, T>) => {
-      console.log(`WS listened: ${method}`, data);
+      if (!environment.production) {
+        console.log(`WS listened: ${method}`, data);
+      }
       subject.next(data);
     });
     const obs = subject.asObservable();

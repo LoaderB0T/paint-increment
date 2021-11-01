@@ -15,7 +15,7 @@ export class DbService {
 
     client.connect(err => {
       assert.strictEqual(undefined, err);
-      console.log('MongoDb: Connected successfullys to server');
+      console.log(`MongoDb: Connected successfully to server: ${dbAddress}`);
 
       this._db = client.db(dbName);
     });
