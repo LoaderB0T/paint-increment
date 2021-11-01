@@ -9,6 +9,8 @@ import { BaseDialog } from '../../models/base-dialog.model';
 export class IncrementDetailsComponent extends BaseDialog {
   private readonly _result = new Subject<boolean>();
   public result = this._result.asObservable().toPromise();
+  public gotMail: boolean = false;
+  public canDoLater: boolean = true;
 
   public name: string = '';
   public email: string = '';
@@ -18,7 +20,9 @@ export class IncrementDetailsComponent extends BaseDialog {
   }
 
   public get validInputs() {
-    return this.name.length > 0 && this.email.length > 0 && this.email.includes('@') && this.email.includes('.');
+    return (
+      this.name.length > 0 && ((this.email.length > 0 && this.email.includes('@') && this.email.includes('.')) || this.gotMail)
+    );
   }
 
   public cancel() {

@@ -8,6 +8,7 @@ import { debounceTime } from 'rxjs/operators';
 import { ApiService } from '../.api/services/api.service';
 import { validityTexts } from '../controls/models/validity-texts.model';
 import { IdService } from '../services/id.service';
+import { UserInfoService } from '../services/user-info.service';
 
 @UntilDestroy()
 @Component({
@@ -15,9 +16,10 @@ import { IdService } from '../services/id.service';
   styleUrls: ['./new-lobby.component.scss']
 })
 export class NewLobbyComponent {
+  private readonly _router: Router;
   private readonly _apiService: ApiService;
   private readonly _idService: IdService;
-  private readonly _router: Router;
+  private readonly _userInfoService: UserInfoService;
 
   private readonly _lobbyName = new BehaviorSubject('');
   private readonly $lobbyName = this._lobbyName.asObservable().pipe(debounceTime(150), untilDestroyed(this));
@@ -31,10 +33,11 @@ export class NewLobbyComponent {
   @ViewChild('newLobby', { static: true })
   private readonly _formElement!: NgForm;
 
-  constructor(apiService: ApiService, router: Router, idService: IdService) {
+  constructor(router: Router, apiService: ApiService, idService: IdService, userInfoService: UserInfoService) {
+    this._router = router;
     this._apiService = apiService;
     this._idService = idService;
-    this._router = router;
+    this._userInfoService = userInfoService;
 
     this.$lobbyName.subscribe(name => {
       this._apiService
@@ -81,6 +84,7 @@ export class NewLobbyComponent {
         if (!lobby.isCreator) {
           throw new Error('Something went wrong, you should be the owner');
         }
+        this._userInfoService.email = this.emailAddress;
         this._router.navigate(['lobby', lobby.id]);
       });
   }

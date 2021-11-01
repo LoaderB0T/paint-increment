@@ -29,7 +29,10 @@ export class DialogService {
     this._rootViewContainer = viewContainerRef;
   }
 
-  public showComponentDialog<T extends BaseDialog>(componentType: new (...args: any[]) => T): T {
+  public showComponentDialog<T extends BaseDialog>(
+    componentType: new (...args: any[]) => T,
+    initializer?: (component: T) => void
+  ): T {
     if (!this._rootViewContainer) {
       throw new Error('setRootViewContainerRef has not been called yet');
     }
@@ -40,6 +43,7 @@ export class DialogService {
     this._subMgrs.push({ id: newId, mgr: new SubscriptionManager() });
     const factory = this._factoryResolver.resolveComponentFactory<T>(componentType);
     const component = factory.create(rootViewContainer.injector);
+    initializer?.(component.instance);
 
     if (component.instance.closeDialog) {
       const hideSub = component.instance.closeDialog.subscribe((id: string) => {

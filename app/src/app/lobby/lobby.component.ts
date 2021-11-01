@@ -11,6 +11,7 @@ import { DialogService } from '../services/dialog.service';
 import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
 import { IncrementDetailsComponent } from '../dialogs/increment-details/increment-details.component';
+import { UserInfoService } from '../services/user-info.service';
 
 const canvasPatternColor = '#e3e3e3';
 
@@ -26,6 +27,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _router: Router;
   private readonly _dialogService: DialogService;
   private readonly _lobbyLockService: LobbyLockService;
+  private readonly _userInfoService: UserInfoService;
 
   public lobby: LobbyResponse;
   private _lobbyImg!: boolean[][];
@@ -104,7 +106,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     idService: IdService,
     router: Router,
     dialogService: DialogService,
-    lobbyLockService: LobbyLockService
+    lobbyLockService: LobbyLockService,
+    userInfoService: UserInfoService
   ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
@@ -112,6 +115,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._router = router;
     this._dialogService = dialogService;
     this._lobbyLockService = lobbyLockService;
+    this._userInfoService = userInfoService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
 
@@ -197,6 +201,27 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           this.editTimeLeftLabel = '';
         }
       });
+
+    setTimeout(() => {
+      if (!this._userInfoService.initialized) {
+        this.getUserDetails();
+      }
+    });
+  }
+
+  private async getUserDetails() {
+    const dialog = this._dialogService.showComponentDialog(IncrementDetailsComponent, c => {
+      c.gotMail = this._userInfoService.email !== '';
+      c.canDoLater = !this.isCreator;
+    });
+
+    const result = await dialog.result;
+    if (result) {
+      this._userInfoService.name = dialog.name;
+      this._userInfoService.email ||= dialog.email;
+      return true;
+    }
+    return false;
   }
 
   private resetLobby() {
@@ -310,16 +335,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private commitIteration(): void {
-    const dialog = this._dialogService.showComponentDialog(IncrementDetailsComponent);
-
-    dialog.result.then(result => {
-      if (result) {
-        const contributorName = dialog.name;
-        const contributorEmail = dialog.email;
-
-        this.sendIncrementToServer(contributorEmail, contributorName);
-      }
-    });
+    this.sendIncrementToServer(this._userInfoService.email, this._userInfoService.name);
   }
 
   private sendIncrementToServer(contributorEmail: string, contributorName: string) {
@@ -355,8 +371,14 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._isLockedByMe = false;
   }
 
-  private startToPaint() {
+  private async startToPaint() {
     if (!this._isLockedBySomebodyElse) {
+      if (!this._userInfoService.initialized) {
+        const gotDetails = await this.getUserDetails();
+        if (!gotDetails) {
+          return;
+        }
+      }
       this._lobbyLockService.lock(this.lobby.id);
     }
   }
