@@ -1,0 +1,10 @@
+<div class="tutorial-backdrop"
+     *ngIf="visible">
+  <div class="tutorial-overlay">
+    {{text}}
+    <button class="button"
+            (click)="close()">
+      <i class="fa-solid fa-check"></i>
+    </button>
+  </div>
+</div>

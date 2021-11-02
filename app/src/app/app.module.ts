@@ -14,6 +14,7 @@ import { environment } from '../environments/environment';
 import { DialogsModule } from './dialogs/dialogs.module';
 import { ActionsComponent } from './actions/actions.component';
 import { ControlsModule } from './controls/controls.module';
+import { TutorialModule } from './tutorial-overlay/tutorial.module';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, ActionsComponent],
@@ -24,7 +25,8 @@ import { ControlsModule } from './controls/controls.module';
     FormsModule,
     ApiModule.forRoot({ rootUrl: environment.apiUrl }),
     DialogsModule,
-    ControlsModule
+    ControlsModule,
+    TutorialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
