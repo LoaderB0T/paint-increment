@@ -38,6 +38,16 @@
 
 <app-actions [actionItems]="actionItems"></app-actions>
 
-<app-tutorial-overlay id="drawing"
-                      text="This is the drawing area. Add pixels with the left mouse button and delete them with the right mouse button.">
-</app-tutorial-overlay>
+<app-tutorial-overlay *ngIf="tutorialVisible"
+                      [lockedBySomeone]="isLockedBySomebodyElse"
+                      [lockedByMe]="isLockedByMe"
+                      [hasInvite]="canStartToPaint"
+                      [pendingConfirm]="hasUnconfirmedIteration"
+                      (closed)="hideTutorial()"></app-tutorial-overlay>
+
+<button class="button icon"
+        id="show-tutorial"
+        [tooltip]="'Show help'"
+        (click)="showTutorial()">
+  <i class="fa-regular fa-circle-question"></i>
+</button>

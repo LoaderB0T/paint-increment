@@ -32,7 +32,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _lobbyImg!: boolean[][];
   private _originalLobbyImg!: boolean[][];
   private _inviteCode?: string;
-  private _isLockedByMe: boolean = false;
   private _dragging: boolean = false;
   private _drawing: boolean = false;
   private _erasing: boolean = false;
@@ -40,6 +39,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _lastDrawY: number = 0;
   private _canvasPattern: boolean = true;
   private _drawnCount: number = 0;
+  private _editTimeLeft: number = 0;
 
   private _ctx?: CanvasRenderingContext2D;
   @ViewChild('canvas', { static: true })
@@ -48,12 +48,13 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   canvasContainer?: ElementRef<HTMLDivElement>;
 
   public lobby: LobbyResponse;
+  public isLockedByMe: boolean = false;
   public isLockedBySomebodyElse: boolean = false;
   public zoom: number = 1;
   public offsetX: number = 0;
   public offsetY: number = 0;
   public editTimeLeftLabel: string = '';
-  private _editTimeLeft: number = 0;
+  public tutorialVisible = false;
 
   public actionItems: ActionItem[] = [
     {
@@ -178,8 +179,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .lobbyReserved()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this._isLockedByMe = data.isReserved;
-        if (!this._isLockedByMe) {
+        this.isLockedByMe = data.isReserved;
+        if (!this.isLockedByMe) {
           this.resetLobby();
         }
       });
@@ -294,11 +295,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public get canPaint(): boolean {
-    return !!this._isLockedByMe;
+    return !!this.isLockedByMe;
   }
 
-  private get canStartToPaint(): boolean {
-    return !this._isLockedByMe && !!this._inviteCode && !this.isLockedBySomebodyElse && !this.hasUnconfirmedIteration;
+  public get canStartToPaint(): boolean {
+    return !this.isLockedByMe && !!this._inviteCode && !this.isLockedBySomebodyElse && !this.hasUnconfirmedIteration;
   }
 
   public get hasUnconfirmedIteration(): boolean {
@@ -359,7 +360,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._lobbyLockService.unlock(this.lobby.id);
 
     this.invalidateInviteCode();
-    this._isLockedByMe = false;
+    this.isLockedByMe = false;
     this.editTimeLeftLabel = '';
   }
 
@@ -514,5 +515,13 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     } else if (this.offsetY < -maxOffsetY) {
       this.offsetY = -maxOffsetY;
     }
+  }
+
+  public hideTutorial() {
+    this.tutorialVisible = false;
+  }
+
+  public showTutorial() {
+    this.tutorialVisible = true;
   }
 }
