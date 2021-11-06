@@ -33,6 +33,14 @@ input {
   }
 }
 
+button {
+  border: unset;
+  background: unset;
+  cursor: unset;
+  outline: unset;
+  color: unset;
+}
+
 .button {
   &.icon {
     line-height: 0;
