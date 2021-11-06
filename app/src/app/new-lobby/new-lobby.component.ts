@@ -26,6 +26,7 @@ export class NewLobbyComponent {
   private _checkingLobbyName = false;
   public lobbyNameAvailable: boolean = true;
   public maxPixels: number = 250;
+  public size: number = 100;
   public emailAddress: string = '';
   public clickedButton: boolean = false;
   public validityTexts = validityTexts;
@@ -72,7 +73,9 @@ export class NewLobbyComponent {
         email: this.emailAddress,
         uid: this._idService.id,
         settings: {
-          maxPixels: this.maxPixels
+          maxPixels: this.maxPixels,
+          height: +this.size,
+          width: +this.size
         }
       }
     });

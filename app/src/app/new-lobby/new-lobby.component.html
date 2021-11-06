@@ -54,6 +54,19 @@
                  [validationDefinitions]="validityTexts"
                  [disabled]="clickedButton"></awd-textbox>
 
+    <awd-textbox inputType="NUMERIC"
+                 placeholder="Size"
+                 required
+                 [fontSize]="35"
+                 icon="pencil"
+                 icon2="ruler-combined"
+                 name="size"
+                 [minValue]="50"
+                 [maxValue]="200"
+                 [(ngModel)]="size"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
+
     <input type="submit"
            class="button"
            id="submit-lobby"
