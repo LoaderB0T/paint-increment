@@ -5,6 +5,16 @@
     <div class="progres-bar"
          [style.width.%]="pixelsLeft / (lobby.settings.maxPixels ?? 100) * 100"></div>
   </div>
+  <span *ngIf="isLockedBySomebodyElse"
+        class="locked"
+        [tooltip]="'The lobby is currently locked by someone else'">
+    <i class="fa-regular fa-lock"></i> Locked
+  </span>
+  <span *ngIf="hasUnconfirmedIteration"
+        class="locked"
+        [tooltip]="'The lobby has an unconfirmed iteration'">
+    <i class="fa-regular fa-clock"></i> Pending confirmation
+  </span>
   <div class="square-container">
     <div #canvasContainer
          id="canvas-container">
@@ -28,6 +38,6 @@
 
 <app-actions [actionItems]="actionItems"></app-actions>
 
-<app-tutorial-overlay
+<app-tutorial-overlay id="drawing"
                       text="This is the drawing area. Add pixels with the left mouse button and delete them with the right mouse button.">
 </app-tutorial-overlay>

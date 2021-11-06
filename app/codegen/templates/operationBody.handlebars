@@ -1,0 +1,5 @@
+{{{bodyMethodTsComments}}}{{methodName}}({{>operationParameters}}): Promise<{{{resultType}}}> {
+
+    return this.{{responseMethodName}}(params).then((r: {{@root.responseClass}}<{{{resultType}}}>) => r.body as {{{resultType}}}
+    );
+  }

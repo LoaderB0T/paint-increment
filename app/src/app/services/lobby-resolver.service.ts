@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
-import { Observable } from 'rxjs';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { IdService } from './id.service';
@@ -17,7 +16,7 @@ export class LobbyResolver implements Resolve<LobbyResponse> {
     this._idService = idService;
   }
 
-  resolve(route: ActivatedRouteSnapshot): Observable<LobbyResponse> {
+  resolve(route: ActivatedRouteSnapshot): Promise<LobbyResponse> {
     return this._apiService.lobbyControllerGetLobby({
       lobbyId: route.params.id,
       uid: this._idService.id

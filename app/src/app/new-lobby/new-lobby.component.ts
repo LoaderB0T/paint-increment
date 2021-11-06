@@ -40,13 +40,10 @@ export class NewLobbyComponent {
     this._userInfoService = userInfoService;
 
     this.$lobbyName.subscribe(name => {
-      this._apiService
-        .lobbyControllerLobbyNameAvailable({ body: { name } })
-        .toPromise()
-        .then(available => {
-          this.lobbyNameAvailable = available;
-          this._checkingLobbyName = false;
-        });
+      this._apiService.lobbyControllerLobbyNameAvailable({ body: { name } }).then(available => {
+        this.lobbyNameAvailable = available;
+        this._checkingLobbyName = false;
+      });
     });
   }
 
@@ -67,25 +64,22 @@ export class NewLobbyComponent {
     return !this._formElement.valid ?? false;
   }
 
-  public createLobby() {
+  public async createLobby() {
     this.clickedButton = true;
-    this._apiService
-      .lobbyControllerPostLobby({
-        body: {
-          name: this.lobbyName,
-          email: this.emailAddress,
-          uid: this._idService.id,
-          settings: {
-            maxPixels: this.maxPixels
-          }
+    const lobby = await this._apiService.lobbyControllerPostLobby({
+      body: {
+        name: this.lobbyName,
+        email: this.emailAddress,
+        uid: this._idService.id,
+        settings: {
+          maxPixels: this.maxPixels
         }
-      })
-      .subscribe(lobby => {
-        if (!lobby.isCreator) {
-          throw new Error('Something went wrong, you should be the owner');
-        }
-        this._userInfoService.email = this.emailAddress;
-        this._router.navigate(['lobby', lobby.id]);
-      });
+      }
+    });
+    if (!lobby.isCreator) {
+      throw new Error('Something went wrong, you should be the owner');
+    }
+    this._userInfoService.email = this.emailAddress;
+    this._router.navigate(['lobby', lobby.id]);
   }
 }

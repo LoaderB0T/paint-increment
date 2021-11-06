@@ -29,20 +29,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _lobbyLockService: LobbyLockService;
   private readonly _userInfoService: UserInfoService;
 
-  public lobby: LobbyResponse;
   private _lobbyImg!: boolean[][];
   private _originalLobbyImg!: boolean[][];
   private _inviteCode?: string;
-  private _isLockedBySomebodyElse: boolean = false;
   private _isLockedByMe: boolean = false;
-
-  @ViewChild('canvas', { static: true })
-  canvas?: ElementRef<HTMLCanvasElement>;
-  @ViewChild('canvasContainer', { static: true })
-  canvasContainer?: ElementRef<HTMLDivElement>;
-
-  private _ctx?: CanvasRenderingContext2D;
-  public zoom: number = 1;
   private _dragging: boolean = false;
   private _drawing: boolean = false;
   private _erasing: boolean = false;
@@ -50,6 +40,16 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _lastDrawY: number = 0;
   private _canvasPattern: boolean = true;
   private _drawnCount: number = 0;
+
+  private _ctx?: CanvasRenderingContext2D;
+  @ViewChild('canvas', { static: true })
+  canvas?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvasContainer', { static: true })
+  canvasContainer?: ElementRef<HTMLDivElement>;
+
+  public lobby: LobbyResponse;
+  public isLockedBySomebodyElse: boolean = false;
+  public zoom: number = 1;
   public offsetX: number = 0;
   public offsetY: number = 0;
   public editTimeLeftLabel: string = '';
@@ -133,8 +133,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
             lobbyId: this.lobby.id
           }
         })
-        .pipe(untilDestroyed(this))
-        .subscribe(res => {
+        .then(res => {
           if (res.isValid) {
             this._inviteCode = inviteCode;
           } else {
@@ -168,15 +167,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .lobbyLocked()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this._apiService
-          .lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id })
-          .pipe(untilDestroyed(this))
-          .subscribe(l => {
-            this._isLockedBySomebodyElse = data.isLocked;
-            this.lobby = l;
-            this.prepareLobbyFields();
-            this.drawLobby();
-          });
+        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
+          this.isLockedBySomebodyElse = data.isLocked;
+          this.lobby = l;
+          this.prepareLobbyFields();
+          this.drawLobby();
+        });
       });
     this._lobbyLockService
       .lobbyReserved()
@@ -302,10 +298,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private get canStartToPaint(): boolean {
-    return !this._isLockedByMe && !!this._inviteCode && !this._isLockedBySomebodyElse && !this.hasUnconfirmedIteration;
+    return !this._isLockedByMe && !!this._inviteCode && !this.isLockedBySomebodyElse && !this.hasUnconfirmedIteration;
   }
 
-  private get hasUnconfirmedIteration(): boolean {
+  public get hasUnconfirmedIteration(): boolean {
     return this.lobby.pixelIterations.some(x => !x.confirmed);
   }
 
@@ -325,8 +321,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           lobbyId: this.lobby.id
         }
       })
-      .pipe(untilDestroyed(this))
-      .subscribe(code => {
+      .then(code => {
         const origin = window.location.origin;
         const codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
         dialog.setCopyText(codeToCopy, copyCode);
@@ -337,7 +332,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this.sendIncrementToServer(this._userInfoService.email, this._userInfoService.name);
   }
 
-  private sendIncrementToServer(contributorEmail: string, contributorName: string) {
+  private async sendIncrementToServer(contributorEmail: string, contributorName: string) {
     const newPixels: IncrementPixel[] = [];
     for (let x = 0; x < this._lobbyImg.length; x++) {
       const row = this._lobbyImg[x];
@@ -350,28 +345,26 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         }
       }
     }
-    this._apiService
-      .lobbyControllerAddPointsToLobby({
-        body: {
-          email: contributorEmail,
-          inviteCode: this._inviteCode,
-          lobbyId: this.lobby.id,
-          name: contributorName,
-          pixels: newPixels,
-          uid: this._idService.id
-        }
-      })
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        this._lobbyLockService.unlock(this.lobby.id);
-      });
+    await this._apiService.lobbyControllerAddPointsToLobby({
+      body: {
+        email: contributorEmail,
+        inviteCode: this._inviteCode,
+        lobbyId: this.lobby.id,
+        name: contributorName,
+        pixels: newPixels,
+        uid: this._idService.id
+      }
+    });
+
+    this._lobbyLockService.unlock(this.lobby.id);
 
     this.invalidateInviteCode();
     this._isLockedByMe = false;
+    this.editTimeLeftLabel = '';
   }
 
   private async startToPaint() {
-    if (!this._isLockedBySomebodyElse) {
+    if (!this.isLockedBySomebodyElse) {
       if (!this._userInfoService.initialized) {
         const gotDetails = await this.getUserDetails();
         if (!gotDetails) {
@@ -390,27 +383,19 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this.acceptOrRejectIteration(false);
   }
 
-  private acceptOrRejectIteration(accept: boolean) {
-    this._apiService
-      .lobbyControllerConfirmIncrement({
-        body: {
-          accept,
-          uid: this._idService.id,
-          lobbyId: this.lobby.id
-        }
-      })
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        this._apiService
-          .lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id })
-          .pipe(untilDestroyed(this))
-          .subscribe(l => {
-            this.lobby = l;
-            this.prepareLobbyFields();
-            this.drawLobby();
-            this._lobbyLockService.unlock(this.lobby.id);
-          });
-      });
+  private async acceptOrRejectIteration(accept: boolean) {
+    await this._apiService.lobbyControllerConfirmIncrement({
+      body: {
+        accept,
+        uid: this._idService.id,
+        lobbyId: this.lobby.id
+      }
+    });
+    const l = await this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id });
+    this.lobby = l;
+    this.prepareLobbyFields();
+    this.drawLobby();
+    this._lobbyLockService.unlock(this.lobby.id);
   }
 
   public gotWheel(event: WheelEvent) {

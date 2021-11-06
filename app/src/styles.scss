@@ -34,7 +34,9 @@ input {
 }
 
 .button {
-  line-height: 0;
+  &.icon {
+    line-height: 0;
+  }
   font-family: Montserrat, sans-serif;
   font-size: 35px;
   margin: 0;
