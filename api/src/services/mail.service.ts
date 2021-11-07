@@ -22,12 +22,13 @@ export class MailService {
     });
   }
 
-  public sendMail(to: string, subject: string, body: string) {
+  public sendMail(to: string, subject: string, body: string, img?: string) {
     const mailOptions = {
       from: this._configService.config.mail.account,
       to,
       subject,
-      text: body
+      html: body,
+      attachments: img ? [{ path: img, filename: 'img.png', cid: '1' }] : undefined
     } as Mail.Options;
 
     this._mailTransporter.sendMail(mailOptions, (error, info) => {

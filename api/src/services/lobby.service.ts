@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { createCanvas } from 'canvas';
 import { v4 as uuid } from 'uuid';
 
 import { AddPixelsRequest } from '../models/dtos/add-pixels-request.dto';
@@ -14,6 +15,7 @@ import { PaintIncrement } from '../models/paint-increment.model';
 import { PaintLobbySettings } from '../models/paint-lobby-settings.model';
 import { PaintLobby } from '../models/paint-lobby.model';
 import { WsState } from '../models/ws-state.model';
+import { ConfigService } from './config.service';
 import { DbService } from './db.service';
 import { MailService } from './mail.service';
 
@@ -21,10 +23,12 @@ import { MailService } from './mail.service';
 export class LobbyService {
   private readonly _dbService: DbService;
   private readonly _mailService: MailService;
+  private readonly _configService: ConfigService;
 
-  constructor(dbService: DbService, mailService: MailService) {
+  constructor(dbService: DbService, mailService: MailService, configService: ConfigService) {
     this._dbService = dbService;
     this._mailService = mailService;
+    this._configService = configService;
   }
 
   async createLobby(request: CreateLobbyRequest) {
@@ -125,7 +129,8 @@ export class LobbyService {
       name: request.name,
       email: request.email,
       pixels: request.pixels.map(p => [p.x, p.y]),
-      confirmed: false
+      confirmed: false,
+      confirmCode: uuid()
     };
 
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
@@ -187,17 +192,42 @@ export class LobbyService {
     const lockData = WsState.lockState[request.lobbyId];
     WsState.deleteTimeout(lockData);
 
-    this._mailService.sendMail(
-      lobby.creatorEmail,
-      'New iteration added to lobby',
-      `${request.name} has added a new iteration to ${lobby.name}`
-    );
+    const canvasSize = 2048;
+    const pixelSize = canvasSize / lobby.settings.width;
+    const canvas = createCanvas(canvasSize, canvasSize);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'black';
+
+    lobby.increments.forEach(x => {
+      x.pixels.forEach(p => {
+        ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
+      });
+    });
+
+    ctx.fillStyle = 'green';
+    newIncrement.pixels.forEach(p => {
+      ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
+    });
+
+    const imgData = canvas.toDataURL();
+    const url = this._configService.config.ownAddress;
+    const acceptUrl = `${url}/lobby/accept/${request.lobbyId}/${newIncrement.confirmCode}`;
+    const rejectUrl = `${url}/lobby/reject/${request.lobbyId}/${newIncrement.confirmCode}`;
+
+    const html = `
+    <h2>${request.name} has added a new iteration to ${lobby.name}</h2>
+    <img src="cid:1">
+    <a href="${acceptUrl}">Accept</a>
+    <a href="${rejectUrl}">Reject</a>
+    `;
+
+    this._mailService.sendMail(lobby.creatorEmail, 'New iteration added to lobby', html, imgData);
   }
 
   async confirmIncrement(request: ConfirmIncrementRequest): Promise<void> {
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
-      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+      throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
 
     if (lobby.creatorUid !== request.uid) {
@@ -208,12 +238,49 @@ export class LobbyService {
       await this._dbService.lobbies.updateOne(
         { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $set: { 'increments.$.confirmed': true }
+          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
         }
       );
     } else {
       await this._dbService.lobbies.updateOne(
         { id: request.lobbyId, 'increments.confirmed': false },
+        {
+          $pull: { increments: { confirmed: false } }
+        }
+      );
+    }
+  }
+
+  async acceptInvite(lobbyId: string, code: string) {
+    this.acceptOrReject(lobbyId, code, true);
+  }
+
+  async rejectInvite(lobbyId: string, code: string) {
+    this.acceptOrReject(lobbyId, code, false);
+  }
+
+  private async acceptOrReject(lobbyId: string, code: string, accept: boolean) {
+    const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
+    if (!lobby) {
+      throw new Error(`Cannot find lobby with id ${lobbyId}`);
+    }
+    const unconfirmedIncrement = lobby.increments.find(x => !x.confirmed);
+    if (!unconfirmedIncrement) {
+      throw new Error(`No unconfirmed increment in lobby ${lobbyId}`);
+    }
+    if (unconfirmedIncrement.confirmCode !== code) {
+      throw new Error('Invalid confirm code');
+    }
+    if (accept) {
+      await this._dbService.lobbies.updateOne(
+        { id: lobbyId, 'increments.confirmed': false },
+        {
+          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
+        }
+      );
+    } else {
+      await this._dbService.lobbies.updateOne(
+        { id: lobbyId, 'increments.confirmed': false },
         {
           $pull: { increments: { confirmed: false } }
         }

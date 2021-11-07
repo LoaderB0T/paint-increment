@@ -9,13 +9,16 @@ import { NewInviteCodeResponseDto } from './models/dtos/new-invite-code-response
 import { ValdiateInviteCodeRequestDto } from './models/dtos/valdiate-invite-code-request.dto';
 import { ValidateInviteCodeResponseDto } from './models/dtos/valdiate-invite-code-response.dto';
 import { LobbyNameAvailableRequestDto } from './models/dtos/lobby-name-available-request.dto';
+import { ConfigService } from './services/config.service';
 
 @Controller('lobby')
 export class LobbyController {
   private readonly _lobbyService: LobbyService;
+  private readonly _configService: ConfigService;
 
-  constructor(lobbyService: LobbyService) {
+  constructor(lobbyService: LobbyService, configService: ConfigService) {
     this._lobbyService = lobbyService;
+    this._configService = configService;
   }
 
   @Get(':lobbyId')
@@ -51,5 +54,19 @@ export class LobbyController {
   @Patch('increment/confirm')
   async confirmIncrement(@Body() request: ConfirmIncrementRequest): Promise<void> {
     return this._lobbyService.confirmIncrement(request);
+  }
+
+  @Get('accept/:lobbyId/:code')
+  async acceptInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
+    await this._lobbyService.acceptInvite(lobbyId, code);
+    const url = `${this._configService.config.clientAddress}/lobby/${lobbyId}?confirmed=true`;
+    return `<script>window.location.href = "${url}";</script>`;
+  }
+
+  @Get('reject/:lobbyId/:code')
+  async rejectInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
+    await this._lobbyService.rejectInvite(lobbyId, code);
+    const url = `${this._configService.config.clientAddress}/lobby/${lobbyId}?rejected=true`;
+    return `<script>window.location.href = "${url}";</script>`;
   }
 }
