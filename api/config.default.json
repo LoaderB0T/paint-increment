@@ -9,5 +9,7 @@
     "database": "paint-increment"
   },
   "origins": ["localhost"],
-  "debug": "false"
+  "debug": "false",
+  "ownAddress": "http://localhost:3000",
+  "clientAddress": "http://localhost:4200"
 }

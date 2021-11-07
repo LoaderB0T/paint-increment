@@ -10,4 +10,6 @@ export interface Config {
   };
   origins: string[];
   debug: boolean;
+  ownAddress: string;
+  clientAddress: string;
 }
