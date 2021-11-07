@@ -12,6 +12,7 @@ import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
 import { IncrementDetailsComponent } from '../dialogs/increment-details/increment-details.component';
 import { UserInfoService } from '../services/user-info.service';
+import { ConfirmedOrRejectedComponent } from '../dialogs/confirmed-or-rejected/confirmed-or-rejected.component';
 
 const canvasPatternColor = '#e3e3e3';
 
@@ -54,7 +55,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   public offsetX: number = 0;
   public offsetY: number = 0;
   public editTimeLeftLabel: string = '';
-  public tutorialVisible = false;
+  public tutorialVisible: boolean;
+  public showControls: boolean;
 
   public actionItems: ActionItem[] = [
     {
@@ -122,6 +124,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
     this.prepareLobbyFields();
 
+    this.showControls = !(localStorage.getItem('showControls') === 'false');
+    this.tutorialVisible = this.showControls;
+
     const inviteCode = (activatedRoute.snapshot.queryParams.invite ?? localStorage.getItem(`invite_${this.lobby.id}`)) as
       | string
       | undefined;
@@ -141,6 +146,21 @@ export class LobbyComponent implements AfterViewInit, OnInit {
             this.invalidateInviteCode();
           }
         });
+    }
+
+    const confirmed = activatedRoute.snapshot.queryParams.confirmed ?? false;
+    const rejected = activatedRoute.snapshot.queryParams.rejected ?? false;
+
+    if (confirmed || rejected) {
+      this._lobbyLockService.unlock(this.lobby.id);
+
+      this._dialogService.showComponentDialog(ConfirmedOrRejectedComponent, c => (c.rejected = rejected));
+
+      this._router.navigate([], {
+        relativeTo: this._activatedRoute,
+        queryParams: { confirmed: null, rejected: null },
+        queryParamsHandling: 'merge'
+      });
     }
   }
 
@@ -199,11 +219,13 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         }
       });
 
-    setTimeout(() => {
-      if (!this._userInfoService.initialized) {
-        this.getUserDetails();
-      }
-    });
+    if (this._inviteCode) {
+      setTimeout(() => {
+        if (!this._userInfoService.initialized) {
+          this.getUserDetails();
+        }
+      });
+    }
   }
 
   private async getUserDetails() {
@@ -518,6 +540,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public hideTutorial() {
+    if (this.showControls) {
+      this.showControls = false;
+      localStorage.setItem('showControls', 'false');
+    }
     this.tutorialVisible = false;
   }
 
