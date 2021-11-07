@@ -14,6 +14,7 @@ export class TutorialOverlayComponent {
   @Input() lockedBySomeone: boolean = false;
   @Input() lockedByMe: boolean = false;
   @Input() pendingConfirm: boolean = false;
+  @Input() showControls: boolean = false;
 
   constructor() {}
 

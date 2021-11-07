@@ -1,7 +1,9 @@
 <div class="tutorial-backdrop">
   <div class="tutorial-overlay">
 
-    <div>
+
+
+    <div *ngIf="!showControls">
       <h2>Help</h2>
       <div *ngIf="!hasInvite">
         <p>
@@ -53,6 +55,24 @@
         <p>
           The lobby owner has to confirm or reject the newest increment before you can start to draw.
         </p>
+      </div>
+    </div>
+
+    <div class="tutorial-content">
+      <h2>Controls</h2>
+      <div class="control-group">
+        <div>
+          <img src="assets/img/lmb.png"> Draw
+        </div>
+        <div>
+          <img src="assets/img/rmb.png"> Erase
+        </div>
+        <div>
+          <img src="assets/img/scroll.png"> Zoom
+        </div>
+        <div>
+          <img src="assets/img/mmb.png"> Move
+        </div>
       </div>
     </div>
 

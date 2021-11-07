@@ -24,5 +24,20 @@
     .button {
       align-self: flex-end;
     }
+
+    .tutorial-content {
+      width: 100%;
+      .control-group {
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+    }
   }
 }
