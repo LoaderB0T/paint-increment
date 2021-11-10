@@ -55,8 +55,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   public offsetX: number = 0;
   public offsetY: number = 0;
   public editTimeLeftLabel: string = '';
-  public tutorialVisible: boolean;
-  public showControls: boolean;
+  public tutorialVisible: boolean = false;
+  public showControls: boolean = false;
 
   public actionItems: ActionItem[] = [
     {
@@ -129,9 +129,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this.lobby = this._activatedRoute.snapshot.data.lobby;
 
     this.prepareLobbyFields();
-
-    this.showControls = !(localStorage.getItem('showControls') === 'false');
-    this.tutorialVisible = this.showControls;
 
     const inviteCode = (activatedRoute.snapshot.queryParams.invite ?? localStorage.getItem(`invite_${this.lobby.id}`)) as
       | string
@@ -406,7 +403,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           return;
         }
       }
-      this._lobbyLockService.lock(this.lobby.id);
+      this.showControls = true;
+      this.tutorialVisible = true;
     }
   }
 
@@ -554,7 +552,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   public hideTutorial() {
     if (this.showControls) {
       this.showControls = false;
-      localStorage.setItem('showControls', 'false');
+      if (!this.isLockedBySomebodyElse) {
+        this._lobbyLockService.lock(this.lobby.id);
+      }
     }
     this.tutorialVisible = false;
   }
