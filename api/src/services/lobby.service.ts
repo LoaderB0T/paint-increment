@@ -196,6 +196,8 @@ export class LobbyService {
     const pixelSize = canvasSize / lobby.settings.width;
     const canvas = createCanvas(canvasSize, canvasSize);
     const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvasSize, canvasSize);
     ctx.fillStyle = 'black';
 
     lobby.increments.forEach(x => {
