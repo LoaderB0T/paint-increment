@@ -56,7 +56,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   public offsetY: number = 0;
   public editTimeLeftLabel: string = '';
   public tutorialVisible: boolean = false;
-  public showControls: boolean = false;
+  public explainControlsBeforeStart: boolean = false;
 
   public actionItems: ActionItem[] = [
     {
@@ -403,7 +403,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           return;
         }
       }
-      this.showControls = true;
+      this.explainControlsBeforeStart = true;
       this.tutorialVisible = true;
     }
   }
@@ -550,8 +550,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public hideTutorial() {
-    if (this.showControls) {
-      this.showControls = false;
+    if (this.explainControlsBeforeStart) {
+      this.explainControlsBeforeStart = false;
       if (!this.isLockedBySomebodyElse) {
         this._lobbyLockService.lock(this.lobby.id);
       }
