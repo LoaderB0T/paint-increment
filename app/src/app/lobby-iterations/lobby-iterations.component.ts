@@ -2,6 +2,8 @@ import { AfterViewInit, Component, ElementRef, QueryList, ViewChildren } from '@
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ActionItem } from '../models/action-item.model';
+import * as JsZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -21,6 +23,12 @@ export class LobbyIterationsComponent implements AfterViewInit {
       text: 'Back to lobby',
       icon: 'left',
       action: () => this.back(),
+      visible: () => true
+    },
+    {
+      text: 'Download Images',
+      icon: 'download',
+      action: () => this.download(),
       visible: () => true
     }
   ];
@@ -43,6 +51,8 @@ export class LobbyIterationsComponent implements AfterViewInit {
   public ngAfterViewInit(): void {
     for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
       const ctx = this.canvas.get(i)!.nativeElement.getContext('2d')!;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, this.lobby.settings.width!, this.lobby.settings.height!);
       for (let j = 0; j <= i; j++) {
         ctx.fillStyle = j === i ? 'green' : 'black';
         const iteration = this.lobby.pixelIterations[j];
@@ -67,5 +77,35 @@ export class LobbyIterationsComponent implements AfterViewInit {
 
   private back() {
     this._router.navigate(['lobby', this.lobby.id]);
+  }
+
+  private download() {
+    const color = '#FF0042';
+    const targetSize = 2048;
+    let size = 0;
+    while (size < targetSize) {
+      size += this.lobby.settings.width!;
+    }
+    const pixelSize = size / this.lobby.settings.width!;
+    const zip = new JsZip();
+    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
+      const el = document.createElement('canvas');
+      el.width = size;
+      el.height = size;
+      const ctx = el.getContext('2d')!;
+      for (let j = 0; j <= i; j++) {
+        ctx.fillStyle = j === i ? color : 'black';
+        const iteration = this.lobby.pixelIterations[j];
+        iteration.pixels.forEach(p => {
+          ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
+        });
+      }
+      const imgString = el.toDataURL('image/png');
+
+      zip.file(`${i}.png`, imgString.split('base64,')[1], { base64: true });
+    }
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      saveAs(content, `${this.lobby.name}.zip`);
+    });
   }
 }
