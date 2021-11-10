@@ -13,8 +13,11 @@
   .tutorial-overlay {
     position: fixed;
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
+    overflow-y: auto;
     width: 80vw;
+    max-height: 90vh;
     font-size: 28px;
     box-shadow: $shadow;
     border-radius: 5px;
@@ -23,6 +26,9 @@
     background-color: rgba(255, 255, 255, 0.75);
     .button {
       align-self: flex-end;
+    }
+
+    .text-tutorial {
     }
 
     .tutorial-content {
