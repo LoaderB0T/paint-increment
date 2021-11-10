@@ -66,6 +66,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       visible: () => this.isCreator && !this.canPaint
     },
     {
+      text: 'Reset image',
+      icon: 'eraser',
+      action: () => this.resetImage(),
+      visible: () => this.canPaint
+    },
+    {
       text: 'Submit paint iteration',
       icon: 'layer-plus',
       action: () => this.commitIteration(),
@@ -349,6 +355,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         const codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
         dialog.setCopyText(codeToCopy, copyCode);
       });
+  }
+
+  private resetImage() {
+    this._lobbyImg = JSON.parse(JSON.stringify(this._originalLobbyImg)) as boolean[][];
+    this._drawnCount = 0;
+    this.drawLobby();
   }
 
   private commitIteration(): void {
