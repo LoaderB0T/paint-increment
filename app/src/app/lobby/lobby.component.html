@@ -6,9 +6,16 @@
          [style.width.%]="pixelsLeft / (lobby.settings.maxPixels ?? 100) * 100"></div>
   </div>
   <span *ngIf="isLockedBySomebodyElse"
-        class="locked"
+        class="infoText"
         [tooltip]="'The lobby is currently locked by someone else'">
     <i class="fa-regular fa-lock"></i> Locked
+  </span>
+  <span *ngIf="isLockedByMe"
+        class="infoText">
+    <div *ngIf="hoveredCoordinates">
+      <i class="fa-regular fa-location-crosshairs"></i> {{ hoveredCoordinates }}
+    </div>
+    <div>&nbsp;</div>
   </span>
   <span *ngIf="hasUnconfirmedIteration"
         class="locked"
