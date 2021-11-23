@@ -5717,6 +5717,13 @@ ng-openapi-gen@^0.17.3:
     ts-node "^7.0.1"
     typescript "^4.2.3"
 
+ngx-device-detector@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/ngx-device-detector/-/ngx-device-detector-2.1.1.tgz#a22a9477f382d02edf28786c5609878a57d2834f"
+  integrity sha512-eTuQLAmc2XRRbxDnO9h1QVV0piSyPjstXT5G8fo1rvXy7Ly3MAiniEM2WvTiN7FjtY/VdhEeuBmu/ErSm5cLJg==
+  dependencies:
+    tslib "^2.0.0"
+
 nice-napi@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nice-napi/-/nice-napi-1.0.2.tgz#dc0ab5a1eac20ce548802fc5686eaa6bc654927b"
