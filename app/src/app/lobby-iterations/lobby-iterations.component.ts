@@ -4,6 +4,8 @@ import { LobbyResponse } from '../.api/models/lobby-response';
 import { ActionItem } from '../models/action-item.model';
 import * as JsZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { DialogService } from '../services/dialog.service';
+import { DownloadColorComponent } from '../dialogs/download-color/download-color.component';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -11,6 +13,7 @@ import { saveAs } from 'file-saver';
 })
 export class LobbyIterationsComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
+  private readonly _dialogService: DialogService;
   private readonly _router: Router;
   public lobby: LobbyResponse;
 
@@ -33,8 +36,9 @@ export class LobbyIterationsComponent implements AfterViewInit {
     }
   ];
 
-  constructor(activatedRoute: ActivatedRoute, router: Router) {
+  constructor(activatedRoute: ActivatedRoute, dialogService: DialogService, router: Router) {
     this._activatedRoute = activatedRoute;
+    this._dialogService = dialogService;
     this._router = router;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby as LobbyResponse;
@@ -80,32 +84,33 @@ export class LobbyIterationsComponent implements AfterViewInit {
   }
 
   private download() {
-    const color = '#FF0042';
-    const targetSize = 2048;
-    let size = 0;
-    while (size < targetSize) {
-      size += this.lobby.settings.width!;
-    }
-    const pixelSize = size / this.lobby.settings.width!;
-    const zip = new JsZip();
-    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
-      const el = document.createElement('canvas');
-      el.width = size;
-      el.height = size;
-      const ctx = el.getContext('2d')!;
-      for (let j = 0; j <= i; j++) {
-        ctx.fillStyle = j === i ? color : 'black';
-        const iteration = this.lobby.pixelIterations[j];
-        iteration.pixels.forEach(p => {
-          ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
-        });
+    this._dialogService.showComponentDialog(DownloadColorComponent).result.then(color => {
+      const targetSize = 2048;
+      let size = 0;
+      while (size < targetSize) {
+        size += this.lobby.settings.width!;
       }
-      const imgString = el.toDataURL('image/png');
+      const pixelSize = size / this.lobby.settings.width!;
+      const zip = new JsZip();
+      for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
+        const el = document.createElement('canvas');
+        el.width = size;
+        el.height = size;
+        const ctx = el.getContext('2d')!;
+        for (let j = 0; j <= i; j++) {
+          ctx.fillStyle = j === i ? color : 'black';
+          const iteration = this.lobby.pixelIterations[j];
+          iteration.pixels.forEach(p => {
+            ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
+          });
+        }
+        const imgString = el.toDataURL('image/png');
 
-      zip.file(`${i}.png`, imgString.split('base64,')[1], { base64: true });
-    }
-    zip.generateAsync({ type: 'blob' }).then(content => {
-      saveAs(content, `${this.lobby.name}.zip`);
+        zip.file(`${i}.png`, imgString.split('base64,')[1], { base64: true });
+      }
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        saveAs(content, `${this.lobby.name}.zip`);
+      });
     });
   }
 }

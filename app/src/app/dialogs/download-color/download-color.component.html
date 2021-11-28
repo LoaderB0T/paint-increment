@@ -1,0 +1,17 @@
+<div class="dialog-bg">
+  <div class="dialog-container">
+    Enter the color HEX code for the accent color of the generated images.
+
+    <input type="text"
+           class="dialog-input"
+           placeholder="HEX code"
+           pattern="^#[0-9A-F]{6}$"
+           [(ngModel)]="color"
+           required>
+
+    <div class="actions">
+      <button class="button"
+              (click)="dismiss()">Dismiss</button>
+    </div>
+  </div>
+</div>
