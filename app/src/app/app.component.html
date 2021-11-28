@@ -1,4 +1,12 @@
-<div id="app-root-container">
+<div *ngIf="isMobile" id="mobile-note-container">
+  <div id="mobile-note-content">
+    <h2>Welcome to Paint Increment</h2>
+    <p>
+      Unfortunately, Paint Increment is not optimized for mobile use. Please open the link on your computer to use Paint Increment.
+    </p>
+  </div>
+</div>
+<div *ngIf="!isMobile" id="app-root-container">
   <div id="app-root-card">
     <div id="app-root-padding">
       <router-outlet></router-outlet>
