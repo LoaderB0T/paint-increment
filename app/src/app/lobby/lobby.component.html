@@ -8,7 +8,7 @@
   <span *ngIf="isLockedBySomebodyElse"
         class="infoText"
         [tooltip]="'The lobby is currently locked by someone else'">
-    <i class="fa-regular fa-lock"></i> Locked
+    <i class="fa-regular fa-lock"></i> Locked by: {{ isLockedByName }}
   </span>
   <span *ngIf="isLockedByMe"
         class="infoText">

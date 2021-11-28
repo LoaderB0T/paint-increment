@@ -19,7 +19,7 @@ export class LobbyGateway implements WsGateway {
   public addSocket(client: Socket, clientId: string): void {
     this._wsService.listen(client, 'lookAtLobby').subscribe(async data => {
       this._wsService.joinRoom(client, data.lobbyId);
-      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
+      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
       const lockData = WsState.lockState[data.lobbyId];
       lockData.lookingAtLobby.push(data.uid);
       WsState.userState[data.uid] ??= { lobbies: [] };
@@ -39,18 +39,22 @@ export class LobbyGateway implements WsGateway {
       if (lockData.lockedBy === data.uid) {
         this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
       } else {
-        this._wsService.sendToClient(clientId, 'lobbyLocked', { isLocked: !!lockData.lockedBy });
+        this._wsService.sendToClient(clientId, 'lobbyLocked', {
+          isLocked: !!lockData.lockedBy,
+          lockedBy: lockData.lockedByName ?? undefined
+        });
       }
     });
 
     this._wsService.listen(client, 'lockLobby').subscribe(data => {
-      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
+      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
       const lockData = WsState.lockState[data.lobbyId];
       if (lockData.lockedBy) {
         this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
         return;
       }
       lockData.lockedBy = data.uid;
+      lockData.lockedByName = data.name;
       lockData.timeoutTime = 15 * 60; // 15 minutes
       lockData.interval = setInterval(() => {
         if (lockData.timeoutTime === undefined) {
@@ -68,11 +72,11 @@ export class LobbyGateway implements WsGateway {
         }
       }, 1000) as any as number;
       this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
-      this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: true });
+      this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: true, lockedBy: data.name });
     });
 
     this._wsService.listen(client, 'unlockLobby').subscribe(async data => {
-      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null };
+      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
       const lockData = WsState.lockState[data.lobbyId];
       if (lockData.lockedBy === data.uid || (await this._lobbyService.getLobby(data.lobbyId, data.uid)).isCreator) {
         WsState.deleteTimeout(lockData);

@@ -3,6 +3,7 @@ import { Socket } from 'socket.io';
 export class LockState {
   [lobbyId: string]: {
     lockedBy: string | null;
+    lockedByName: string | null;
     interval?: number;
     timeoutTime?: number;
     lookingAtLobby: string[];

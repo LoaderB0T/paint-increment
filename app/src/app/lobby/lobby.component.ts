@@ -56,6 +56,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   public lobby: LobbyResponse;
   public isLockedByMe: boolean = false;
   public isLockedBySomebodyElse: boolean = false;
+  public isLockedByName: string | undefined;
   public zoom: number = 1;
   public offsetX: number = 0;
   public offsetY: number = 0;
@@ -208,6 +209,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .subscribe(data => {
         this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
           this.isLockedBySomebodyElse = data.isLocked;
+          this.isLockedByName = data.lockedBy ?? 'Owner';
           this.lobby = l;
           this.prepareLobbyFields();
           this.drawLobby();
