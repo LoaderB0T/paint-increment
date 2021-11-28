@@ -85,6 +85,9 @@ export class LobbyIterationsComponent implements AfterViewInit {
 
   private download() {
     this._dialogService.showComponentDialog(DownloadColorComponent).result.then(color => {
+      if (!color) {
+        return;
+      }
       const targetSize = 2048;
       let size = 0;
       while (size < targetSize) {

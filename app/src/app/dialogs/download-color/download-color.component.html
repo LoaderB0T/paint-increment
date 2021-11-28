@@ -2,16 +2,24 @@
   <div class="dialog-container">
     Enter the color HEX code for the accent color of the generated images.
 
-    <input type="text"
-           class="dialog-input"
-           placeholder="HEX code"
-           pattern="^#[0-9A-F]{6}$"
-           [(ngModel)]="color"
-           required>
+    <awd-textbox placeholder="HEX code"
+                 pattern="^#[0-9A-F]{6}$"
+                 [fontSize]="28"
+                 [(ngModel)]="color"
+                 required>
+    </awd-textbox>
+
+    <div id="color-preview"
+         [style.background-color]="color">
+
+    </div>
 
     <div class="actions">
       <button class="button"
-              (click)="dismiss()">Dismiss</button>
+              (click)="cancel()">Cancel</button>
+      <button class="button"
+              [disabled]="!validInputs"
+              (click)="submit()">Submit</button>
     </div>
   </div>
 </div>

@@ -16,8 +16,18 @@ export class DownloadColorComponent extends BaseDialog {
     super();
   }
 
-  public dismiss() {
+  public submit() {
     this._result.next(this.color);
+    this._result.complete();
+    this.close();
+  }
+
+  public get validInputs() {
+    return this.color.match(/^#[0-9A-F]{6}$/i);
+  }
+
+  public cancel() {
+    this._result.next(undefined);
     this._result.complete();
     this.close();
   }
