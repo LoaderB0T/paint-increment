@@ -13,6 +13,8 @@ import { LobbyLockService } from '../services/lobby-lock.service';
 import { IncrementDetailsComponent } from '../dialogs/increment-details/increment-details.component';
 import { UserInfoService } from '../services/user-info.service';
 import { ConfirmedOrRejectedComponent } from '../dialogs/confirmed-or-rejected/confirmed-or-rejected.component';
+import { DeviceDetectorService } from 'ngx-device-detector';
+import { NoMobileComponent } from '../dialogs/no-mobile/no-mobile.component';
 
 const canvasPatternColor = '#e3e3e3';
 
@@ -29,6 +31,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _dialogService: DialogService;
   private readonly _lobbyLockService: LobbyLockService;
   private readonly _userInfoService: UserInfoService;
+  private readonly _deviceService: DeviceDetectorService;
 
   private _lobbyImg!: boolean[][];
   private _originalLobbyImg!: boolean[][];
@@ -118,7 +121,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     router: Router,
     dialogService: DialogService,
     lobbyLockService: LobbyLockService,
-    userInfoService: UserInfoService
+    userInfoService: UserInfoService,
+    deviceService: DeviceDetectorService
   ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
@@ -127,6 +131,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._dialogService = dialogService;
     this._lobbyLockService = lobbyLockService;
     this._userInfoService = userInfoService;
+    this._deviceService = deviceService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
 
@@ -167,6 +172,14 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         queryParamsHandling: 'merge'
       });
     }
+
+    if (this.isMobile) {
+      this._dialogService.showComponentDialog(NoMobileComponent);
+    }
+  }
+
+  public get isMobile(): boolean {
+    return this._deviceService.isMobile();
   }
 
   public get pixelsLeft() {
@@ -406,6 +419,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private async startToPaint() {
+    if (this.isMobile) {
+      this._dialogService.showComponentDialog(NoMobileComponent);
+      return;
+    }
+
     if (!this.isLockedBySomebodyElse) {
       if (!this._userInfoService.initialized) {
         const gotDetails = await this.getUserDetails();
