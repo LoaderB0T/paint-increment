@@ -14,6 +14,11 @@
 
     </div>
 
+    <input type="checkbox"
+           name="transparent"
+           [(ngModel)]="transparent">
+    <label for="transparent">Transparent</label>
+
     <div class="actions">
       <button class="button"
               (click)="cancel()">Cancel</button>
@@ -22,7 +27,10 @@
               (click)="submitImages()">Download Images</button>
       <button class="button"
               [disabled]="!validInputs"
-              (click)="submitCanvas()">Download Canvas</button>
+              (click)="submitBack()">Download Back</button>
+      <button class="button"
+              [disabled]="!validInputs"
+              (click)="submitFront()">Download Front</button>
     </div>
   </div>
 </div>

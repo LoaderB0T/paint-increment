@@ -6,6 +6,7 @@ import * as JsZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { DialogService } from '../services/dialog.service';
 import { DownloadColorComponent } from '../dialogs/download-color/download-color.component';
+import { getPixelText } from './pixel-text';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -88,15 +89,17 @@ export class LobbyIterationsComponent implements AfterViewInit {
       if (!response) {
         return;
       }
-      if (response.canvas) {
-        this.downloadCanvas(response.color);
+      if (response.back) {
+        this.downloadBack(response.color, response.transparent);
+      } else if (response.front) {
+        this.downloadFront(response.color, response.transparent);
       } else {
-        this.downloadImages(response.color);
+        this.downloadImages(response.color, response.transparent);
       }
     });
   }
 
-  private async downloadCanvas(color: string) {
+  private async downloadBack(color: string, transparent: boolean) {
     const myFont = new FontFace('Pixeled', 'url(/assets/Pixeled.ttf)');
     const font = await myFont.load();
 
@@ -132,7 +135,6 @@ export class LobbyIterationsComponent implements AfterViewInit {
     ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
 
     for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
-      const iteration = this.lobby.pixelIterations[i];
       const x = i % columns;
       const y = Math.floor(i / columns);
 
@@ -140,13 +142,21 @@ export class LobbyIterationsComponent implements AfterViewInit {
       const startY = y * (2 * borderThickness + availableSizePerIteration + textSpace) + borderThickness;
       const width = availableSizePerIteration;
       const height = availableSizePerIteration;
-      ctx.fillStyle = 'white';
-      ctx.fillRect(startX, startY, width, height);
+      if (transparent) {
+        ctx.clearRect(startX, startY, width, height);
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(startX, startY, width, height);
+      }
     }
     for (let i = 0; i < rows; i++) {
       const y = (i + 1) * (2 * borderThickness + availableSizePerIteration) + i * textSpace;
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, y, actualCanvasWidth, textSpace);
+      if (transparent) {
+        ctx.clearRect(0, y, actualCanvasWidth, textSpace);
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, y, actualCanvasWidth, textSpace);
+      }
     }
 
     for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
@@ -176,11 +186,106 @@ export class LobbyIterationsComponent implements AfterViewInit {
     }
 
     canvas.toBlob(blob => {
-      saveAs(blob!, `${this.lobby.name}_${color}.png`);
+      saveAs(blob!, `${this.lobby.name}_${color}_back.png`);
     });
   }
 
-  private downloadImages(color: string) {
+  private downloadFront(color: string, transparent: boolean) {
+    const targetSize = 4000;
+    const pixelLength = this.lobby.settings.width!;
+    const textSpace = 6;
+    const pixelCountWidth = pixelLength + 2;
+    const pixelCountHeight = pixelLength + 2 + textSpace;
+
+    const pixelSize = Math.floor(Math.min(targetSize / pixelCountWidth, targetSize / pixelCountHeight));
+
+    const actualCanvasWidth = pixelSize * pixelCountWidth;
+    const actualCanvasHeight = pixelSize * pixelCountHeight;
+
+    const cornerTL = { x: 12, y: 6 };
+    const cornerTR = { x: 7, y: 17 };
+    const cornerBL = { x: 11, y: 6 };
+    const cornerBR = { x: 15, y: 9 };
+
+    const edgePixels = [];
+    for (let i = 0; i < cornerTL.x; i++) {
+      edgePixels.push({ x: i, y: 0 });
+    }
+    for (let i = 0; i < cornerTL.y; i++) {
+      edgePixels.push({ x: 0, y: i });
+    }
+    for (let i = 0; i < cornerTR.x; i++) {
+      edgePixels.push({ x: pixelCountWidth - i - 1, y: 0 });
+    }
+    for (let i = 0; i < cornerTR.y; i++) {
+      edgePixels.push({ x: pixelCountWidth - 1, y: i });
+    }
+    for (let i = 0; i < cornerBL.x; i++) {
+      edgePixels.push({ x: i, y: pixelCountHeight - 1 - textSpace });
+    }
+    for (let i = 0; i < cornerBL.y; i++) {
+      edgePixels.push({ x: 0, y: pixelCountHeight - 1 - textSpace - i });
+    }
+    for (let i = 0; i < cornerBR.x; i++) {
+      edgePixels.push({ x: pixelCountWidth - i - 1, y: pixelCountHeight - 1 - textSpace });
+    }
+    for (let i = 0; i < cornerBR.y; i++) {
+      edgePixels.push({ x: pixelCountWidth - 1, y: pixelCountHeight - 1 - textSpace - i });
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = actualCanvasWidth;
+    canvas.height = actualCanvasHeight;
+    const ctx = canvas.getContext('2d')!;
+
+    if (!transparent) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
+    }
+
+    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
+      const iteration = this.lobby.pixelIterations[i];
+      iteration.pixels.forEach(p => {
+        ctx.fillStyle = 'black';
+        ctx.fillRect((p.x + 1) * pixelSize, (p.y + 1) * pixelSize, pixelSize, pixelSize);
+      });
+    }
+
+    ctx.fillStyle = color;
+    edgePixels.forEach(p => {
+      ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
+    });
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const yearNumbers = year
+      .toString()
+      .split('')
+      .map(c => parseInt(c, 10));
+    const yearNumbersPixels = yearNumbers.map(n => getPixelText(n));
+    const yearBaseX = (pixelCountWidth - 4 * 4 + 1) * pixelSize;
+    const yearBaseY = (pixelCountHeight - textSpace + 1) * pixelSize;
+
+    ctx.fillStyle = 'black';
+    for (let n = 0; n < yearNumbersPixels.length; n++) {
+      const yearNumberPixels = yearNumbersPixels[n];
+      for (let rowIndex = 0; rowIndex < yearNumberPixels.length; rowIndex++) {
+        const row = yearNumberPixels[rowIndex];
+        for (let colIndex = 0; colIndex < row.length; colIndex++) {
+          const pixel = row[colIndex];
+          if (pixel) {
+            ctx.fillRect(yearBaseX + (colIndex + n * 4) * pixelSize, yearBaseY + rowIndex * pixelSize, pixelSize, pixelSize);
+          }
+        }
+      }
+    }
+
+    canvas.toBlob(blob => {
+      saveAs(blob!, `${this.lobby.name}_${color}_front.png`);
+    });
+  }
+
+  private downloadImages(color: string, transparent: boolean) {
     const targetSize = 2048;
     let size = 0;
     while (size < targetSize) {
@@ -193,6 +298,12 @@ export class LobbyIterationsComponent implements AfterViewInit {
       el.width = size;
       el.height = size;
       const ctx = el.getContext('2d')!;
+
+      if (!transparent) {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, size, size);
+      }
+
       for (let j = 0; j <= i; j++) {
         ctx.fillStyle = j === i ? color : 'black';
         const iteration = this.lobby.pixelIterations[j];
