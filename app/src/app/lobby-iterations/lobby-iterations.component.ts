@@ -186,7 +186,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
     }
 
     canvas.toBlob(blob => {
-      saveAs(blob!, `${this.lobby.name}_${color}_back.png`);
+      saveAs(blob!, `${this.lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
     });
   }
 
@@ -281,7 +281,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
     }
 
     canvas.toBlob(blob => {
-      saveAs(blob!, `${this.lobby.name}_${color}_front.png`);
+      saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
     });
   }
 
@@ -316,7 +316,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
       zip.file(`${i}.png`, imgString.split('base64,')[1], { base64: true });
     }
     zip.generateAsync({ type: 'blob' }).then(content => {
-      saveAs(content, `${this.lobby.name}.zip`);
+      saveAs(content, `${this.lobby.name}_${color}${transparent ? '_T' : ''}.zip`);
     });
   }
 }
