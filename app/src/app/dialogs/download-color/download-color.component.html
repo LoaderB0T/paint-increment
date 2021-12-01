@@ -19,7 +19,10 @@
               (click)="cancel()">Cancel</button>
       <button class="button"
               [disabled]="!validInputs"
-              (click)="submit()">Submit</button>
+              (click)="submitImages()">Download Images</button>
+      <button class="button"
+              [disabled]="!validInputs"
+              (click)="submitCanvas()">Download Canvas</button>
     </div>
   </div>
 </div>

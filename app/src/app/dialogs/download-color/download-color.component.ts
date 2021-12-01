@@ -7,7 +7,7 @@ import { BaseDialog } from '../../models/base-dialog.model';
   styleUrls: ['./download-color.component.scss']
 })
 export class DownloadColorComponent extends BaseDialog {
-  private readonly _result = new Subject<string>();
+  private readonly _result = new Subject<{ color: string; canvas: boolean }>();
   public result = this._result.asObservable().toPromise();
   public rejected = false;
   public color: string = '#FF0042';
@@ -16,8 +16,16 @@ export class DownloadColorComponent extends BaseDialog {
     super();
   }
 
-  public submit() {
-    this._result.next(this.color);
+  public submitCanvas() {
+    this.submit(true);
+  }
+
+  public submitImages() {
+    this.submit(false);
+  }
+
+  public submit(canvas: boolean) {
+    this._result.next({ color: this.color, canvas });
     this._result.complete();
     this.close();
   }
