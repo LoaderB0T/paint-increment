@@ -21,7 +21,7 @@
     display: flex;
     justify-content: center;
     width: calc(var(--font-size) * 2);
-    clip-path: inset(0 0);
+    clip-path: inset(-5px -5px); // Because of small overflow
     .icon,
     .icon2 {
       transition: transform cubic-bezier(0.26, 0.14, 0.01, 0.98) 500ms;
