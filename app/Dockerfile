@@ -14,6 +14,7 @@ RUN yarn install
 
 COPY . .
 
+RUN yarn codegen
 RUN yarn build
 
 # stage 2
