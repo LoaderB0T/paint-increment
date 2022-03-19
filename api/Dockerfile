@@ -8,13 +8,14 @@ ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 WORKDIR /app
 
-COPY package.json .
-COPY yarn.lock .
+COPY ./api/package.json .
+COPY ./api/yarn.lock .
 RUN node -v
 
 RUN yarn install
 
-COPY . .
+COPY ./api .
+COPY ./app/src/app/models/ws-event-definitions.model.ts ./src/models
 
 RUN yarn build
 
