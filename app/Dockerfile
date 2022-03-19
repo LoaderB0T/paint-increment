@@ -8,22 +8,23 @@ ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 WORKDIR /app
 
-COPY package.json .
-COPY yarn.lock .
+COPY ./app/package.json .
+COPY ./app/yarn.lock .
 RUN yarn install
 
-COPY . .
+COPY ./app .
+COPY ./api/swagger.json .
 
-RUN yarn codegen
+RUN yarn codegen-docker
 RUN yarn build
 
 # stage 2
 
 FROM nginx:alpine
 
-COPY config/angular.conf /etc/nginx/angular.conf
-COPY config/nginx.conf /etc/nginx/nginx.conf
-COPY config/security-headers.conf /etc/nginx/security-headers.conf
+COPY ./app/config/angular.conf /etc/nginx/angular.conf
+COPY ./app/config/nginx.conf /etc/nginx/nginx.conf
+COPY ./app/config/security-headers.conf /etc/nginx/security-headers.conf
 
 COPY --from=builder /app/dist/paint-increment-client /usr/share/nginx/html
 
