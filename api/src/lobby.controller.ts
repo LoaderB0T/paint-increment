@@ -21,6 +21,11 @@ export class LobbyController {
     this._configService = configService;
   }
 
+  @Get('test')
+  async test() {
+    return 'test';
+  }
+
   @Get(':lobbyId')
   async getLobby(@Param('lobbyId') lobbyId: string, @Query('uid') uid: string): Promise<LobbyResponse> {
     return this._lobbyService.getLobby(lobbyId, uid);
