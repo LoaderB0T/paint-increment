@@ -2,7 +2,7 @@
 
 ARG skipBuild=false
 
-FROM node:16 as builder
+FROM node:16
 
 ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
@@ -18,14 +18,6 @@ COPY ./api .
 COPY ./app/src/app/models/ws-event-definitions.model.ts ./src/models
 
 RUN yarn build
-
-# stage 2
-
-FROM node:16.14.2-alpine3.15
-
-WORKDIR /app
-
-COPY --from=builder /app .
 
 EXPOSE 80
 
