@@ -187,8 +187,7 @@ export class LobbyService {
       ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
     });
 
-    const imgData = canvas.toDataURL();
-    return imgData;
+    return canvas.toDataURL();
   }
 
   private async validateNewIncrement(request: AddPixelsRequest, newIncrement: PaintIncrement) {
@@ -217,11 +216,7 @@ export class LobbyService {
       throw new Error('Cannot add new increment if unaccepted increment exists');
     }
 
-    const pixelConflict = request.pixels.some(newPixel => {
-      return lobby.increments.some(existingIncrement => {
-        return existingIncrement.pixels.some(existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y);
-      });
-    });
+    const pixelConflict = this.doesNewIncrementHavePixelConflict(request, lobby);
     if (pixelConflict) {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
@@ -234,6 +229,14 @@ export class LobbyService {
       throw new Error('Cannot add increment because it contains pixels outside of the bounds of the lobby');
     }
     return lobby;
+  }
+
+  private doesNewIncrementHavePixelConflict(request: AddPixelsRequest, lobby: PaintLobby) {
+    return request.pixels.some(newPixel => {
+      return lobby.increments.some(existingIncrement => {
+        return existingIncrement.pixels.some(existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y);
+      });
+    });
   }
 
   async confirmIncrement(request: ConfirmIncrementRequest): Promise<void> {

@@ -203,25 +203,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   public ngOnInit() {
     this._lobbyLockService.lookingAtLobby(this.lobby.id);
-    this._lobbyLockService
-      .lobbyLocked()
-      .pipe(untilDestroyed(this))
-      .subscribe(data => {
-        this.handleLobbyLockedChanged(data);
-      });
-    this._lobbyLockService
-      .lobbyReserved()
-      .pipe(untilDestroyed(this))
-      .subscribe(data => {
-        this.handleLobbyReservedChanged(data);
-      });
-
-    this._lobbyLockService
-      .reservationTime()
-      .pipe(untilDestroyed(this))
-      .subscribe(data => {
-        this.handleReservationTimeUpdated(data);
-      });
+    this.listenForLobbyLocked();
+    this.listenForLobbyReserved();
+    this.listenForReservationTime();
 
     if (this._inviteCode) {
       setTimeout(() => {
@@ -232,32 +216,47 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     }
   }
 
-  private handleReservationTimeUpdated(data: { timeLeft: number } & { uid?: string | undefined }) {
-    this._editTimeLeft = data.timeLeft;
-    if (this._editTimeLeft > 0) {
-      const editMinutes = Math.floor(this._editTimeLeft / 60);
-      const editSeconds = this._editTimeLeft % 60;
-      this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
-    } else {
-      this.editTimeLeftLabel = '';
-    }
+  private listenForReservationTime() {
+    this._lobbyLockService
+      .reservationTime()
+      .pipe(untilDestroyed(this))
+      .subscribe(data => {
+        this._editTimeLeft = data.timeLeft;
+        if (this._editTimeLeft > 0) {
+          const editMinutes = Math.floor(this._editTimeLeft / 60);
+          const editSeconds = this._editTimeLeft % 60;
+          this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
+        } else {
+          this.editTimeLeftLabel = '';
+        }
+      });
   }
 
-  private handleLobbyReservedChanged(data: { isReserved: boolean } & { uid?: string | undefined }) {
-    this.isLockedByMe = data.isReserved;
-    if (!this.isLockedByMe) {
-      this.resetLobby();
-    }
+  private listenForLobbyReserved() {
+    this._lobbyLockService
+      .lobbyReserved()
+      .pipe(untilDestroyed(this))
+      .subscribe(data => {
+        this.isLockedByMe = data.isReserved;
+        if (!this.isLockedByMe) {
+          this.resetLobby();
+        }
+      });
   }
 
-  private handleLobbyLockedChanged(data: { isLocked: boolean; lockedBy?: string | undefined } & { uid?: string | undefined }) {
-    this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
-      this.isLockedBySomebodyElse = data.isLocked;
-      this.isLockedByName = data.lockedBy ?? 'Owner';
-      this.lobby = l;
-      this.prepareLobbyFields();
-      this.drawLobby();
-    });
+  private listenForLobbyLocked() {
+    this._lobbyLockService
+      .lobbyLocked()
+      .pipe(untilDestroyed(this))
+      .subscribe(data => {
+        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
+          this.isLockedBySomebodyElse = data.isLocked;
+          this.isLockedByName = data.lockedBy ?? 'Owner';
+          this.lobby = l;
+          this.prepareLobbyFields();
+          this.drawLobby();
+        });
+      });
   }
 
   private async getUserDetails() {
