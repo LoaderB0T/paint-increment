@@ -10,6 +10,6 @@
     }
   ],
   "settings": {
-    "typescript.tsdk": "api\\node_modules\\typescript\\lib"
+    "typescript.tsdk": "API\\node_modules\\typescript\\lib"
   }
 }

@@ -2,13 +2,13 @@ import { WsCommunicationDefinitionsClientToServer, WsCommunicationDefinitionsSer
 
 type AddUidToType<T> = T & { uid: string };
 
-type A<T extends WsCommunicationDefinitionsClientToServer> = T extends { payload: any }
+type ApplyAddUid<T extends WsCommunicationDefinitionsClientToServer> = T extends { payload: any }
   ? Omit<T, 'payload'> & {
       payload: AddUidToType<T['payload']>;
     }
   : never;
 
-type WsCommunicationDefinitionsClientToServer2 = A<WsCommunicationDefinitionsClientToServer>;
+type WsCommunicationDefinitionsClientToServer2 = ApplyAddUid<WsCommunicationDefinitionsClientToServer>;
 
 type FlattenUnion<T> = {} extends T
   ? never

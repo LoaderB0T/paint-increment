@@ -3,24 +3,27 @@
   <div *ngIf="canPaint"
        class="pixels-left">
     <div class="progres-bar"
-         [style.width.%]="pixelsLeft / (lobby.settings.maxPixels ?? 100) * 100"></div>
+         [style.width.%]="pixelsLeft / lobby.settings.maxPixels * 100"></div>
   </div>
   <span *ngIf="isLockedBySomebodyElse"
         class="infoText"
         [tooltip]="'The lobby is currently locked by someone else'">
-    <i class="fa-regular fa-lock"></i> Locked by: {{ isLockedByName }}
+    <i class="fa-regular fa-lock"
+       aria-hidden="true"></i> Locked by: {{ isLockedByName }}
   </span>
   <span *ngIf="isLockedByMe"
         class="infoText">
     <div *ngIf="hoveredCoordinates">
-      <i class="fa-regular fa-location-crosshairs"></i> {{ hoveredCoordinates }}
+      <i class="fa-regular fa-location-crosshairs"
+         aria-hidden="true"></i> {{ hoveredCoordinates }}
     </div>
     <div>&nbsp;</div>
   </span>
   <span *ngIf="hasUnconfirmedIteration"
         class="locked"
         [tooltip]="'The lobby has an unconfirmed iteration'">
-    <i class="fa-regular fa-clock"></i> Pending confirmation
+    <i class="fa-regular fa-clock"
+       aria-hidden="true"></i> Pending confirmation
   </span>
   <div class="square-container">
     <div #canvasContainer
@@ -57,5 +60,6 @@
         id="show-tutorial"
         [tooltip]="'Show help'"
         (click)="showTutorial()">
-  <i class="fa-regular fa-circle-question"></i>
+  <i class="fa-regular fa-circle-question"
+     aria-hidden="true"></i>
 </button>

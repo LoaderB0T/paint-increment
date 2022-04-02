@@ -134,6 +134,91 @@ export class LobbyIterationsComponent implements AfterViewInit {
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
 
+    this.drawSquaresForIterations(columns, borderThickness, availableSizePerIteration, textSpace, transparent, ctx);
+    this.clearRowsForText(rows, borderThickness, availableSizePerIteration, textSpace, transparent, ctx, actualCanvasWidth);
+
+    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
+      const contributor = this.lobby.pixelIterations[i].name;
+      const x = i % columns;
+      const y = Math.floor(i / columns);
+      const startX = x * (borderThickness + availableSizePerIteration) + borderThickness;
+      const startY = y * (2 * borderThickness + availableSizePerIteration + textSpace) + borderThickness;
+
+      this.drawContributorName(ctx, contributor, startX, availableSizePerIteration, startY, borderThickness, textSpace);
+
+      this.drawContributorsIterationInSquare(i, ctx, color, startX, pixelSize, startY);
+    }
+
+    canvas.toBlob(blob => {
+      saveAs(blob!, `${this.lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
+    });
+  }
+
+  private drawContributorsIterationInSquare(
+    i: number,
+    ctx: CanvasRenderingContext2D,
+    color: string,
+    startX: number,
+    pixelSize: number,
+    startY: number
+  ) {
+    for (let j = 0; j <= i; j++) {
+      ctx.fillStyle = j === i ? color : 'black';
+      const iteration = this.lobby.pixelIterations[j];
+      iteration.pixels.forEach(p => {
+        ctx.fillRect(startX + p.x * pixelSize, startY + p.y * pixelSize, pixelSize, pixelSize);
+      });
+    }
+  }
+
+  private drawContributorName(
+    ctx: CanvasRenderingContext2D,
+    contributor: string,
+    startX: number,
+    availableSizePerIteration: number,
+    startY: number,
+    borderThickness: number,
+    textSpace: number
+  ) {
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '44px Pixeled';
+    ctx.fillText(
+      contributor,
+      startX + availableSizePerIteration * 0.5,
+      startY + availableSizePerIteration + borderThickness + textSpace * 0.5 + 4
+    );
+  }
+
+  private clearRowsForText(
+    rows: number,
+    borderThickness: number,
+    availableSizePerIteration: number,
+    textSpace: number,
+    transparent: boolean,
+    ctx: CanvasRenderingContext2D,
+    actualCanvasWidth: number
+  ) {
+    for (let i = 0; i < rows; i++) {
+      const y = (i + 1) * (2 * borderThickness + availableSizePerIteration) + i * textSpace;
+      if (transparent) {
+        ctx.clearRect(0, y, actualCanvasWidth, textSpace);
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, y, actualCanvasWidth, textSpace);
+      }
+    }
+  }
+
+  private drawSquaresForIterations(
+    columns: number,
+    borderThickness: number,
+    availableSizePerIteration: number,
+    textSpace: number,
+    transparent: boolean,
+    ctx: CanvasRenderingContext2D
+  ) {
     for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
       const x = i % columns;
       const y = Math.floor(i / columns);
@@ -149,45 +234,6 @@ export class LobbyIterationsComponent implements AfterViewInit {
         ctx.fillRect(startX, startY, width, height);
       }
     }
-    for (let i = 0; i < rows; i++) {
-      const y = (i + 1) * (2 * borderThickness + availableSizePerIteration) + i * textSpace;
-      if (transparent) {
-        ctx.clearRect(0, y, actualCanvasWidth, textSpace);
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, y, actualCanvasWidth, textSpace);
-      }
-    }
-
-    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
-      const contributor = this.lobby.pixelIterations[i].name;
-      const x = i % columns;
-      const y = Math.floor(i / columns);
-      const startX = x * (borderThickness + availableSizePerIteration) + borderThickness;
-      const startY = y * (2 * borderThickness + availableSizePerIteration + textSpace) + borderThickness;
-
-      ctx.fillStyle = 'black';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = '44px Pixeled';
-      ctx.fillText(
-        contributor,
-        startX + availableSizePerIteration * 0.5,
-        startY + availableSizePerIteration + borderThickness + textSpace * 0.5 + 4
-      );
-
-      for (let j = 0; j <= i; j++) {
-        ctx.fillStyle = j === i ? color : 'black';
-        const iteration = this.lobby.pixelIterations[j];
-        iteration.pixels.forEach(p => {
-          ctx.fillRect(startX + p.x * pixelSize, startY + p.y * pixelSize, pixelSize, pixelSize);
-        });
-      }
-    }
-
-    canvas.toBlob(blob => {
-      saveAs(blob!, `${this.lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
-    });
   }
 
   private downloadFront(color: string, transparent: boolean) {
@@ -202,6 +248,83 @@ export class LobbyIterationsComponent implements AfterViewInit {
     const actualCanvasWidth = pixelSize * pixelCountWidth;
     const actualCanvasHeight = pixelSize * pixelCountHeight;
 
+    const edgePixels = this.calculateEdgePixels(pixelCountWidth, pixelCountHeight, textSpace);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = actualCanvasWidth;
+    canvas.height = actualCanvasHeight;
+    const ctx = canvas.getContext('2d')!;
+
+    if (!transparent) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
+    }
+
+    this.drawAllIterations(ctx, pixelSize);
+
+    this.drawEdgePixels(ctx, color, edgePixels, pixelSize);
+
+    this.drawYearInBottomRightCorner(pixelCountWidth, pixelSize, pixelCountHeight, textSpace, ctx);
+
+    canvas.toBlob(blob => {
+      saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
+    });
+  }
+
+  private drawYearInBottomRightCorner(
+    pixelCountWidth: number,
+    pixelSize: number,
+    pixelCountHeight: number,
+    textSpace: number,
+    ctx: CanvasRenderingContext2D
+  ) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const yearNumbers = year
+      .toString()
+      .split('')
+      .map(c => parseInt(c, 10));
+    const yearNumbersPixels = yearNumbers.map(n => getPixelText(n));
+    const yearBaseX = (pixelCountWidth - 4 * 4 + 1) * pixelSize;
+    const yearBaseY = (pixelCountHeight - textSpace + 1) * pixelSize;
+
+    ctx.fillStyle = 'black';
+    for (let n = 0; n < yearNumbersPixels.length; n++) {
+      const yearNumberPixels = yearNumbersPixels[n];
+      for (let rowIndex = 0; rowIndex < yearNumberPixels.length; rowIndex++) {
+        const row = yearNumberPixels[rowIndex];
+        for (let colIndex = 0; colIndex < row.length; colIndex++) {
+          const pixel = row[colIndex];
+          if (pixel) {
+            ctx.fillRect(yearBaseX + (colIndex + n * 4) * pixelSize, yearBaseY + rowIndex * pixelSize, pixelSize, pixelSize);
+          }
+        }
+      }
+    }
+  }
+
+  private drawEdgePixels(
+    ctx: CanvasRenderingContext2D,
+    color: string,
+    edgePixels: { x: number; y: number }[],
+    pixelSize: number
+  ) {
+    ctx.fillStyle = color;
+    edgePixels.forEach(p => {
+      ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
+    });
+  }
+
+  private drawAllIterations(ctx: CanvasRenderingContext2D, pixelSize: number) {
+    this.lobby.pixelIterations.forEach(iteration => {
+      iteration.pixels.forEach(p => {
+        ctx.fillStyle = 'black';
+        ctx.fillRect((p.x + 1) * pixelSize, (p.y + 1) * pixelSize, pixelSize, pixelSize);
+      });
+    });
+  }
+
+  private calculateEdgePixels(pixelCountWidth: number, pixelCountHeight: number, textSpace: number) {
     const cornerTL = { x: 12, y: 6 };
     const cornerTR = { x: 7, y: 17 };
     const cornerBL = { x: 11, y: 6 };
@@ -232,57 +355,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
     for (let i = 0; i < cornerBR.y; i++) {
       edgePixels.push({ x: pixelCountWidth - 1, y: pixelCountHeight - 1 - textSpace - i });
     }
-
-    const canvas = document.createElement('canvas');
-    canvas.width = actualCanvasWidth;
-    canvas.height = actualCanvasHeight;
-    const ctx = canvas.getContext('2d')!;
-
-    if (!transparent) {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
-    }
-
-    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
-      const iteration = this.lobby.pixelIterations[i];
-      iteration.pixels.forEach(p => {
-        ctx.fillStyle = 'black';
-        ctx.fillRect((p.x + 1) * pixelSize, (p.y + 1) * pixelSize, pixelSize, pixelSize);
-      });
-    }
-
-    ctx.fillStyle = color;
-    edgePixels.forEach(p => {
-      ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
-    });
-
-    const now = new Date();
-    const year = now.getFullYear();
-    const yearNumbers = year
-      .toString()
-      .split('')
-      .map(c => parseInt(c, 10));
-    const yearNumbersPixels = yearNumbers.map(n => getPixelText(n));
-    const yearBaseX = (pixelCountWidth - 4 * 4 + 1) * pixelSize;
-    const yearBaseY = (pixelCountHeight - textSpace + 1) * pixelSize;
-
-    ctx.fillStyle = 'black';
-    for (let n = 0; n < yearNumbersPixels.length; n++) {
-      const yearNumberPixels = yearNumbersPixels[n];
-      for (let rowIndex = 0; rowIndex < yearNumberPixels.length; rowIndex++) {
-        const row = yearNumberPixels[rowIndex];
-        for (let colIndex = 0; colIndex < row.length; colIndex++) {
-          const pixel = row[colIndex];
-          if (pixel) {
-            ctx.fillRect(yearBaseX + (colIndex + n * 4) * pixelSize, yearBaseY + rowIndex * pixelSize, pixelSize, pixelSize);
-          }
-        }
-      }
-    }
-
-    canvas.toBlob(blob => {
-      saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
-    });
+    return edgePixels;
   }
 
   private downloadImages(color: string, transparent: boolean) {

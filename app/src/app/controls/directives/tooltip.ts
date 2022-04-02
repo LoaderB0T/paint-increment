@@ -24,15 +24,11 @@ export class TooltipDirective implements OnDestroy {
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    if (this.shown) {
-      this.hide();
-    }
+    this.hide();
   }
 
   public ngOnDestroy(): void {
-    if (this.shown) {
-      this.hide();
-    }
+    this.hide();
   }
 
   private show() {
@@ -52,7 +48,7 @@ export class TooltipDirective implements OnDestroy {
 
     const tooltipPos = this._tooltip!.getBoundingClientRect();
 
-    const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const scrollPos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     let top = hostPos.top - tooltipPos.height - 10;
 
@@ -76,6 +72,10 @@ export class TooltipDirective implements OnDestroy {
   }
 
   private hide() {
+    if (!this.shown) {
+      return;
+    }
+
     const toRemove = this._tooltip;
     this._renderer.removeClass(toRemove, 'visible');
     this.shown = false;

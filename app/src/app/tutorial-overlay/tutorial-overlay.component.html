@@ -20,7 +20,8 @@
           </p>
           <p>
             Once you clicked on the button, you have 15 minutes to finish your drawing. You have to commit your drawing
-            by clicking on the "submit paint iteration <i class="fa-regular fa-layer-plus"></i>" button. Otherwise your
+            by clicking on the "submit paint iteration <i class="fa-regular fa-layer-plus"
+               aria-hidden="true"></i>" button. Otherwise your
             drawing will be discarded and you will have to start a new one.
           </p>
         </div>
@@ -35,12 +36,14 @@
           mouse wheel and move the canvas by pressing down the mouse wheel and dragging it.
         </p>
         <p>
-          To submit your drawing you can click on the "submit paint iteration <i class="fa-regular fa-layer-plus"></i>"
+          To submit your drawing you can click on the "submit paint iteration <i class="fa-regular fa-layer-plus"
+             aria-hidden="true"></i>"
           button.
         </p>
         <p>
           When the timer expires before you submit your drawing, your drawing will be discarded. In that case, you can
-          simply restart by clicking on the "start paint <i class="fa-regular fa-paint-brush-fine"></i>" button again.
+          simply restart by clicking on the "start paint <i class="fa-regular fa-paint-brush-fine"
+             aria-hidden="true"></i>" button again.
         </p>
       </div>
       <div *ngIf="lockedBySomeone">
@@ -60,23 +63,28 @@
       <h2>Controls</h2>
       <div class="control-group">
         <div>
-          <img src="assets/img/lmb.png"> Draw
+          <img src="assets/img/lmb.png"
+               alt="Left mouse button"> Draw
         </div>
         <div>
-          <img src="assets/img/rmb.png"> Erase
+          <img src="assets/img/rmb.png"
+               alt="Right mouse button"> Erase
         </div>
         <div>
-          <img src="assets/img/scroll.png"> Zoom
+          <img src="assets/img/scroll.png"
+               alt="Scroll up or down"> Zoom
         </div>
         <div>
-          <img src="assets/img/mmb.png"> Move
+          <img src="assets/img/mmb.png"
+               alt="Middle mouse button and drag"> Move
         </div>
       </div>
     </div>
 
     <button class="button icon"
             (click)="close()">
-      <i class="fa-solid fa-check"></i>
+      <i class="fa-solid fa-check"
+         aria-hidden="true"></i>
     </button>
   </div>
 </div>

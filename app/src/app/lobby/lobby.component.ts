@@ -49,9 +49,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   private _ctx?: CanvasRenderingContext2D;
   @ViewChild('canvas', { static: true })
-  canvas?: ElementRef<HTMLCanvasElement>;
+  public canvas?: ElementRef<HTMLCanvasElement>;
   @ViewChild('canvasContainer', { static: true })
-  canvasContainer?: ElementRef<HTMLDivElement>;
+  public canvasContainer?: ElementRef<HTMLDivElement>;
 
   public lobby: LobbyResponse;
   public isLockedByMe: boolean = false;
@@ -207,36 +207,20 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .lobbyLocked()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
-          this.isLockedBySomebodyElse = data.isLocked;
-          this.isLockedByName = data.lockedBy ?? 'Owner';
-          this.lobby = l;
-          this.prepareLobbyFields();
-          this.drawLobby();
-        });
+        this.handleLobbyLockedChanged(data);
       });
     this._lobbyLockService
       .lobbyReserved()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this.isLockedByMe = data.isReserved;
-        if (!this.isLockedByMe) {
-          this.resetLobby();
-        }
+        this.handleLobbyReservedChanged(data);
       });
 
     this._lobbyLockService
       .reservationTime()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this._editTimeLeft = data.timeLeft;
-        if (this._editTimeLeft > 0) {
-          const editMinutes = Math.floor(this._editTimeLeft / 60);
-          const editSeconds = this._editTimeLeft % 60;
-          this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
-        } else {
-          this.editTimeLeftLabel = '';
-        }
+        this.handleReservationTimeUpdated(data);
       });
 
     if (this._inviteCode) {
@@ -246,6 +230,34 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         }
       });
     }
+  }
+
+  private handleReservationTimeUpdated(data: { timeLeft: number } & { uid?: string | undefined }) {
+    this._editTimeLeft = data.timeLeft;
+    if (this._editTimeLeft > 0) {
+      const editMinutes = Math.floor(this._editTimeLeft / 60);
+      const editSeconds = this._editTimeLeft % 60;
+      this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
+    } else {
+      this.editTimeLeftLabel = '';
+    }
+  }
+
+  private handleLobbyReservedChanged(data: { isReserved: boolean } & { uid?: string | undefined }) {
+    this.isLockedByMe = data.isReserved;
+    if (!this.isLockedByMe) {
+      this.resetLobby();
+    }
+  }
+
+  private handleLobbyLockedChanged(data: { isLocked: boolean; lockedBy?: string | undefined } & { uid?: string | undefined }) {
+    this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
+      this.isLockedBySomebodyElse = data.isLocked;
+      this.isLockedByName = data.lockedBy ?? 'Owner';
+      this.lobby = l;
+      this.prepareLobbyFields();
+      this.drawLobby();
+    });
   }
 
   private async getUserDetails() {
@@ -294,29 +306,41 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._ctx.fillStyle = '#ffffff';
     this._ctx.fillRect(0, 0, this.width, this.height);
     if (this._canvasPattern) {
-      for (let x = 0; x < this.width; x++) {
-        for (let y = 0; y < this.height; y++) {
-          if ((x + y) % 2 === 0) {
-            this._ctx.fillStyle = canvasPatternColor;
-            this._ctx?.fillRect(x, y, 1, 1);
-          }
-        }
-      }
+      this.drawCanvasPattern(this._ctx);
     }
+    this.drawCurrentUnsavedImage(this._ctx);
+    this.drawExistingIterations(this._ctx);
+  }
+
+  private drawExistingIterations(ctx: CanvasRenderingContext2D) {
+    this.lobby.pixelIterations.forEach(x => {
+      ctx.fillStyle = x.confirmed ? 'black' : 'green';
+      x.pixels.forEach(p => {
+        ctx.fillRect(p.x, p.y, 1, 1);
+      });
+    });
+  }
+
+  private drawCurrentUnsavedImage(ctx: CanvasRenderingContext2D) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         if (this._lobbyImg[x][y]) {
-          this._ctx.fillStyle = 'black';
-          this._ctx?.fillRect(x, y, 1, 1);
+          ctx.fillStyle = 'black';
+          ctx?.fillRect(x, y, 1, 1);
         }
       }
     }
-    this.lobby.pixelIterations.forEach(x => {
-      this._ctx!.fillStyle = x.confirmed ? 'black' : 'green';
-      x.pixels.forEach(p => {
-        this._ctx?.fillRect(p.x, p.y, 1, 1);
-      });
-    });
+  }
+
+  private drawCanvasPattern(ctx: CanvasRenderingContext2D) {
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if ((x + y) % 2 === 0) {
+          ctx.fillStyle = canvasPatternColor;
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+    }
   }
 
   private toggleCanvasPattern(): void {
@@ -531,24 +555,30 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   private drawPixel(x: number, y: number, erase: boolean) {
     if (!erase && this.pixelsLeft <= 0) {
+      // No more pixels left
       return;
     }
-    if (!this._originalLobbyImg[x][y]) {
-      if (this._lobbyImg[x][y] !== !erase) {
-        this._lobbyImg[x][y] = !erase;
-        this._drawnCount += erase ? -1 : 1;
-        if (erase) {
-          if ((x + y) % 2 === 0) {
-            this._ctx!.fillStyle = canvasPatternColor;
-          } else {
-            this._ctx!.fillStyle = '#ffffff';
-          }
-        } else {
-          this._ctx!.fillStyle = 'black';
-        }
-        this._ctx?.fillRect(x, y, 1, 1);
-      }
+    if (this._originalLobbyImg[x][y]) {
+      // We cannot draw on a pixel that is already painted (nor erase it)
+      return;
     }
+    if (this._lobbyImg[x][y] === !erase) {
+      // Pixel is unchanged
+      return;
+    }
+
+    this._lobbyImg[x][y] = !erase;
+    this._drawnCount += erase ? -1 : 1;
+    if (erase) {
+      if ((x + y) % 2 === 0) {
+        this._ctx!.fillStyle = canvasPatternColor;
+      } else {
+        this._ctx!.fillStyle = '#ffffff';
+      }
+    } else {
+      this._ctx!.fillStyle = 'black';
+    }
+    this._ctx?.fillRect(x, y, 1, 1);
   }
 
   public mouseMove(event: MouseEvent) {

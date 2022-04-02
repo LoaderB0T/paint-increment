@@ -29,7 +29,9 @@ export class WsService {
     });
   }
 
-  public init() {}
+  public init() {
+    // Do nothing, but class will be instantiated by DI
+  }
 
   public close() {
     this._socket.close();

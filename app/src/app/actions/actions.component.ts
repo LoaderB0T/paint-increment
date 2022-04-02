@@ -9,8 +9,6 @@ import { ActionItem } from '../models/action-item.model';
 export class ActionsComponent {
   @Input() actionItems: ActionItem[] = [];
 
-  constructor() {}
-
   public get visibleActions(): ActionItem[] {
     return this.actionItems.filter(x => x.visible());
   }

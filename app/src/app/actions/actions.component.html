@@ -4,6 +4,7 @@
           *ngFor="let action of visibleActions"
           [tooltip]="action.text"
           (click)="action.action()">
-    <i class="action-button-icon far fa-{{action.icon}}"></i>
+    <i aria-hidden="true"
+       class="action-button-icon far fa-{{action.icon}}"></i>
   </button>
 </div>

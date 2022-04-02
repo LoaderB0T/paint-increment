@@ -124,7 +124,7 @@ export class LobbyService {
     return res;
   }
 
-  async addIncrement(request: AddPixelsRequest) {
+  public async addIncrement(request: AddPixelsRequest) {
     const newIncrement: PaintIncrement = {
       name: request.name,
       email: request.email,
@@ -133,6 +133,65 @@ export class LobbyService {
       confirmCode: uuid()
     };
 
+    const lobby = await this.validateNewIncrement(request, newIncrement);
+
+    await this._dbService.lobbies.updateOne(
+      { id: request.lobbyId },
+      {
+        $pull: { inviteCodes: request.inviteCode }
+      }
+    );
+
+    await this._dbService.lobbies.updateOne(
+      { id: request.lobbyId },
+      {
+        $push: { increments: newIncrement }
+      }
+    );
+
+    const lockData = WsState.lockState[request.lobbyId];
+    WsState.deleteTimeout(lockData);
+
+    const imgData = this.getImageDataForNewIncrement(lobby, newIncrement);
+    const url = this._configService.config.ownAddress;
+    const acceptUrl = `${url}/lobby/accept/${request.lobbyId}/${newIncrement.confirmCode}`;
+    const rejectUrl = `${url}/lobby/reject/${request.lobbyId}/${newIncrement.confirmCode}`;
+
+    const html = `
+    <h2>${request.name} has added a new iteration to ${lobby.name}</h2>
+    <img src="cid:1">
+    <a href="${acceptUrl}">Accept</a>
+    <a href="${rejectUrl}">Reject</a>
+    `;
+
+    this._mailService.sendMail(lobby.creatorEmail, 'New iteration added to lobby', html, imgData);
+  }
+
+  private getImageDataForNewIncrement(lobby: PaintLobby, newIncrement: PaintIncrement) {
+    const canvasSize = 2048;
+    const pixelSize = canvasSize / lobby.settings.width;
+    const canvas = createCanvas(canvasSize, canvasSize);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvasSize, canvasSize);
+    ctx.fillStyle = 'black';
+
+    lobby.increments.forEach(x => {
+      x.pixels.forEach(p => {
+        ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
+      });
+    });
+
+    ctx.fillStyle = 'green';
+    newIncrement.pixels.forEach(p => {
+      ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
+    });
+
+    const imgData = canvas.toDataURL();
+    return imgData;
+  }
+
+  private async validateNewIncrement(request: AddPixelsRequest, newIncrement: PaintIncrement) {
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
@@ -174,56 +233,7 @@ export class LobbyService {
     if (request.pixels.some(p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height)) {
       throw new Error('Cannot add increment because it contains pixels outside of the bounds of the lobby');
     }
-
-    await this._dbService.lobbies.updateOne(
-      { id: request.lobbyId },
-      {
-        $pull: { inviteCodes: request.inviteCode }
-      }
-    );
-
-    await this._dbService.lobbies.updateOne(
-      { id: request.lobbyId },
-      {
-        $push: { increments: newIncrement }
-      }
-    );
-
-    const lockData = WsState.lockState[request.lobbyId];
-    WsState.deleteTimeout(lockData);
-
-    const canvasSize = 2048;
-    const pixelSize = canvasSize / lobby.settings.width;
-    const canvas = createCanvas(canvasSize, canvasSize);
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvasSize, canvasSize);
-    ctx.fillStyle = 'black';
-
-    lobby.increments.forEach(x => {
-      x.pixels.forEach(p => {
-        ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
-      });
-    });
-
-    ctx.fillStyle = 'green';
-    newIncrement.pixels.forEach(p => {
-      ctx.fillRect(p[0] * pixelSize, p[1] * pixelSize, pixelSize, pixelSize);
-    });
-
-    const imgData = canvas.toDataURL();
-    const url = this._configService.config.ownAddress;
-    const acceptUrl = `${url}/lobby/accept/${request.lobbyId}/${newIncrement.confirmCode}`;
-    const rejectUrl = `${url}/lobby/reject/${request.lobbyId}/${newIncrement.confirmCode}`;
-
-    const html = `
-    <h2>${request.name} has added a new iteration to ${lobby.name}</h2>
-    <img src="cid:1">
-    <a href="${acceptUrl}">Accept</a>
-    <a href="${rejectUrl}">Reject</a>
-    `;
-
-    this._mailService.sendMail(lobby.creatorEmail, 'New iteration added to lobby', html, imgData);
+    return lobby;
   }
 
   async confirmIncrement(request: ConfirmIncrementRequest): Promise<void> {

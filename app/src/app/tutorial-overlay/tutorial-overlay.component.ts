@@ -16,8 +16,6 @@ export class TutorialOverlayComponent {
   @Input() pendingConfirm: boolean = false;
   @Input() showControls: boolean = false;
 
-  constructor() {}
-
   public close() {
     this.closed.next();
   }
