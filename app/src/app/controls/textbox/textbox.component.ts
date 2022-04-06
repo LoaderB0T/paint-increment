@@ -6,7 +6,8 @@ import {
   Output,
   EventEmitter,
   ChangeDetectionStrategy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  SecurityContext
 } from '@angular/core';
 import { InputType } from '../models/input-type';
 import {
@@ -170,7 +171,12 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
   }
 
   public get cssVariablesStyle() {
-    return this._sanitizer.bypassSecurityTrustStyle(`--font-size: ${this.fontSize}px;`);
+    if (typeof this.fontSize !== 'number') {
+      throw new Error('fontSize must be a number');
+    }
+    return this._sanitizer.bypassSecurityTrustStyle(
+      this._sanitizer.sanitize(SecurityContext.STYLE, `--font-size: ${this.fontSize}px;`) ?? ''
+    );
   }
 
   get value(): any {
