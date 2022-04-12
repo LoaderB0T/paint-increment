@@ -1,16 +1,19 @@
 {
-  "name": "paint-increment",
+  "name": "paint-increment-api",
   "private": true,
   "version": "1.0.0",
   "description": "Paint a picture incrementally with your friends",
   "license": "MIT",
+  "author": {
+    "name": "Janik Schumacher (LoaderB0T)",
+    "url": "https://awdware.de"
+  },
   "homepage": "https://github.com/LoaderB0T/paint-increment",
   "repository": {
     "type": "git",
     "url": "https://github.com/LoaderB0T/paint-increment.git"
   },
   "prettier": "@awdware/prettier-config",
-  "author": "LoaderB0T",
   "scripts": {
     "link-file": "yarn ts-node ./link-events.ts",
     "prebuild": "rimraf dist",
