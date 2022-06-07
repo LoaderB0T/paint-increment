@@ -10,14 +10,16 @@
 {{/requestBody}}
     }
 
-    return this.http.request(rb.build({
-      responseType: '{{responseType}}',
-      accept: '{{accept}}'
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        {{> handleResponse}}
-      }),
-      take(1)
-    ).toPromise();
+    return firstValueFrom(
+      this.http.request(rb.build({
+        responseType: '{{responseType}}',
+        accept: '{{accept}}'
+      })).pipe(
+        filter((r: any) => r instanceof HttpResponse),
+        map((r: HttpResponse<any>) => {
+          {{> handleResponse}}
+        }),
+        take(1)
+      )
+    );
   }

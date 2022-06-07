@@ -6,7 +6,9 @@ export type WsSendMessage = WsCommunicationDefinitionsClientToServer['name'];
 export type WsReceiveMessage = WsCommunicationDefinitionsServerToClient['name'];
 
 export type ExtractPayload<A extends WsCommunication, T> = A extends { name: T }
-  ? A['payload'] & {
+  ? ExtractPayloadInt<A> & {
       uid?: string;
     }
   : never;
+
+export type ExtractPayloadInt<A> = A extends { payload: any } ? A['payload'] : never;

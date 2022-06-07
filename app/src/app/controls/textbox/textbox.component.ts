@@ -38,7 +38,7 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
   @Input() public fontSize: number = 16;
   @Input() public name: string = '';
   @Input() public placeholder: string = '';
-  @Input() public pattern: string = '';
+  @Input() public pattern: string = '.*';
   @Input() public minLength: number = 0;
   @Input() public maxLength: number = 524288;
   @Input() public inputTabIndex: number = 99999;

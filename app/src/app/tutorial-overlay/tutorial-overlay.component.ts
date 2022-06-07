@@ -17,6 +17,6 @@ export class TutorialOverlayComponent {
   @Input() showControls: boolean = false;
 
   public close() {
-    this.closed.next();
+    this.closed.next(undefined);
   }
 }

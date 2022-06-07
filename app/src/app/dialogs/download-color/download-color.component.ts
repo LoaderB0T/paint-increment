@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { BaseDialog } from '../../models/base-dialog.model';
 
 @Component({
@@ -7,8 +7,8 @@ import { BaseDialog } from '../../models/base-dialog.model';
   styleUrls: ['./download-color.component.scss']
 })
 export class DownloadColorComponent extends BaseDialog {
-  private readonly _result = new Subject<{ color: string; back: boolean; front: boolean; transparent: boolean }>();
-  public result = this._result.asObservable().toPromise();
+  private readonly _result = new Subject<{ color: string; back: boolean; front: boolean; transparent: boolean } | undefined>();
+  public result = firstValueFrom(this._result.asObservable());
   public rejected = false;
   public color: string = '#FF0042';
   public transparent = false;
