@@ -11,6 +11,6 @@ export abstract class BaseDialog {
   }
 
   public close() {
-    this.$closeDialog.next();
+    this.$closeDialog.next(undefined);
   }
 }
