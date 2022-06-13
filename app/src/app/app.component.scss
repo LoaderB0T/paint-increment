@@ -17,6 +17,7 @@
     padding: 25px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
     #app-root-padding {
       height: 100%;
     }

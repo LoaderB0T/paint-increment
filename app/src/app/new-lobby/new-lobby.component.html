@@ -67,6 +67,19 @@
                  [validationDefinitions]="validityTexts"
                  [disabled]="clickedButton"></awd-textbox>
 
+    <awd-textbox inputType="NUMERIC"
+                 placeholder="Time limit in minutes"
+                 required
+                 [fontSize]="35"
+                 icon="hourglass-start"
+                 icon2="hourglass-end"
+                 name="timeLimit"
+                 [minValue]="1"
+                 [maxValue]="60"
+                 [(ngModel)]="timeLimit"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
+
     <input type="submit"
            class="button"
            id="submit-lobby"

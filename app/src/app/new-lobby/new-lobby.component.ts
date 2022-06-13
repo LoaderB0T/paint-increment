@@ -27,6 +27,7 @@ export class NewLobbyComponent {
   public lobbyNameAvailable: boolean = true;
   public maxPixels: number = 250;
   public size: number = 100;
+  public timeLimit: number = 15;
   public emailAddress: string = '';
   public clickedButton: boolean = false;
   public validityTexts = validityTexts;
@@ -75,7 +76,8 @@ export class NewLobbyComponent {
         settings: {
           maxPixels: this.maxPixels,
           height: +this.size,
-          width: +this.size
+          width: +this.size,
+          timeLimit: +this.timeLimit
         }
       }
     });

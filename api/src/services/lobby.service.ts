@@ -35,7 +35,8 @@ export class LobbyService {
     const settings: PaintLobbySettings = {
       height: request.settings.height ?? 128,
       width: request.settings.height ?? 128,
-      maxPixels: request.settings.maxPixels
+      maxPixels: request.settings.maxPixels,
+      timeLimit: request.settings.timeLimit ?? 15
     };
 
     if (!settings.maxPixels || settings.maxPixels < 1) {

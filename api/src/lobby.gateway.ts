@@ -46,16 +46,18 @@ export class LobbyGateway implements WsGateway {
       }
     });
 
-    this._wsService.listen(client, 'lockLobby').subscribe(data => {
+    this._wsService.listen(client, 'lockLobby').subscribe(async data => {
       WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
       const lockData = WsState.lockState[data.lobbyId];
       if (lockData.lockedBy) {
         this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
         return;
       }
+      const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      const gracePeriod = 35; // 32 seconds, UI will only show 30 (like a grace period for the grace period...)
       lockData.lockedBy = data.uid;
       lockData.lockedByName = data.name;
-      lockData.timeoutTime = 15 * 60; // 15 minutes
+      lockData.timeoutTime = lobby.settings.timeLimit * 60 + gracePeriod; // configured time plus grace period
       lockData.interval = setInterval(() => {
         if (lockData.timeoutTime === undefined) {
           WsState.deleteTimeout(lockData);
@@ -68,7 +70,9 @@ export class LobbyGateway implements WsGateway {
           this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
           lockData.lockedBy = null;
         } else {
-          this._wsService.sendToClient(clientId, 'reservationTime', { timeLeft: lockData.timeoutTime });
+          this._wsService.sendToClient(clientId, 'reservationTime', {
+            timeLeft: lockData.timeoutTime - gracePeriod // grace period subtracted
+          });
         }
       }, 1000) as any as number;
       this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
