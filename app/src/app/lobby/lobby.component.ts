@@ -184,6 +184,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public get pixelsLeft() {
+    if (this.isCreator) {
+      return 1; // Creator can always paint
+    }
     return (this.lobby.settings.maxPixels ?? 100) - this._drawnCount;
   }
 

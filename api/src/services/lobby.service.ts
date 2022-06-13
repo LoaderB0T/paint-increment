@@ -221,8 +221,8 @@ export class LobbyService {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
-    if (request.pixels.length > lobby.settings.maxPixels) {
-      throw new Error('Cannot add increment because it contains too many pixels');
+    if (request.uid !== lobby.creatorUid && request.pixels.length > lobby.settings.maxPixels) {
+      throw new Error('Cannot add increment because it contains too many pixels and the iteration was not made by the creator');
     }
 
     if (request.pixels.some(p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height)) {

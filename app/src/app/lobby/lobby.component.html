@@ -3,6 +3,7 @@
   <div *ngIf="canPaint"
        class="pixels-left">
     <div class="progres-bar"
+         *ngIf="!isCreator"
          [style.width.%]="pixelsLeft / lobby.settings.maxPixels * 100"></div>
   </div>
   <span *ngIf="isLockedBySomebodyElse"
