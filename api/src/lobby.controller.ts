@@ -6,8 +6,8 @@ import { CreateLobbyRequest } from './models/dtos/create-lobby-request.dto';
 import { LobbyResponse } from './models/dtos/lobby-response.dto';
 import { NewInviteCodeRequestDto } from './models/dtos/new-invite-code-request.dto';
 import { NewInviteCodeResponseDto } from './models/dtos/new-invite-code-response.dto';
-import { ValdiateInviteCodeRequestDto } from './models/dtos/valdiate-invite-code-request.dto';
-import { ValidateInviteCodeResponseDto } from './models/dtos/valdiate-invite-code-response.dto';
+import { ValidateInviteCodeRequestDto } from './models/dtos/validate-invite-code-request.dto';
+import { ValidateInviteCodeResponseDto } from './models/dtos/validate-invite-code-response.dto';
 import { LobbyNameAvailableRequestDto } from './models/dtos/lobby-name-available-request.dto';
 import { ConfigService } from './services/config.service';
 
@@ -42,7 +42,7 @@ export class LobbyController {
   }
 
   @Post('invite/validate')
-  async validateInvite(@Body() request: ValdiateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
+  async validateInvite(@Body() request: ValidateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
     return this._lobbyService.inviteValid(request);
   }
 
