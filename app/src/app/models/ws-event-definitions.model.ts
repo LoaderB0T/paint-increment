@@ -1,5 +1,6 @@
 export type WsCommunicationDefinitionsClientToServer =
-  | { name: 'lockLobby'; payload: { lobbyId: string; name: string } }
+  | { name: 'discardDrawing'; payload: { lobbyId: string } }
+  | { name: 'lockLobby'; payload: { lobbyId: string; name: string; inviteCode?: string } }
   | { name: 'unlockLobby'; payload: { lobbyId: string } }
   | { name: 'lookAtLobby'; payload: { lobbyId: string } };
 

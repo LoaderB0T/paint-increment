@@ -9,8 +9,8 @@ import { LobbyNameAvailableRequestDto } from '../models/dtos/lobby-name-availabl
 import { LobbyResponse } from '../models/dtos/lobby-response.dto';
 import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto';
 import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto';
-import { ValdiateInviteCodeRequestDto } from '../models/dtos/valdiate-invite-code-request.dto';
-import { ValidateInviteCodeResponseDto } from '../models/dtos/valdiate-invite-code-response.dto';
+import { ValidateInviteCodeRequestDto } from '../models/dtos/validate-invite-code-request.dto';
+import { ValidateInviteCodeResponseDto } from '../models/dtos/validate-invite-code-response.dto';
 import { PaintIncrement } from '../models/paint-increment.model';
 import { PaintLobbySettings } from '../models/paint-lobby-settings.model';
 import { PaintLobby } from '../models/paint-lobby.model';
@@ -93,7 +93,7 @@ export class LobbyService {
     return { inviteCode: newCode };
   }
 
-  async inviteValid(request: ValdiateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
+  async inviteValid(request: ValidateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
@@ -125,6 +125,15 @@ export class LobbyService {
     return res;
   }
 
+  public async invalidateInvite(lobbyId: string, code: string) {
+    await this._dbService.lobbies.updateOne(
+      { id: lobbyId },
+      {
+        $pull: { inviteCodes: code }
+      }
+    );
+  }
+
   public async addIncrement(request: AddPixelsRequest) {
     const newIncrement: PaintIncrement = {
       name: request.name,
@@ -136,12 +145,9 @@ export class LobbyService {
 
     const lobby = await this.validateNewIncrement(request, newIncrement);
 
-    await this._dbService.lobbies.updateOne(
-      { id: request.lobbyId },
-      {
-        $pull: { inviteCodes: request.inviteCode }
-      }
-    );
+    if (request.inviteCode) {
+      await this.invalidateInvite(lobby.id, request.inviteCode);
+    }
 
     await this._dbService.lobbies.updateOne(
       { id: request.lobbyId },
@@ -191,26 +197,37 @@ export class LobbyService {
     return canvas.toDataURL();
   }
 
-  private async validateNewIncrement(request: AddPixelsRequest, newIncrement: PaintIncrement) {
-    const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
+  public async validateAccess(lobbyId: string, uid?: string, inviteCode?: string): Promise<PaintLobby> {
+    if (!uid) {
+      throw new Error('No uid provided');
+    }
+
+    const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
-      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+      throw new Error(`Cannot find lobby with id${lobbyId}`);
     }
 
-    if (!request.inviteCode && request.uid !== lobby.creatorUid) {
-      throw new Error('create increment without invite code or valid creator token');
-    }
-
-    if (!request.inviteCode && request.uid) {
+    if (!inviteCode) {
+      if (uid !== lobby.creatorUid) {
+        throw new Error('create increment without invite code or valid creator token');
+      }
       if (lobby.increments.length > 0) {
         throw new Error('Creator token can only be used when no iterations have been added');
-      } else {
-        newIncrement.confirmed = true;
       }
+      return lobby;
     }
 
-    if (!newIncrement.confirmed && !lobby.inviteCodes.some(x => x === request.inviteCode)) {
+    if (!lobby.inviteCodes.some(x => x === inviteCode)) {
       throw new Error('Invalid or used invite code');
+    }
+    return lobby;
+  }
+
+  private async validateNewIncrement(request: AddPixelsRequest, newIncrement: PaintIncrement) {
+    const lobby = await this.validateAccess(request.lobbyId, request.uid, request.inviteCode);
+
+    if (!request.inviteCode) {
+      newIncrement.confirmed = true;
     }
 
     if (lobby.increments.some(x => !x.confirmed)) {

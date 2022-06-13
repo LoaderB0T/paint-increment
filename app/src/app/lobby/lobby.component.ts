@@ -15,6 +15,7 @@ import { UserInfoService } from '../services/user-info.service';
 import { ConfirmedOrRejectedComponent } from '../dialogs/confirmed-or-rejected/confirmed-or-rejected.component';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { NoMobileComponent } from '../dialogs/no-mobile/no-mobile.component';
+import { TimeUpComponent } from '../dialogs/time-up/time-up.component';
 
 const canvasPatternColor = '#e3e3e3';
 
@@ -46,6 +47,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _canvasPattern: boolean = true;
   private _drawnCount: number = 0;
   private _editTimeLeft: number = 0;
+  private _timeUpComponent?: TimeUpComponent;
 
   private _ctx?: CanvasRenderingContext2D;
   @ViewChild('canvas', { static: true })
@@ -231,6 +233,19 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
         } else {
           this.editTimeLeftLabel = '';
+          if (!this._timeUpComponent) {
+            this._timeUpComponent = this._dialogService.showComponentDialog(TimeUpComponent);
+            this._timeUpComponent.discard.subscribe(() => {
+              this._lobbyLockService.discardDrawing(this.lobby.id);
+            });
+            this._timeUpComponent.upload.subscribe(() => {
+              this.commitIteration();
+              this._timeUpComponent?.close();
+              this._timeUpComponent = undefined;
+            });
+          }
+          const timeLeft = data.timeLeft + 30;
+          this._timeUpComponent!.gracePeriodTimeLeft = timeLeft >= 0 ? timeLeft : 0;
         }
       });
   }
@@ -278,8 +293,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private resetLobby() {
+    this.invalidateInviteCode();
     this._lobbyImg = JSON.parse(JSON.stringify(this._originalLobbyImg)) as boolean[][];
     this.drawLobby();
+    this._timeUpComponent?.close();
+    this._timeUpComponent = undefined;
   }
 
   public ngAfterViewInit(): void {
@@ -629,7 +647,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     if (this.explainControlsBeforeStart) {
       this.explainControlsBeforeStart = false;
       if (!this.isLockedBySomebodyElse) {
-        this._lobbyLockService.lock(this.lobby.id);
+        if (!this._inviteCode) {
+          throw new Error('Invite code is not set');
+        }
+        this._lobbyLockService.lock(this.lobby.id, this._inviteCode);
       }
     }
     this.tutorialVisible = false;

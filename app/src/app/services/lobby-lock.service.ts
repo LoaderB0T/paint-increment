@@ -12,8 +12,12 @@ export class LobbyLockService {
     this._userInfoService = userInfoService;
   }
 
-  public lock(lobbyId: string): void {
-    this._wsService.send('lockLobby', { lobbyId, name: this._userInfoService.name });
+  public lock(lobbyId: string, inviteCode: string): void {
+    this._wsService.send('lockLobby', { lobbyId, name: this._userInfoService.name, inviteCode });
+  }
+
+  public discardDrawing(lobbyId: string): void {
+    this._wsService.send('discardDrawing', { lobbyId });
   }
 
   public unlock(lobbyId: string) {

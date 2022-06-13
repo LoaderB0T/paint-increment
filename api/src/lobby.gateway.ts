@@ -46,6 +46,14 @@ export class LobbyGateway implements WsGateway {
       }
     });
 
+    this._wsService.listen(client, 'discardDrawing').subscribe(async data => {
+      const lockData = WsState.lockState[data.lobbyId];
+      if (lockData.lockedBy !== data.uid) {
+        return;
+      }
+      lockData.timeoutTime = 0;
+    });
+
     this._wsService.listen(client, 'lockLobby').subscribe(async data => {
       WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
       const lockData = WsState.lockState[data.lobbyId];
@@ -53,19 +61,23 @@ export class LobbyGateway implements WsGateway {
         this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
         return;
       }
-      const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
-      const gracePeriod = 35; // 32 seconds, UI will only show 30 (like a grace period for the grace period...)
+      const lobby = await this._lobbyService.validateAccess(data.lobbyId, data.uid, data.inviteCode);
+      const gracePeriod = 32; // 32 seconds, UI will only show 30 (like a grace period for the grace period...)
       lockData.lockedBy = data.uid;
       lockData.lockedByName = data.name;
       lockData.timeoutTime = lobby.settings.timeLimit * 60 + gracePeriod; // configured time plus grace period
-      lockData.interval = setInterval(() => {
+      lockData.interval = setInterval(async () => {
         if (lockData.timeoutTime === undefined) {
           WsState.deleteTimeout(lockData);
           return;
         }
         lockData.timeoutTime--;
         if (lockData.timeoutTime <= 0) {
+          console.log('timeoutTime less or equal to 0');
           WsState.deleteTimeout(lockData);
+          if (data.inviteCode) {
+            await this._lobbyService.invalidateInvite(data.lobbyId, data.inviteCode);
+          }
           this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: false });
           this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
           lockData.lockedBy = null;

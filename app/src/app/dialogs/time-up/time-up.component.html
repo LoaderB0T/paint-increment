@@ -1,0 +1,17 @@
+<div class="dialog-bg">
+  <div class="dialog-container">
+    <p>
+      The configured time to draw has expired. Please decide whether to upload or discard your drawing.
+      In case of a discard, you will have to get a new invite code from the lobby owner.
+    </p>
+    <p>
+      Please decide within <span>{{gracePeriodTimeLeft}}</span> seconds.
+    </p>
+    <div class="actions">
+      <button class="button"
+              (click)="discardBtn()">Discard</button>
+      <button class="button"
+              (click)="uploadBtn()">Upload</button>
+    </div>
+  </div>
+</div>

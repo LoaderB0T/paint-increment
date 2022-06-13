@@ -1,0 +1,13 @@
+@import '../../../vars.scss';
+
+.dialog-container {
+  .actions {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 20px;
+    button {
+      width: 100%;
+    }
+  }
+}

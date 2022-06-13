@@ -41,8 +41,9 @@ export class DialogService {
     if (component.instance.closeDialog) {
       const hideSub = component.instance.closeDialog.subscribe((id: string) => {
         const indexToRemove = this._rootViewContainer!.indexOf(component.hostView);
-
-        this._rootViewContainer!.remove(indexToRemove);
+        if (indexToRemove > -1) {
+          this._rootViewContainer!.remove(indexToRemove);
+        }
         this._subMgrs.find(subMgr => subMgr.id === id)?.mgr?.unsubscribeAll();
         if (this._rootViewContainer!.length === 0) {
           this.dialogVisible = false;
