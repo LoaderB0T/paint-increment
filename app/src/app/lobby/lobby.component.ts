@@ -160,6 +160,22 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           }
         });
     }
+    const creatorSecret = activatedRoute.snapshot.queryParams.creatorSecret as string | undefined;
+    if (creatorSecret) {
+      this._apiService
+        .lobbyControllerValidateCreatorSecret({
+          body: {
+            creatorSecret,
+            lobbyId: this.lobby.id,
+            uid: this._idService.id
+          }
+        })
+        .then(res => {
+          if (res.isValid) {
+            this.resetLobby();
+          }
+        });
+    }
 
     const confirmed = activatedRoute.snapshot.queryParams.confirmed ?? false;
     const rejected = activatedRoute.snapshot.queryParams.rejected ?? false;
