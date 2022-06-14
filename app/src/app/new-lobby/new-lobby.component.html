@@ -30,6 +30,17 @@
                  [validationDefinitions]="validityTexts"
                  [disabled]="clickedButton"></awd-textbox>
 
+    <awd-textbox inputType="TEXT"
+                 placeholder="Your Name"
+                 required
+                 [fontSize]="35"
+                 icon="pencil"
+                 icon2="at"
+                 name="ownerName"
+                 [(ngModel)]="ownerName"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
+
     <awd-textbox inputType="EMAIL"
                  placeholder="Email Address"
                  required

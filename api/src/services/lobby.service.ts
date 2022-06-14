@@ -48,8 +48,10 @@ export class LobbyService {
       name: request.name,
       increments: [],
       settings,
-      creatorUid: request.uid,
+      creatorUids: [request.uid],
+      creatorSecret: uuid(),
       creatorEmail: request.email,
+      creatorName: request.ownerName,
       inviteCodes: []
     };
 
@@ -58,6 +60,27 @@ export class LobbyService {
     }
 
     await this._dbService.lobbies.insertOne(lobby);
+
+    const url = this._configService.config.clientAddress;
+    const lobbyUrl = `${url}/lobby/${lobby.id}`;
+    const creatorUrl = `${lobbyUrl}?creatorCode=${lobby.creatorSecret}`;
+
+    const html = `
+    <h1>paint.awdware.de</h1>
+    <h2>Hi, ${request.ownerName}. You just successfully created the lobby '${lobby.name}'.</h2>
+    
+    <p>
+      You can view the lobby with the following link:
+      <a href="${lobbyUrl}">Lobby link</a>
+    </p>
+    <p>
+      You can gain creator rights on a different device by using the link below. Don't share this link with anyone else.
+      <a href="${creatorUrl}">Creator Link</a>
+    </p>
+
+    `;
+
+    this._mailService.sendMail(lobby.creatorEmail, 'Lobby created - paint.awdware.de', html);
 
     const res: LobbyResponse = {
       id: lobby.id,
@@ -78,7 +101,7 @@ export class LobbyService {
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    if (lobby.creatorUid !== request.uid) {
+    if (!lobby.creatorUids.includes(request.uid)) {
       throw new Error('Invalid creator token');
     }
     const newCode = uuid();
@@ -120,7 +143,7 @@ export class LobbyService {
         };
       }),
       settings: lobby.settings,
-      isCreator: uid === lobby.creatorUid
+      isCreator: lobby.creatorUids.includes(uid)
     };
     return res;
   }
@@ -208,7 +231,7 @@ export class LobbyService {
     }
 
     if (!inviteCode) {
-      if (uid !== lobby.creatorUid) {
+      if (!lobby.creatorUids.includes(uid)) {
         throw new Error('create increment without invite code or valid creator token');
       }
       if (lobby.increments.length > 0) {
@@ -239,7 +262,7 @@ export class LobbyService {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
-    if (request.uid !== lobby.creatorUid && request.pixels.length > lobby.settings.maxPixels) {
+    if (!lobby.creatorUids.includes(request.uid ?? '-') && request.pixels.length > lobby.settings.maxPixels) {
       throw new Error('Cannot add increment because it contains too many pixels and the iteration was not made by the creator');
     }
 
@@ -263,7 +286,7 @@ export class LobbyService {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
 
-    if (lobby.creatorUid !== request.uid) {
+    if (!lobby.creatorUids.includes(request.uid)) {
       throw new Error('Invalid creator token');
     }
 

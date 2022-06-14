@@ -22,13 +22,14 @@ export class NewLobbyComponent {
   private readonly _userInfoService: UserInfoService;
 
   private readonly _lobbyName = new BehaviorSubject('');
-  private readonly $lobbyName = this._lobbyName.asObservable().pipe(debounceTime(150), untilDestroyed(this));
+  private readonly $lobbyName = this._lobbyName.asObservable().pipe(debounceTime(300), untilDestroyed(this));
   private _checkingLobbyName = false;
   public lobbyNameAvailable: boolean = true;
   public maxPixels: number = 250;
   public size: number = 100;
   public timeLimit: number = 15;
   public emailAddress: string = '';
+  public ownerName: string = '';
   public clickedButton: boolean = false;
   public validityTexts = validityTexts;
 
@@ -71,6 +72,7 @@ export class NewLobbyComponent {
     const lobby = await this._apiService.lobbyControllerPostLobby({
       body: {
         name: this.lobbyName,
+        ownerName: this.ownerName,
         email: this.emailAddress,
         uid: this._idService.id,
         settings: {
