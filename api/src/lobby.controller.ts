@@ -10,6 +10,8 @@ import { ValidateInviteCodeRequestDto } from './models/dtos/validate-invite-code
 import { ValidateInviteCodeResponseDto } from './models/dtos/validate-invite-code-response.dto';
 import { LobbyNameAvailableRequestDto } from './models/dtos/lobby-name-available-request.dto';
 import { ConfigService } from './services/config.service';
+import { ValidateCreatorSecretRequestDto } from './models/dtos/validate-creator-secret-request.dto';
+import { ValidateCreatorSecretResponseDto } from './models/dtos/validate-creator-secret-response.dto';
 
 @Controller('lobby')
 export class LobbyController {
@@ -44,6 +46,11 @@ export class LobbyController {
   @Post('invite/validate')
   async validateInvite(@Body() request: ValidateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
     return this._lobbyService.inviteValid(request);
+  }
+
+  @Post('creatorSecret/validate')
+  async validateCreatorSecret(@Body() request: ValidateCreatorSecretRequestDto): Promise<ValidateCreatorSecretResponseDto> {
+    return this._lobbyService.creatorSecretValid(request);
   }
 
   @Post()

@@ -9,6 +9,8 @@ import { LobbyNameAvailableRequestDto } from '../models/dtos/lobby-name-availabl
 import { LobbyResponse } from '../models/dtos/lobby-response.dto';
 import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto';
 import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto';
+import { ValidateCreatorSecretRequestDto } from '../models/dtos/validate-creator-secret-request.dto';
+import { ValidateCreatorSecretResponseDto } from '../models/dtos/validate-creator-secret-response.dto';
 import { ValidateInviteCodeRequestDto } from '../models/dtos/validate-invite-code-request.dto';
 import { ValidateInviteCodeResponseDto } from '../models/dtos/validate-invite-code-response.dto';
 import { PaintIncrement } from '../models/paint-increment.model';
@@ -63,7 +65,7 @@ export class LobbyService {
 
     const url = this._configService.config.clientAddress;
     const lobbyUrl = `${url}/lobby/${lobby.id}`;
-    const creatorUrl = `${lobbyUrl}?creatorCode=${lobby.creatorSecret}`;
+    const creatorUrl = `${lobbyUrl}?creatorSecret=${lobby.creatorSecret}`;
 
     const html = `
     <h1>paint.awdware.de</h1>
@@ -123,6 +125,21 @@ export class LobbyService {
     }
 
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
+  }
+
+  async creatorSecretValid(request: ValidateCreatorSecretRequestDto): Promise<ValidateCreatorSecretResponseDto> {
+    const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
+    if (!lobby) {
+      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+    }
+    const isValid = lobby.creatorSecret === request.creatorSecret;
+    if (isValid) {
+      if (!lobby.creatorUids.includes(request.uid)) {
+        await this._dbService.lobbies.updateOne({ id: request.lobbyId }, { $push: { creatorUids: request.uid } });
+      }
+    }
+
+    return { isValid };
   }
 
   async getLobby(lobbyId: string, uid: string): Promise<LobbyResponse> {
