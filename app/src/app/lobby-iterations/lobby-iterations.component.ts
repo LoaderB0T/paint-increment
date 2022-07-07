@@ -90,7 +90,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
         return;
       }
       if (response.back) {
-        this.downloadBack(response.color, response.transparent);
+        this.downloadBack(response.color, response.transparent, response.columns);
       } else if (response.front) {
         this.downloadFront(response.color, response.transparent);
       } else {
@@ -99,14 +99,13 @@ export class LobbyIterationsComponent implements AfterViewInit {
     });
   }
 
-  private async downloadBack(color: string, transparent: boolean) {
+  private async downloadBack(color: string, transparent: boolean, columns: number) {
     const myFont = new FontFace('Pixeled', 'url(/assets/Pixeled.ttf)');
     const font = await myFont.load();
 
     document.fonts.add(font);
 
     const targetSize = 4000;
-    const columns = 5;
     const rows = Math.ceil(this.lobby.pixelIterations.length / columns);
     const borderThickness = 12;
     const textSpace = 70;

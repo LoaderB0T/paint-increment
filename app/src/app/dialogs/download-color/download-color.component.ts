@@ -7,11 +7,14 @@ import { BaseDialog } from '../../models/base-dialog.model';
   styleUrls: ['./download-color.component.scss']
 })
 export class DownloadColorComponent extends BaseDialog {
-  private readonly _result = new Subject<{ color: string; back: boolean; front: boolean; transparent: boolean } | undefined>();
+  private readonly _result = new Subject<
+    { color: string; back: boolean; front: boolean; transparent: boolean; columns: number } | undefined
+  >();
   public result = firstValueFrom(this._result.asObservable());
   public rejected = false;
   public color: string = '#FF0042';
   public transparent = false;
+  public columns = 5;
 
   constructor() {
     super();
@@ -30,7 +33,7 @@ export class DownloadColorComponent extends BaseDialog {
   }
 
   public submit(back: boolean = false, front: boolean = false) {
-    this._result.next({ color: this.color, back, front, transparent: this.transparent });
+    this._result.next({ color: this.color, back, front, transparent: this.transparent, columns: this.columns });
     this._result.complete();
     this.close();
   }
