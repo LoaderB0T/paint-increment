@@ -20,6 +20,14 @@ export class MailService {
         pass: this._configService.config.mail.password
       }
     });
+
+    this._mailTransporter.verify(error => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('Email server is ready');
+      }
+    });
   }
 
   public sendMail(to: string, subject: string, body: string, img?: string) {

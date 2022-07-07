@@ -9,6 +9,8 @@ import { LobbyNameAvailableRequestDto } from '../models/dtos/lobby-name-availabl
 import { LobbyResponse } from '../models/dtos/lobby-response.dto';
 import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto';
 import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto';
+import { ValidateCreatorSecretRequestDto } from '../models/dtos/validate-creator-secret-request.dto';
+import { ValidateCreatorSecretResponseDto } from '../models/dtos/validate-creator-secret-response.dto';
 import { ValidateInviteCodeRequestDto } from '../models/dtos/validate-invite-code-request.dto';
 import { ValidateInviteCodeResponseDto } from '../models/dtos/validate-invite-code-response.dto';
 import { PaintIncrement } from '../models/paint-increment.model';
@@ -48,8 +50,10 @@ export class LobbyService {
       name: request.name,
       increments: [],
       settings,
-      creatorUid: request.uid,
+      creatorUids: [request.uid],
+      creatorSecret: uuid(),
       creatorEmail: request.email,
+      creatorName: request.ownerName,
       inviteCodes: []
     };
 
@@ -58,6 +62,27 @@ export class LobbyService {
     }
 
     await this._dbService.lobbies.insertOne(lobby);
+
+    const url = this._configService.config.clientAddress;
+    const lobbyUrl = `${url}/lobby/${lobby.id}`;
+    const creatorUrl = `${lobbyUrl}?creatorSecret=${lobby.creatorSecret}`;
+
+    const html = `
+    <h1>paint.awdware.de</h1>
+    <h2>Hi, ${request.ownerName}. You just successfully created the lobby '${lobby.name}'.</h2>
+    
+    <p>
+      You can view the lobby with the following link:
+      <a href="${lobbyUrl}">Lobby link</a>
+    </p>
+    <p>
+      You can gain creator rights on a different device by using the link below. Don't share this link with anyone else.
+      <a href="${creatorUrl}">Creator Link</a>
+    </p>
+
+    `;
+
+    this._mailService.sendMail(lobby.creatorEmail, 'Lobby created - paint.awdware.de', html);
 
     const res: LobbyResponse = {
       id: lobby.id,
@@ -78,7 +103,7 @@ export class LobbyService {
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    if (lobby.creatorUid !== request.uid) {
+    if (!lobby.creatorUids.includes(request.uid)) {
       throw new Error('Invalid creator token');
     }
     const newCode = uuid();
@@ -102,6 +127,21 @@ export class LobbyService {
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
   }
 
+  async creatorSecretValid(request: ValidateCreatorSecretRequestDto): Promise<ValidateCreatorSecretResponseDto> {
+    const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
+    if (!lobby) {
+      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+    }
+    const isValid = lobby.creatorSecret === request.creatorSecret;
+    if (isValid) {
+      if (!lobby.creatorUids.includes(request.uid)) {
+        await this._dbService.lobbies.updateOne({ id: request.lobbyId }, { $push: { creatorUids: request.uid } });
+      }
+    }
+
+    return { isValid };
+  }
+
   async getLobby(lobbyId: string, uid: string): Promise<LobbyResponse> {
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
@@ -120,7 +160,7 @@ export class LobbyService {
         };
       }),
       settings: lobby.settings,
-      isCreator: uid === lobby.creatorUid
+      isCreator: lobby.creatorUids.includes(uid)
     };
     return res;
   }
@@ -208,7 +248,7 @@ export class LobbyService {
     }
 
     if (!inviteCode) {
-      if (uid !== lobby.creatorUid) {
+      if (!lobby.creatorUids.includes(uid)) {
         throw new Error('create increment without invite code or valid creator token');
       }
       if (lobby.increments.length > 0) {
@@ -239,7 +279,7 @@ export class LobbyService {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
-    if (request.uid !== lobby.creatorUid && request.pixels.length > lobby.settings.maxPixels) {
+    if (!lobby.creatorUids.includes(request.uid ?? '-') && request.pixels.length > lobby.settings.maxPixels) {
       throw new Error('Cannot add increment because it contains too many pixels and the iteration was not made by the creator');
     }
 
@@ -263,7 +303,7 @@ export class LobbyService {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
 
-    if (lobby.creatorUid !== request.uid) {
+    if (!lobby.creatorUids.includes(request.uid)) {
       throw new Error('Invalid creator token');
     }
 
