@@ -72,9 +72,15 @@ export class DownloadComponent implements AfterViewInit {
       visible: () => true
     },
     {
-      text: 'Download Images',
-      icon: 'download',
-      action: () => this.download(),
+      text: 'Download Image',
+      icon: 'file-arrow-down',
+      action: () => this.download(false),
+      visible: () => true
+    },
+    {
+      text: 'Download All Iterations',
+      icon: 'folder-arrow-down',
+      action: () => this.download(true),
       visible: () => true
     },
     {
@@ -137,21 +143,25 @@ export class DownloadComponent implements AfterViewInit {
     this.refreshPreview();
   }
 
-  public download() {
+  public download(all: boolean) {
     const color = this.color;
     const transparent = this.transparent;
-    if (this._showBack) {
-      renderBack(this.lobby, color, transparent, this.columns).then(canvas => {
-        canvas.toBlob(blob => {
-          saveAs(blob!, `${this.lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
-        });
-      });
+    if (all) {
+      this.downloadIterations(color, transparent);
     } else {
-      renderFront(this.lobby, color, transparent, this.renderYear, this.renderEdgePixels).then(canvas => {
-        canvas.toBlob(blob => {
-          saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
+      if (this._showBack) {
+        renderBack(this.lobby, color, transparent, this.columns).then(canvas => {
+          canvas.toBlob(blob => {
+            saveAs(blob!, `${this.lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
+          });
         });
-      });
+      } else {
+        renderFront(this.lobby, color, transparent, this.renderYear, this.renderEdgePixels).then(canvas => {
+          canvas.toBlob(blob => {
+            saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
+          });
+        });
+      }
     }
   }
 
@@ -159,7 +169,7 @@ export class DownloadComponent implements AfterViewInit {
     this._router.navigate(['lobby', this.lobby.id]);
   }
 
-  private downloadImages(color: string, transparent: boolean) {
+  private downloadIterations(color: string, transparent: boolean) {
     const targetSize = 2048;
     let size = 0;
     while (size < targetSize) {
