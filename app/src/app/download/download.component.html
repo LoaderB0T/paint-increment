@@ -1,0 +1,42 @@
+<div id="download-main-container">
+
+  <canvas id="download-preview"></canvas>
+
+  <div class="actions">
+    <awd-textbox placeholder="HEX code"
+                 pattern="^#[0-9A-F]{6}$"
+                 [fontSize]="28"
+                 [(ngModel)]="color"
+                 required>
+    </awd-textbox>
+
+    <div id="color-preview"
+         [style.background-color]="color">
+
+    </div>
+
+    <awd-textbox placeholder="Column Count"
+                 [inputType]="'NUMERIC'"
+                 [fontSize]="28"
+                 [minValue]="1"
+                 [maxValue]="10"
+                 [(ngModel)]="columns"
+                 required>
+    </awd-textbox>
+
+    <div class="stacked">
+      <input type="checkbox"
+             name="transparent"
+             [(ngModel)]="transparent">
+      <label for="transparent">Transparent</label>
+    </div>
+  </div>
+
+
+  <div class="actions">
+    <button class="button"
+            (click)="download()">Download</button>
+  </div>
+</div>
+
+<app-actions [actionItems]="actionItems"></app-actions>

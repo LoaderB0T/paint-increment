@@ -1,0 +1,13 @@
+:host {
+  height: 100%;
+}
+
+#download-main-container {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  justify-content: center;
+  max-height: 90vh;
+}

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { DownloadComponent } from './download/download.component';
 import { HomeComponent } from './home/home.component';
 import { LobbyIterationsComponent } from './lobby-iterations/lobby-iterations.component';
 import { LobbyComponent } from './lobby/lobby.component';
@@ -31,6 +32,13 @@ const routes: Routes = [
       {
         path: 'iterations',
         component: LobbyIterationsComponent,
+        resolve: {
+          lobby: LobbyResolver
+        }
+      },
+      {
+        path: 'download',
+        component: DownloadComponent,
         resolve: {
           lobby: LobbyResolver
         }
