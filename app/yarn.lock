@@ -4896,6 +4896,13 @@ neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+ng-let@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/ng-let/-/ng-let-14.0.1.tgz#e7b1520d7128c0cc82d93ac90238555858b83cf5"
+  integrity sha512-le3p546NMel7B/Nf3wW3fPjBJR+V9rQTs0CkrVnjjh1mNKFv+pXxBbe9lwBGbdmAH1QJv1SURDi59ZIMuoM58Q==
+  dependencies:
+    tslib "^2.3.1"
+
 ng-openapi-gen@^0.21.2:
   version "0.21.2"
   resolved "https://registry.yarnpkg.com/ng-openapi-gen/-/ng-openapi-gen-0.21.2.tgz#6eda9f7e05cf99cddd7c4ab6ba043f95ca8220dd"

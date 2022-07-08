@@ -1,8 +1,9 @@
 <div id="download-main-container">
 
   <canvas #canvas
-          [width]="canvasSize"
-          [height]="canvasSize"
+          *ngLet="canvasSize$ | async as canvasSize"
+          [width]="canvasSize.width"
+          [height]="canvasSize.height"
           id="download-preview"></canvas>
 
   <div class="actions">
@@ -29,6 +30,10 @@
 
     <awd-checkbox [(ngModel)]="transparent"
                   labelText="Transparent"></awd-checkbox>
+    <awd-checkbox [(ngModel)]="renderYear"
+                  labelText="Render Year"></awd-checkbox>
+    <awd-checkbox [(ngModel)]="renderEdgePixels"
+                  labelText="Render Edge Pixels"></awd-checkbox>
   </div>
 </div>
 

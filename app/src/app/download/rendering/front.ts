@@ -4,19 +4,23 @@ import { calculateEdgePixels } from './front-edge-pixels';
 import { drawAllIterations } from './front-iterations';
 import { drawYearInBottomRightCorner } from './front-year';
 
-export const renderFront = async (lobby: LobbyResponse, color: string, transparent: boolean) => {
+export const renderFront = async (
+  lobby: LobbyResponse,
+  color: string,
+  transparent: boolean,
+  renderYear: boolean,
+  renderEdgePixels: boolean
+) => {
   const targetSize = 4000;
   const pixelLength = lobby.settings.width!;
   const textSpace = 6;
-  const pixelCountWidth = pixelLength + 2;
-  const pixelCountHeight = pixelLength + 2 + textSpace;
+  const pixelCountWidth = pixelLength + (renderEdgePixels ? 2 : 0);
+  const pixelCountHeight = pixelLength + (renderEdgePixels ? 2 : 0) + (renderYear ? textSpace : 0);
 
   const pixelSize = Math.floor(Math.min(targetSize / pixelCountWidth, targetSize / pixelCountHeight));
 
   const actualCanvasWidth = pixelSize * pixelCountWidth;
   const actualCanvasHeight = pixelSize * pixelCountHeight;
-
-  const edgePixels = calculateEdgePixels(pixelCountWidth, pixelCountHeight, textSpace);
 
   const canvas = document.createElement('canvas');
   canvas.width = actualCanvasWidth;
@@ -28,11 +32,16 @@ export const renderFront = async (lobby: LobbyResponse, color: string, transpare
     ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
   }
 
-  drawAllIterations(lobby, ctx, pixelSize);
+  drawAllIterations(lobby, ctx, pixelSize, renderEdgePixels);
 
-  drawEdgePixels(ctx, color, edgePixels, pixelSize);
+  if (renderEdgePixels) {
+    const edgePixels = calculateEdgePixels(pixelCountWidth, pixelCountHeight, textSpace, renderYear);
+    drawEdgePixels(ctx, color, edgePixels, pixelSize);
+  }
 
-  drawYearInBottomRightCorner(pixelCountWidth, pixelSize, pixelCountHeight, textSpace, ctx);
+  if (renderYear) {
+    drawYearInBottomRightCorner(pixelCountWidth, pixelSize, pixelCountHeight, textSpace, ctx);
+  }
 
   return canvas;
 };

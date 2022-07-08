@@ -16,6 +16,7 @@ import { ActionsComponent } from './actions/actions.component';
 import { ControlsModule } from './controls/controls.module';
 import { TutorialModule } from './tutorial-overlay/tutorial.module';
 import { DownloadComponent } from './download/download.component';
+import { NgLetModule } from 'ng-let';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { DownloadComponent } from './download/download.component';
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
+    NgLetModule,
     ApiModule.forRoot({ rootUrl: environment.apiUrl }),
     DialogsModule,
     ControlsModule,

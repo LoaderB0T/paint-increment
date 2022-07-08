@@ -6,6 +6,7 @@ import * as JsZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { renderBack } from './rendering/back';
 import { renderFront } from './rendering/front';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   templateUrl: './download.component.html',
@@ -15,7 +16,8 @@ export class DownloadComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _router: Router;
   public lobby: LobbyResponse;
-  public readonly canvasSize = 4000;
+  private readonly _canvasSize = new BehaviorSubject<{ width: number; height: number }>({ width: 0, height: 0 });
+  public readonly canvasSize$ = this._canvasSize.asObservable();
 
   @ViewChild('canvas')
   canvas!: ElementRef<HTMLCanvasElement>;
@@ -23,6 +25,8 @@ export class DownloadComponent implements AfterViewInit {
   private _transparent = false;
   private _columns = '5';
   private _showBack = false;
+  private _renderYear = true;
+  private _renderEdgePixels = true;
 
   public get color(): string {
     return this._color;
@@ -43,6 +47,20 @@ export class DownloadComponent implements AfterViewInit {
   }
   public set columns(value: number) {
     this._columns = `${value}`;
+    this.refreshPreview();
+  }
+  public get renderYear() {
+    return this._renderYear;
+  }
+  public set renderYear(value) {
+    this._renderYear = value;
+    this.refreshPreview();
+  }
+  public get renderEdgePixels() {
+    return this._renderEdgePixels;
+  }
+  public set renderEdgePixels(value) {
+    this._renderEdgePixels = value;
     this.refreshPreview();
   }
 
@@ -97,14 +115,20 @@ export class DownloadComponent implements AfterViewInit {
     if (this._showBack) {
       renderBack(this.lobby, this.color, this.transparent, this.columns).then(canvas => {
         const ctx = this.canvas.nativeElement.getContext('2d')!;
-        ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
-        ctx.drawImage(canvas, 0, 0);
+        this._canvasSize.next({ width: canvas.width, height: canvas.height });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setTimeout(() => {
+          ctx.drawImage(canvas, 0, 0);
+        });
       });
     } else {
-      renderFront(this.lobby, this.color, this.transparent).then(canvas => {
+      renderFront(this.lobby, this.color, this.transparent, this.renderYear, this.renderEdgePixels).then(canvas => {
         const ctx = this.canvas.nativeElement.getContext('2d')!;
-        ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
-        ctx.drawImage(canvas, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this._canvasSize.next({ width: canvas.width, height: canvas.height });
+        setTimeout(() => {
+          ctx.drawImage(canvas, 0, 0);
+        });
       });
     }
   }
@@ -123,7 +147,7 @@ export class DownloadComponent implements AfterViewInit {
         });
       });
     } else {
-      renderFront(this.lobby, color, transparent).then(canvas => {
+      renderFront(this.lobby, color, transparent, this.renderYear, this.renderEdgePixels).then(canvas => {
         canvas.toBlob(blob => {
           saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
         });

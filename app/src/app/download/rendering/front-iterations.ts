@@ -1,10 +1,16 @@
 import { LobbyResponse } from '../../.api/models/lobby-response';
 
-export const drawAllIterations = (lobby: LobbyResponse, ctx: CanvasRenderingContext2D, pixelSize: number) => {
+export const drawAllIterations = (
+  lobby: LobbyResponse,
+  ctx: CanvasRenderingContext2D,
+  pixelSize: number,
+  renderEdgePixels: boolean
+) => {
+  const skipPixelCount = renderEdgePixels ? 1 : 0;
   lobby.pixelIterations.forEach(iteration => {
     iteration.pixels.forEach(p => {
       ctx.fillStyle = 'black';
-      ctx.fillRect((p.x + 1) * pixelSize, (p.y + 1) * pixelSize, pixelSize, pixelSize);
+      ctx.fillRect((p.x + skipPixelCount) * pixelSize, (p.y + skipPixelCount) * pixelSize, pixelSize, pixelSize);
     });
   });
 };
