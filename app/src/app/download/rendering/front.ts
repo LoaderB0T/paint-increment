@@ -1,11 +1,10 @@
-import * as saveAs from 'file-saver';
 import { LobbyResponse } from '../../.api/models/lobby-response';
 import { drawEdgePixels } from './front-draw-edge-pixels';
 import { calculateEdgePixels } from './front-edge-pixels';
 import { drawAllIterations } from './front-iterations';
 import { drawYearInBottomRightCorner } from './front-year';
 
-export const downloadFront = (lobby: LobbyResponse, color: string, transparent: boolean) => {
+export const renderFront = async (lobby: LobbyResponse, color: string, transparent: boolean) => {
   const targetSize = 4000;
   const pixelLength = lobby.settings.width!;
   const textSpace = 6;
@@ -35,7 +34,5 @@ export const downloadFront = (lobby: LobbyResponse, color: string, transparent: 
 
   drawYearInBottomRightCorner(pixelCountWidth, pixelSize, pixelCountHeight, textSpace, ctx);
 
-  canvas.toBlob(blob => {
-    saveAs(blob!, `${lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
-  });
+  return canvas;
 };

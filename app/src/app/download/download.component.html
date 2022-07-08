@@ -1,6 +1,9 @@
 <div id="download-main-container">
 
-  <canvas id="download-preview"></canvas>
+  <canvas #canvas
+          [width]="canvasSize"
+          [height]="canvasSize"
+          id="download-preview"></canvas>
 
   <div class="actions">
     <awd-textbox placeholder="HEX code"
@@ -30,12 +33,6 @@
              [(ngModel)]="transparent">
       <label for="transparent">Transparent</label>
     </div>
-  </div>
-
-
-  <div class="actions">
-    <button class="button"
-            (click)="download()">Download</button>
   </div>
 </div>
 

@@ -1,11 +1,10 @@
-import * as saveAs from 'file-saver';
 import { LobbyResponse } from '../../.api/models/lobby-response';
 import { drawContributorsIterationInSquare } from './back-iterations';
 import { clearRowsForText } from './back-name-rows';
 import { drawContributorName } from './back-names';
 import { drawSquaresForIterations } from './back-squares';
 
-export const downloadBack = async (lobby: LobbyResponse, color: string, transparent: boolean, columns: number) => {
+export const renderBack = async (lobby: LobbyResponse, color: string, transparent: boolean, columns: number) => {
   const myFont = new FontFace('Pixeled', 'url(/assets/Pixeled.ttf)');
   const font = await myFont.load();
 
@@ -54,7 +53,5 @@ export const downloadBack = async (lobby: LobbyResponse, color: string, transpar
     drawContributorsIterationInSquare(lobby, i, ctx, color, startX, pixelSize, startY);
   }
 
-  canvas.toBlob(blob => {
-    saveAs(blob!, `${lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
-  });
+  return canvas;
 };

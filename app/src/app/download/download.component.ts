@@ -4,8 +4,8 @@ import { LobbyResponse } from '../.api/models/lobby-response';
 import { ActionItem } from '../models/action-item.model';
 import * as JsZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { downloadBack } from './rendering/back';
-import { downloadFront } from './rendering/front';
+import { renderBack } from './rendering/back';
+import { renderFront } from './rendering/front';
 
 @Component({
   templateUrl: './download.component.html',
@@ -15,13 +15,36 @@ export class DownloadComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _router: Router;
   public lobby: LobbyResponse;
+  public readonly canvasSize = 4000;
 
   @ViewChild('canvas')
   canvas!: ElementRef<HTMLCanvasElement>;
+  private _color = '#00ff00';
+  private _transparent = false;
+  private _columns = '5';
+  private _showBack = false;
 
-  public color = '#ff0042';
-  public transparent = false;
-  public columns = '5';
+  public get color(): string {
+    return this._color;
+  }
+  public set color(value: string) {
+    this._color = value;
+    this.refreshPreview();
+  }
+  public get transparent() {
+    return this._transparent;
+  }
+  public set transparent(value) {
+    this._transparent = value;
+    this.refreshPreview();
+  }
+  public get columns() {
+    return Number.parseInt(this._columns, 10);
+  }
+  public set columns(value: number) {
+    this._columns = `${value}`;
+    this.refreshPreview();
+  }
 
   public actionItems: ActionItem[] = [
     {
@@ -35,6 +58,18 @@ export class DownloadComponent implements AfterViewInit {
       icon: 'download',
       action: () => this.download(),
       visible: () => true
+    },
+    {
+      text: 'Switch to front',
+      icon: 'arrows-repeat',
+      action: () => this.flip(),
+      visible: () => this._showBack
+    },
+    {
+      text: 'Switch to back',
+      icon: 'arrows-repeat',
+      action: () => this.flip(),
+      visible: () => !this._showBack
     }
   ];
 
@@ -45,6 +80,11 @@ export class DownloadComponent implements AfterViewInit {
     this.lobby = this._activatedRoute.snapshot.data.lobby as LobbyResponse;
   }
 
+  private flip() {
+    this._showBack = !this._showBack;
+    this.refreshPreview();
+  }
+
   public get width(): number {
     return this.lobby.settings.width!;
   }
@@ -53,24 +93,42 @@ export class DownloadComponent implements AfterViewInit {
     return this.lobby.settings.height!;
   }
 
-  public ngAfterViewInit(): void {
-    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
-      const ctx = this.canvas.nativeElement.getContext('2d')!;
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, this.lobby.settings.width!, this.lobby.settings.height!);
-      for (let j = 0; j <= i; j++) {
-        ctx.fillStyle = j === i ? 'green' : 'black';
-        const iteration = this.lobby.pixelIterations[j];
-        iteration.pixels.forEach(p => {
-          ctx.fillRect(p.x, p.y, 1, 1);
-        });
-      }
+  private refreshPreview() {
+    if (this._showBack) {
+      renderBack(this.lobby, this.color, this.transparent, this.columns).then(canvas => {
+        const ctx = this.canvas.nativeElement.getContext('2d')!;
+        ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
+        ctx.drawImage(canvas, 0, 0);
+      });
+    } else {
+      renderFront(this.lobby, this.color, this.transparent).then(canvas => {
+        const ctx = this.canvas.nativeElement.getContext('2d')!;
+        ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
+        ctx.drawImage(canvas, 0, 0);
+      });
     }
   }
 
+  public ngAfterViewInit(): void {
+    this.refreshPreview();
+  }
+
   public download() {
-    downloadBack(this.lobby, this.color, this.transparent, Number.parseInt(this.columns));
-    downloadFront(this.lobby, this.color, this.transparent);
+    const color = this.color;
+    const transparent = this.transparent;
+    if (this._showBack) {
+      renderBack(this.lobby, color, transparent, this.columns).then(canvas => {
+        canvas.toBlob(blob => {
+          saveAs(blob!, `${this.lobby.name}_${color}_back${transparent ? '_T' : ''}.png`);
+        });
+      });
+    } else {
+      renderFront(this.lobby, color, transparent).then(canvas => {
+        canvas.toBlob(blob => {
+          saveAs(blob!, `${this.lobby.name}_${color}_front${transparent ? '_T' : ''}.png`);
+        });
+      });
+    }
   }
 
   private back() {
