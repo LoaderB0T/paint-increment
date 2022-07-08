@@ -1,0 +1,24 @@
+:host {
+  height: 100%;
+}
+
+#download-main-container {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  overflow-y: auto;
+  max-height: 90vh;
+  flex-direction: column;
+
+  canvas {
+    width: 900px;
+    margin: auto;
+    border: solid 1px black;
+  }
+
+  .actions {
+    display: flex;
+    gap: 20px;
+    padding: 4px;
+  }
+}

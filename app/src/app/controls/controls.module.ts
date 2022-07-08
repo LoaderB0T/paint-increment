@@ -4,10 +4,11 @@ import { TextboxComponent } from './textbox/textbox.component';
 import { FormsModule } from '@angular/forms';
 import { EqualWidthDirective } from './equal-width.directive';
 import { TooltipDirective } from './directives/tooltip';
+import { CheckboxComponent } from './checkbox/checkbox.component';
 
 @NgModule({
-  declarations: [TextboxComponent, EqualWidthDirective, TooltipDirective],
+  declarations: [TextboxComponent, CheckboxComponent, EqualWidthDirective, TooltipDirective],
   imports: [CommonModule, FormsModule],
-  exports: [TextboxComponent, TooltipDirective]
+  exports: [TextboxComponent, CheckboxComponent, TooltipDirective]
 })
 export class ControlsModule {}

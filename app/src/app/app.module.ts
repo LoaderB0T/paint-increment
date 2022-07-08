@@ -15,14 +15,25 @@ import { DialogsModule } from './dialogs/dialogs.module';
 import { ActionsComponent } from './actions/actions.component';
 import { ControlsModule } from './controls/controls.module';
 import { TutorialModule } from './tutorial-overlay/tutorial.module';
+import { DownloadComponent } from './download/download.component';
+import { NgLetModule } from 'ng-let';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NewLobbyComponent, LobbyComponent, LobbyIterationsComponent, ActionsComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    NewLobbyComponent,
+    LobbyComponent,
+    LobbyIterationsComponent,
+    ActionsComponent,
+    DownloadComponent
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
+    NgLetModule,
     ApiModule.forRoot({ rootUrl: environment.apiUrl }),
     DialogsModule,
     ControlsModule,

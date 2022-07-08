@@ -1,0 +1,40 @@
+<div id="download-main-container">
+
+  <canvas #canvas
+          *ngLet="canvasSize$ | async as canvasSize"
+          [width]="canvasSize.width"
+          [height]="canvasSize.height"
+          id="download-preview"></canvas>
+
+  <div class="actions">
+    <awd-textbox placeholder="HEX code"
+                 pattern="^#[0-9A-F]{6}$"
+                 [fontSize]="28"
+                 [(ngModel)]="color"
+                 required>
+    </awd-textbox>
+
+    <div id="color-preview"
+         [style.background-color]="color">
+
+    </div>
+
+    <awd-textbox placeholder="Column Count"
+                 [inputType]="'NUMERIC'"
+                 [fontSize]="28"
+                 [minValue]="1"
+                 [maxValue]="10"
+                 [(ngModel)]="columns"
+                 required>
+    </awd-textbox>
+
+    <awd-checkbox [(ngModel)]="transparent"
+                  labelText="Transparent"></awd-checkbox>
+    <awd-checkbox [(ngModel)]="renderYear"
+                  labelText="Render Year"></awd-checkbox>
+    <awd-checkbox [(ngModel)]="renderEdgePixels"
+                  labelText="Render Edge Pixels"></awd-checkbox>
+  </div>
+</div>
+
+<app-actions [actionItems]="actionItems"></app-actions>
