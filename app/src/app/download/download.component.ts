@@ -7,6 +7,7 @@ import { saveAs } from 'file-saver';
 import { renderBack } from './rendering/back';
 import { renderFront } from './rendering/front';
 import { BehaviorSubject } from 'rxjs';
+import { downloadIterations } from './rendering/all-iterations';
 
 @Component({
   templateUrl: './download.component.html',
@@ -147,7 +148,7 @@ export class DownloadComponent implements AfterViewInit {
     const color = this.color;
     const transparent = this.transparent;
     if (all) {
-      this.downloadIterations(color, transparent);
+      downloadIterations(this.lobby, color, transparent);
     } else {
       if (this._showBack) {
         renderBack(this.lobby, color, transparent, this.columns).then(canvas => {
@@ -167,40 +168,5 @@ export class DownloadComponent implements AfterViewInit {
 
   private back() {
     this._router.navigate(['lobby', this.lobby.id]);
-  }
-
-  private downloadIterations(color: string, transparent: boolean) {
-    const targetSize = 2048;
-    let size = 0;
-    while (size < targetSize) {
-      size += this.lobby.settings.width!;
-    }
-    const pixelSize = size / this.lobby.settings.width!;
-    const zip = new JsZip();
-    for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
-      const el = document.createElement('canvas');
-      el.width = size;
-      el.height = size;
-      const ctx = el.getContext('2d')!;
-
-      if (!transparent) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, size, size);
-      }
-
-      for (let j = 0; j <= i; j++) {
-        ctx.fillStyle = j === i ? color : 'black';
-        const iteration = this.lobby.pixelIterations[j];
-        iteration.pixels.forEach(p => {
-          ctx.fillRect(p.x * pixelSize, p.y * pixelSize, pixelSize, pixelSize);
-        });
-      }
-      const imgString = el.toDataURL('image/png');
-
-      zip.file(`${i}.png`, imgString.split('base64,')[1], { base64: true });
-    }
-    zip.generateAsync({ type: 'blob' }).then(content => {
-      saveAs(content, `${this.lobby.name}_${color}${transparent ? '_T' : ''}.zip`);
-    });
   }
 }
