@@ -5,7 +5,7 @@ import { ActionItem } from '../models/action-item.model';
 import * as JsZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { DialogService } from '../services/dialog.service';
-import { DownloadColorComponent } from '../dialogs/download-color/download-color.component';
+import { DownloadComponent } from '../dialogs/download/download.component';
 import { getPixelText } from './pixel-text';
 
 @Component({
@@ -85,7 +85,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
   }
 
   private download() {
-    this._dialogService.showComponentDialog(DownloadColorComponent).result.then(response => {
+    this._dialogService.showComponentDialog(DownloadComponent).result.then(response => {
       if (!response) {
         return;
       }

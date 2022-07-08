@@ -5,7 +5,7 @@ import { IncrementDetailsComponent } from './increment-details/increment-details
 import { FormsModule } from '@angular/forms';
 import { ControlsModule } from '../controls/controls.module';
 import { ConfirmedOrRejectedComponent } from './confirmed-or-rejected/confirmed-or-rejected.component';
-import { DownloadColorComponent } from './download-color/download-color.component';
+import { DownloadComponent } from './download/download.component';
 import { NoMobileComponent } from './no-mobile/no-mobile.component';
 import { TimeUpComponent } from './time-up/time-up.component';
 
@@ -14,7 +14,7 @@ import { TimeUpComponent } from './time-up/time-up.component';
     InviteCodeComponent,
     IncrementDetailsComponent,
     ConfirmedOrRejectedComponent,
-    DownloadColorComponent,
+    DownloadComponent,
     NoMobileComponent,
     TimeUpComponent
   ],

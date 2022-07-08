@@ -3,10 +3,10 @@ import { firstValueFrom, Subject } from 'rxjs';
 import { BaseDialog } from '../../models/base-dialog.model';
 
 @Component({
-  templateUrl: './download-color.component.html',
-  styleUrls: ['./download-color.component.scss']
+  templateUrl: './download.component.html',
+  styleUrls: ['./download.component.scss']
 })
-export class DownloadColorComponent extends BaseDialog {
+export class DownloadComponent extends BaseDialog {
   private readonly _result = new Subject<
     { color: string; back: boolean; front: boolean; transparent: boolean; columns: number } | undefined
   >();
