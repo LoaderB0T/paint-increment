@@ -1,0 +1,20 @@
+<div class="checkbox-root"
+     (click)="clicked($event)"
+     (keypress)="clicked($event)">
+  <input type="checkbox"
+         class="checkbox-{{ identifier }}"
+         name="{{ identifier }}"
+         id="{{ identifier }}"
+         tabindex="{{ inputTabIndex }}"
+         [(ngModel)]="checkedBoolValue" />
+  <label class="{{ identifier }}Lbl"
+         for="{{ identifier }}">
+    <span class="checkIconBg"
+          [style.background]="color">
+      <i class="fa-{{ iconName }} checkIcon fal"></i>
+    </span>
+    <span class="checkDescription">
+      {{ labelText }}
+    </span>
+  </label>
+</div>

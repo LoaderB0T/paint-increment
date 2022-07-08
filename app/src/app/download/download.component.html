@@ -27,12 +27,8 @@
                  required>
     </awd-textbox>
 
-    <div class="stacked">
-      <input type="checkbox"
-             name="transparent"
-             [(ngModel)]="transparent">
-      <label for="transparent">Transparent</label>
-    </div>
+    <awd-checkbox [(ngModel)]="transparent"
+                  labelText="Transparent"></awd-checkbox>
   </div>
 </div>
 
