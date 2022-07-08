@@ -14,7 +14,7 @@ export class DownloadComponent extends BaseDialog {
   public rejected = false;
   public color: string = '#FF0042';
   public transparent = false;
-  public columns = 5;
+  public columns: string = '5';
 
   constructor() {
     super();
@@ -33,7 +33,13 @@ export class DownloadComponent extends BaseDialog {
   }
 
   public submit(back: boolean = false, front: boolean = false) {
-    this._result.next({ color: this.color, back, front, transparent: this.transparent, columns: this.columns });
+    this._result.next({
+      color: this.color,
+      back,
+      front,
+      transparent: this.transparent,
+      columns: Number.parseInt(this.columns, 10)
+    });
     this._result.complete();
     this.close();
   }
