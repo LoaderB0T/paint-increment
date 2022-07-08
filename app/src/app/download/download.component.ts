@@ -2,7 +2,6 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ActionItem } from '../models/action-item.model';
-import * as JsZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { renderBack } from './rendering/back';
 import { renderFront } from './rendering/front';
@@ -111,11 +110,11 @@ export class DownloadComponent implements AfterViewInit {
   }
 
   public get width(): number {
-    return this.lobby.settings.width!;
+    return this.lobby.settings.width;
   }
 
   public get height(): number {
-    return this.lobby.settings.height!;
+    return this.lobby.settings.height;
   }
 
   private refreshPreview() {

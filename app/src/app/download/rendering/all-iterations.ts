@@ -6,9 +6,9 @@ export const downloadIterations = (lobby: LobbyResponse, color: string, transpar
   const targetSize = 2048;
   let size = 0;
   while (size < targetSize) {
-    size += lobby.settings.width!;
+    size += lobby.settings.width;
   }
-  const pixelSize = size / lobby.settings.width!;
+  const pixelSize = size / lobby.settings.width;
   const zip = new JSZip();
   for (let i = 0; i < lobby.pixelIterations.length; i++) {
     const el = document.createElement('canvas');

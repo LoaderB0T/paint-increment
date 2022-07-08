@@ -14,7 +14,7 @@ export const renderBack = async (lobby: LobbyResponse, color: string, transparen
   const rows = Math.ceil(lobby.pixelIterations.length / columns);
   const borderThickness = 12;
   const textSpace = 70;
-  const pixelLength = lobby.settings.width!;
+  const pixelLength = lobby.settings.width;
 
   const availableHeight = targetSize - 2 * rows * borderThickness - rows * textSpace;
   const availableWidth = targetSize - (columns + 1) * borderThickness;

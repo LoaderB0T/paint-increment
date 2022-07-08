@@ -39,18 +39,18 @@ export class LobbyIterationsComponent implements AfterViewInit {
   }
 
   public get width(): number {
-    return this.lobby.settings.width!;
+    return this.lobby.settings.width;
   }
 
   public get height(): number {
-    return this.lobby.settings.height!;
+    return this.lobby.settings.height;
   }
 
   public ngAfterViewInit(): void {
     for (let i = 0; i < this.lobby.pixelIterations.length; i++) {
       const ctx = this.canvas.get(i)!.nativeElement.getContext('2d')!;
       ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, this.lobby.settings.width!, this.lobby.settings.height!);
+      ctx.fillRect(0, 0, this.lobby.settings.width, this.lobby.settings.height);
       for (let j = 0; j <= i; j++) {
         ctx.fillStyle = j === i ? 'green' : 'black';
         const iteration = this.lobby.pixelIterations[j];

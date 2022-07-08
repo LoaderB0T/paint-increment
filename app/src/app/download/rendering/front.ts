@@ -12,7 +12,7 @@ export const renderFront = async (
   renderEdgePixels: boolean
 ) => {
   const targetSize = 4000;
-  const pixelLength = lobby.settings.width!;
+  const pixelLength = lobby.settings.width;
   const textSpace = 6;
   const pixelCountWidth = pixelLength + (renderEdgePixels ? 2 : 0);
   const pixelCountHeight = pixelLength + (renderEdgePixels ? 2 : 0) + (renderYear ? textSpace : 0);
