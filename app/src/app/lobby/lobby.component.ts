@@ -261,7 +261,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
             });
           }
           const timeLeft = data.timeLeft + 30;
-          this._timeUpComponent!.gracePeriodTimeLeft = timeLeft >= 0 ? timeLeft : 0;
+          this._timeUpComponent.gracePeriodTimeLeft = timeLeft >= 0 ? timeLeft : 0;
         }
       });
   }
