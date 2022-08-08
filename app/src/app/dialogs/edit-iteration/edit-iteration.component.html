@@ -1,0 +1,13 @@
+<div class="dialog-bg">
+  <div class="dialog-container"
+       *ngIf="iteration">
+    Edit iteration of {{iteration.name}}
+
+    <div class="actions">
+      <button class="button"
+              (click)="dismiss()">Cancel</button>
+      <button class="button"
+              (click)="dismiss()">Save</button>
+    </div>
+  </div>
+</div>
