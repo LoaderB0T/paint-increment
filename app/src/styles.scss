@@ -136,11 +136,16 @@ $tooltipBorder: $tooltipBorderSize white solid;
   .dialog-container {
     position: relative;
     width: max(50vw, 500px);
-    min-height: 150px;
     background-color: #ffffff;
     border-radius: 20px;
     box-shadow: $shadow;
     padding: 25px;
+    &::after {
+      // make space for actions
+      content: '';
+      height: 80px;
+      width: 1px;
+    }
     .close-button {
       display: flex;
       bottom: 20px;
