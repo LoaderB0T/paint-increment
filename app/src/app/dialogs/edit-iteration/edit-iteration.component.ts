@@ -9,10 +9,11 @@ import { BaseDialog } from '../../models/base-dialog.model';
   styleUrls: ['./edit-iteration.component.scss']
 })
 export class EditIterationComponent extends BaseDialog {
-  private readonly _result = new Subject<void>();
+  private readonly _result = new Subject<IterationModel | undefined>();
   public result = firstValueFrom(this._result);
   public lobby?: LobbyResponse;
   public iterationIndex?: number;
+  private _newIndex?: number;
 
   constructor() {
     super();
@@ -22,7 +23,7 @@ export class EditIterationComponent extends BaseDialog {
     if (!this.lobby) {
       throw new Error('Lobby not set');
     }
-    if (!this.iterationIndex) {
+    if (this.iterationIndex === undefined) {
       throw new Error('Iteration index not set');
     }
     const iteration = this.lobby.pixelIterations[this.iterationIndex];
@@ -32,8 +33,28 @@ export class EditIterationComponent extends BaseDialog {
     return iteration;
   }
 
+  public get newName(): string {
+    return this.iteration.name;
+  }
+  public set newName(value: string) {
+    this.iteration.name = value;
+  }
+  public get newIndex(): string {
+    this._newIndex ??= this.iterationIndex ?? -1;
+    return String(this._newIndex);
+  }
+  public set newIndex(value: string) {
+    this._newIndex = Number.parseInt(value, 10);
+  }
+
   public dismiss() {
-    this._result.next();
+    this._result.next(undefined);
+    this._result.complete();
+    this.close();
+  }
+
+  public save() {
+    this._result.next(this.iteration);
     this._result.complete();
     this.close();
   }
