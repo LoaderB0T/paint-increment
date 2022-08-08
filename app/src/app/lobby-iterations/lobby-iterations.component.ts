@@ -91,9 +91,15 @@ export class LobbyIterationsComponent implements AfterViewInit {
     if (index === -1) {
       throw new Error(`Iteration of ${iteration.name} not found`);
     }
-    this._dialogService.showComponentDialog<EditIterationComponent>(EditIterationComponent, c => {
-      c.lobby = this.lobby;
-      c.iterationIndex = index;
-    });
+    this._dialogService
+      .showComponentDialog<EditIterationComponent>(EditIterationComponent, c => {
+        c.lobby = this.lobby;
+        c.iterationIndex = index;
+      })
+      .result.then(newIteration => {
+        if (newIteration) {
+          // TODO: update iteration
+        }
+      });
   }
 }
