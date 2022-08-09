@@ -18,6 +18,9 @@ export class IterationEditGateway implements WsGateway {
   public addSocket(client: Socket): void {
     this._wsService.listen(client, 'deleteIteration').subscribe(async data => {
       const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      if (!lobby.isCreator) {
+        throw new Error('You are not the creator of this lobby');
+      }
       const iteration = lobby.pixelIterations.find(i => i.id === data.iterationId);
       if (!iteration) {
         throw new Error('Iteration not found');
@@ -27,6 +30,9 @@ export class IterationEditGateway implements WsGateway {
 
     this._wsService.listen(client, 'changeIterationName').subscribe(async data => {
       const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      if (!lobby.isCreator) {
+        throw new Error('You are not the creator of this lobby');
+      }
       const iteration = lobby.pixelIterations.find(i => i.id === data.iterationId);
       if (!iteration) {
         throw new Error('Iteration not found');
@@ -36,6 +42,9 @@ export class IterationEditGateway implements WsGateway {
 
     this._wsService.listen(client, 'changeIterationIndex').subscribe(async data => {
       const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      if (!lobby.isCreator) {
+        throw new Error('You are not the creator of this lobby');
+      }
       const iteration = lobby.pixelIterations.find(i => i.id === data.iterationId);
       if (!iteration) {
         throw new Error('Iteration not found');
