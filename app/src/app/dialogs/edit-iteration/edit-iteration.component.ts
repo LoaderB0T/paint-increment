@@ -9,7 +9,7 @@ import { BaseDialog } from '../../models/base-dialog.model';
   styleUrls: ['./edit-iteration.component.scss']
 })
 export class EditIterationComponent extends BaseDialog {
-  private readonly _result = new Subject<IterationModel | undefined>();
+  private readonly _result = new Subject<{ name: string; index: number; delete: boolean } | undefined>();
   public result = firstValueFrom(this._result);
   public lobby?: LobbyResponse;
   public iterationIndex?: number;
@@ -54,7 +54,7 @@ export class EditIterationComponent extends BaseDialog {
   }
 
   public save() {
-    this._result.next(this.iteration);
+    this._result.next({ name: this.iteration.name, index: this._newIndex ?? this.iterationIndex ?? -1, delete: false });
     this._result.complete();
     this.close();
   }

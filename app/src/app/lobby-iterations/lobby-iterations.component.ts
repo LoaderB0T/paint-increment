@@ -5,6 +5,7 @@ import { LobbyResponse } from '../.api/models/lobby-response';
 import { EditIterationComponent } from '../dialogs/edit-iteration/edit-iteration.component';
 import { ActionItem } from '../models/action-item.model';
 import { DialogService } from '../services/dialog.service';
+import { IterationEditService } from '../services/iteration-edit.service';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -14,6 +15,7 @@ export class LobbyIterationsComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _router: Router;
   private readonly _dialogService: DialogService;
+  private readonly _iterationEditService: IterationEditService;
   public lobby: LobbyResponse;
 
   @ViewChildren('canvas')
@@ -35,10 +37,16 @@ export class LobbyIterationsComponent implements AfterViewInit {
     }
   ];
 
-  constructor(activatedRoute: ActivatedRoute, router: Router, dialogService: DialogService) {
+  constructor(
+    activatedRoute: ActivatedRoute,
+    router: Router,
+    dialogService: DialogService,
+    iterationEditService: IterationEditService
+  ) {
     this._activatedRoute = activatedRoute;
     this._router = router;
     this._dialogService = dialogService;
+    this._iterationEditService = iterationEditService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby as LobbyResponse;
   }
@@ -98,7 +106,15 @@ export class LobbyIterationsComponent implements AfterViewInit {
       })
       .result.then(newIteration => {
         if (newIteration) {
-          // TODO: update iteration
+          if (newIteration.delete) {
+            this._iterationEditService.deleteIteration(this.lobby.id, index);
+          }
+          if (newIteration.name !== iteration.name) {
+            // update name
+          }
+          if (newIteration.index !== index) {
+            // update index
+          }
         }
       });
   }
