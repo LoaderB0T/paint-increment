@@ -12,8 +12,14 @@ export class IterationEditService {
     this._userInfoService = userInfoService;
   }
 
-  public deleteIteration(lobbyId: string, index: number) {
-    this._wsService.send('lookAtLobby', { lobbyId });
+  public deleteIteration(lobbyId: string, iterationId: string) {
+    this._wsService.send('deleteIteration', { lobbyId, iterationId });
+  }
+  public changeIterationName(lobbyId: string, iterationId: string, newName: string) {
+    this._wsService.send('changeIterationName', { lobbyId, iterationId, newName });
+  }
+  public changeIterationIndex(lobbyId: string, iterationId: string, newIndex: number) {
+    this._wsService.send('changeIterationIndex', { lobbyId, iterationId, newIndex });
   }
 
   public reservationTime() {

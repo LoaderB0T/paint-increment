@@ -102,18 +102,19 @@ export class LobbyIterationsComponent implements AfterViewInit {
     this._dialogService
       .showComponentDialog<EditIterationComponent>(EditIterationComponent, c => {
         c.lobby = this.lobby;
-        c.iterationIndex = index;
+        c.iterationId = iteration.id;
       })
       .result.then(newIteration => {
         if (newIteration) {
           if (newIteration.delete) {
-            this._iterationEditService.deleteIteration(this.lobby.id, index);
+            this._iterationEditService.deleteIteration(this.lobby.id, iteration.id);
+            return;
           }
           if (newIteration.name !== iteration.name) {
-            // update name
+            this._iterationEditService.changeIterationName(this.lobby.id, iteration.id, newIteration.name);
           }
           if (newIteration.index !== index) {
-            // update index
+            this._iterationEditService.changeIterationIndex(this.lobby.id, iteration.id, newIteration.index);
           }
         }
       });

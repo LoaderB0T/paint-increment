@@ -12,8 +12,9 @@ export class EditIterationComponent extends BaseDialog {
   private readonly _result = new Subject<{ name: string; index: number; delete: boolean } | undefined>();
   public result = firstValueFrom(this._result);
   public lobby?: LobbyResponse;
-  public iterationIndex?: number;
+  public iterationId?: string;
   private _newIndex?: number;
+  private _newName?: string;
 
   constructor() {
     super();
@@ -23,10 +24,10 @@ export class EditIterationComponent extends BaseDialog {
     if (!this.lobby) {
       throw new Error('Lobby not set');
     }
-    if (this.iterationIndex === undefined) {
+    if (this.iterationId === undefined) {
       throw new Error('Iteration index not set');
     }
-    const iteration = this.lobby.pixelIterations[this.iterationIndex];
+    const iteration = this.lobby.pixelIterations.find(i => i.id === this.iterationId);
     if (!iteration) {
       throw new Error('Iteration not found');
     }
@@ -34,14 +35,15 @@ export class EditIterationComponent extends BaseDialog {
   }
 
   public get newName(): string {
-    return this.iteration.name;
+    this._newName ??= this.iteration.name;
+    return this._newName;
   }
   public set newName(value: string) {
-    this.iteration.name = value;
+    this._newName = value;
   }
   public get newIndex(): string {
-    this._newIndex ??= this.iterationIndex ?? -1;
-    return String(this._newIndex);
+    this._newIndex ??= this.lobby?.pixelIterations.findIndex(i => i.id === this.iterationId);
+    return String(this._newIndex ?? -1);
   }
   public set newIndex(value: string) {
     this._newIndex = Number.parseInt(value, 10);
@@ -54,7 +56,13 @@ export class EditIterationComponent extends BaseDialog {
   }
 
   public save() {
-    this._result.next({ name: this.iteration.name, index: this._newIndex ?? this.iterationIndex ?? -1, delete: false });
+    this._result.next({ name: this.newName, index: this._newIndex ?? -1, delete: false });
+    this._result.complete();
+    this.close();
+  }
+
+  public remove() {
+    this._result.next({ name: '', index: -1, delete: true });
     this._result.complete();
     this.close();
   }

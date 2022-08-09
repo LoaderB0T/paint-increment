@@ -1,7 +1,7 @@
 <div class="dialog-bg">
   <div class="dialog-container"
        *ngIf="iteration">
-    Edit iteration {{iterationIndex ?? '?'}} of {{iteration.name}}
+    Edit iteration {{iteration.id}} of {{iteration.name}}
 
     <div class="side-by-side">
       <awd-textbox inputType="TEXT"
@@ -11,11 +11,15 @@
       </awd-textbox>
       <awd-textbox inputType="NUMERIC"
                    placeholder="New Index"
+                   [minValue]="0"
+                   [maxValue]="(lobby?.pixelIterations?.length ?? 1) - 1"
                    [(ngModel)]="newIndex"
                    [fontSize]="36">
       </awd-textbox>
     </div>
     <div class="actions">
+      <button class="button"
+              (click)="remove()">Delete</button>
       <button class="button"
               (click)="dismiss()">Cancel</button>
       <button class="button"

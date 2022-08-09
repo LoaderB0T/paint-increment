@@ -154,6 +154,7 @@ export class LobbyService {
         return {
           confirmed: i.confirmed,
           name: i.name,
+          id: i.id,
           pixels: i.pixels.map(ip => {
             return { x: ip[0], y: ip[1] };
           })
@@ -177,6 +178,7 @@ export class LobbyService {
   public async addIncrement(request: AddPixelsRequest) {
     const newIncrement: PaintIncrement = {
       name: request.name,
+      id: uuid(),
       email: request.email,
       pixels: request.pixels.map(p => [p.x, p.y]),
       confirmed: false,
@@ -359,5 +361,48 @@ export class LobbyService {
         }
       );
     }
+  }
+
+  public deleteIteration(lobbyId: string, incrementId: string) {
+    return this._dbService.lobbies.updateOne(
+      { id: lobbyId },
+      {
+        $pull: { increments: { id: incrementId } }
+      }
+    );
+  }
+
+  public changeIterationName(lobbyId: string, incrementId: string, name: string) {
+    return this._dbService.lobbies.updateOne(
+      { id: lobbyId, 'increments.id': incrementId },
+      {
+        $set: { 'increments.$.name': name }
+      }
+    );
+  }
+
+  public async changeIterationIndex(lobbyId: string, incrementId: string, index: number) {
+    const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
+    if (!lobby) {
+      throw new Error(`Cannot find lobby with id ${lobbyId}`);
+    }
+    const increment = lobby.increments.find(x => x.id === incrementId);
+    if (!increment) {
+      throw new Error(`Cannot find increment with id ${incrementId}`);
+    }
+    // pull the increment from the array
+    this._dbService.lobbies.updateOne(
+      { id: lobbyId },
+      {
+        $pull: { increments: { id: incrementId } }
+      }
+    );
+    // push the increment to the new index
+    this._dbService.lobbies.updateOne(
+      { id: lobbyId },
+      {
+        $push: { increments: { $each: [increment], $position: index } }
+      }
+    );
   }
 }
