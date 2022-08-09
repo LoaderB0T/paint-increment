@@ -7,6 +7,7 @@ import { ControlsModule } from '../controls/controls.module';
 import { ConfirmedOrRejectedComponent } from './confirmed-or-rejected/confirmed-or-rejected.component';
 import { NoMobileComponent } from './no-mobile/no-mobile.component';
 import { TimeUpComponent } from './time-up/time-up.component';
+import { EditIterationComponent } from './edit-iteration/edit-iteration.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { TimeUpComponent } from './time-up/time-up.component';
     IncrementDetailsComponent,
     ConfirmedOrRejectedComponent,
     NoMobileComponent,
-    TimeUpComponent
+    TimeUpComponent,
+    EditIterationComponent
   ],
   imports: [CommonModule, FormsModule, ControlsModule]
 })

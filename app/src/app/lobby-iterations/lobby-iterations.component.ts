@@ -1,7 +1,11 @@
 import { AfterViewInit, Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { IterationModel } from '../.api/models/iteration-model';
 import { LobbyResponse } from '../.api/models/lobby-response';
+import { EditIterationComponent } from '../dialogs/edit-iteration/edit-iteration.component';
 import { ActionItem } from '../models/action-item.model';
+import { DialogService } from '../services/dialog.service';
+import { IterationEditService } from '../services/iteration-edit.service';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -10,6 +14,8 @@ import { ActionItem } from '../models/action-item.model';
 export class LobbyIterationsComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _router: Router;
+  private readonly _dialogService: DialogService;
+  private readonly _iterationEditService: IterationEditService;
   public lobby: LobbyResponse;
 
   @ViewChildren('canvas')
@@ -31,9 +37,16 @@ export class LobbyIterationsComponent implements AfterViewInit {
     }
   ];
 
-  constructor(activatedRoute: ActivatedRoute, router: Router) {
+  constructor(
+    activatedRoute: ActivatedRoute,
+    router: Router,
+    dialogService: DialogService,
+    iterationEditService: IterationEditService
+  ) {
     this._activatedRoute = activatedRoute;
     this._router = router;
+    this._dialogService = dialogService;
+    this._iterationEditService = iterationEditService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby as LobbyResponse;
   }
@@ -79,5 +92,31 @@ export class LobbyIterationsComponent implements AfterViewInit {
 
   private download() {
     this._router.navigate(['lobby', this.lobby.id, 'download']);
+  }
+
+  public editIteration(iteration: IterationModel) {
+    const index = this.lobby.pixelIterations.indexOf(iteration);
+    if (index === -1) {
+      throw new Error(`Iteration of ${iteration.name} not found`);
+    }
+    this._dialogService
+      .showComponentDialog<EditIterationComponent>(EditIterationComponent, c => {
+        c.lobby = this.lobby;
+        c.iterationId = iteration.id;
+      })
+      .result.then(newIteration => {
+        if (newIteration) {
+          if (newIteration.delete) {
+            this._iterationEditService.deleteIteration(this.lobby.id, iteration.id);
+            return;
+          }
+          if (newIteration.name !== iteration.name) {
+            this._iterationEditService.changeIterationName(this.lobby.id, iteration.id, newIteration.name);
+          }
+          if (newIteration.index !== index) {
+            this._iterationEditService.changeIterationIndex(this.lobby.id, iteration.id, newIteration.index);
+          }
+        }
+      });
   }
 }

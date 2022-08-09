@@ -7,7 +7,12 @@
             [width]="width"
             [height]="height">
     </canvas>
-    <span>{{iteration.name}}</span>
+    <div class="footer">
+      <span>{{iteration.name}}</span>
+      <i aria-hidden="true"
+         (click)="editIteration(iteration)"
+         class="edit-icon fal fa-pencil"></i>
+    </div>
   </div>
 </div>
 
