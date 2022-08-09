@@ -10,6 +10,7 @@
     <div class="footer">
       <span>{{iteration.name}}</span>
       <i aria-hidden="true"
+         *ngIf="lobby.isCreator"
          (click)="editIteration(iteration)"
          class="edit-icon fal fa-pencil"></i>
     </div>
