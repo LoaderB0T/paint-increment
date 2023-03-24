@@ -20,7 +20,7 @@ specifiers:
   '@awdware/eslint-config-base': ^1.1.0
   '@awdware/prettier-config': ^0.0.2
   '@ngneat/until-destroy': ^9.2.3
-  '@types/css-font-loading-module': ^0.0.8
+  '@types/css-font-loading-module': 0.0.7
   '@types/file-saver': ^2.0.5
   '@types/node': ^18.15.7
   '@types/uuid': ^9.0.1
@@ -71,7 +71,7 @@ devDependencies:
   '@awdware/eslint-config-angular': 1.0.1_vqdfhms4ixfw7zeyoynzanvcy4
   '@awdware/eslint-config-base': 1.1.0_qwwmkapuahnydehyweh7uqmdhi
   '@awdware/prettier-config': 0.0.2_prettier@2.8.7
-  '@types/css-font-loading-module': 0.0.8
+  '@types/css-font-loading-module': 0.0.7
   '@types/file-saver': 2.0.5
   '@types/node': 18.15.7
   '@types/uuid': 9.0.1
@@ -2285,8 +2285,8 @@ packages:
       '@types/node': 18.15.7
     dev: true
 
-  /@types/css-font-loading-module/0.0.8:
-    resolution: {integrity: sha512-PdJeLlCJj/ShOA+c0dXdZ/e1P0Cdjhip+dRBtPaigOqwKd0DiFx3NeO6T2E7AQ5JszSR3dub3YkQjc2hcQyxSw==}
+  /@types/css-font-loading-module/0.0.7:
+    resolution: {integrity: sha512-nl09VhutdjINdWyXxHWN/w9zlNCfr60JUqJbd24YXUuCwgeL0TpFSdElCwb6cxfB6ybE19Gjj4g0jsgkXxKv1Q==}
     dev: true
 
   /@types/eslint-scope/3.7.4:

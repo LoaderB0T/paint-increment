@@ -1,24 +1,12 @@
 version: "3.3"
 
 services:
-  paint_app:
-    container_name: "paint_app"
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: app/Dockerfile
-
-  paint_api:
-    container_name: "paint_api"
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: api/Dockerfile
-
   mongodb:
     container_name: "mongodb"
     restart: unless-stopped
     image: mongo:6.0.1
+    ports:
+      - "27017:27017"
     volumes:
       - mongodb-data:/data/db
 
