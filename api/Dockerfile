@@ -4,23 +4,25 @@ ARG skipBuild=false
 
 FROM node:16
 
-ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
+# ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 WORKDIR /app
 
+RUN npm i -g pnpm
+
 COPY ./api/package.json .
-COPY ./api/yarn.lock .
+COPY ./api/pnpm-lock.yaml .
 RUN node -v
 
-RUN yarn install
+RUN pnpm i
 
 COPY ./api .
 COPY ./app/src/app/models/ws-event-definitions.model.ts ./src/models
 
-RUN yarn build
+RUN pnpm run build
 
 EXPOSE 80
 
 ENV PORT 80
 
-CMD yarn start:prod
+CMD pnpm run start:prod

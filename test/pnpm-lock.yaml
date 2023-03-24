@@ -1,38 +1,28 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@awdware/eslint-config-angular': ^1.0.1
   '@awdware/eslint-config-base': ^1.0.0
   '@awdware/prettier-config': ^0.0.2
   '@types/node': ^16.0.0
   '@typescript-eslint/eslint-plugin': ^5.17.0
   '@typescript-eslint/parser': ^5.17.0
   eslint: ^8.12.0
+  playwright: ^1.32.0
+  prettier: ^2.8.7
   typescript: ~4.7.3
 
 devDependencies:
-  '@awdware/eslint-config-angular': 1.0.1_xydqqwvrhwvldfawbefyj7iz2q
   '@awdware/eslint-config-base': 1.1.0_qwwmkapuahnydehyweh7uqmdhi
-  '@awdware/prettier-config': 0.0.2
+  '@awdware/prettier-config': 0.0.2_prettier@2.8.7
   '@types/node': 16.18.19
   '@typescript-eslint/eslint-plugin': 5.56.0_tdlfzgcpl3o7c3erxtokdxrd2q
   '@typescript-eslint/parser': 5.56.0_eky3x5i7y7l4yby5jbcncpkdgu
   eslint: 8.36.0
+  playwright: 1.32.0
+  prettier: 2.8.7
   typescript: 4.7.4
 
 packages:
-
-  /@awdware/eslint-config-angular/1.0.1_xydqqwvrhwvldfawbefyj7iz2q:
-    resolution: {integrity: sha512-IA/34uKbkielI72tu+i6hHSmfk31Genw7Lp1iXdfF7I7geHw2pG5MEi0sqxYXxpBPoDfllmGbdRwjCErDMdxpg==}
-    peerDependencies:
-      '@angular-eslint/builder': '>= 12.2.0'
-      '@angular-eslint/eslint-plugin': '>= 12.2.0'
-      '@angular-eslint/eslint-plugin-template': '>= 12.2.0'
-      '@angular-eslint/template-parser': '>= 12.2.0'
-      '@awdware/eslint-config-base': '>= 1'
-    dependencies:
-      '@awdware/eslint-config-base': 1.1.0_qwwmkapuahnydehyweh7uqmdhi
-    dev: true
 
   /@awdware/eslint-config-base/1.1.0_qwwmkapuahnydehyweh7uqmdhi:
     resolution: {integrity: sha512-01D5T535aaykDKQ2HjcJAry6xJQHn7jtuAkUqh3G/jRzVT1Z4Xglxkc/29I+AlauRqqVzIwOD9cJ9ho2R7DAMw==}
@@ -46,10 +36,12 @@ packages:
       eslint: 8.36.0
     dev: true
 
-  /@awdware/prettier-config/0.0.2:
+  /@awdware/prettier-config/0.0.2_prettier@2.8.7:
     resolution: {integrity: sha512-VK6SiTmFgiN27sMCOQesu70LgjBCW79FnIQrDzOF+8iZ6p6E/cJs7RPicUpSw+YnzBeRQvHIeC4pBJ//iYKnlA==}
     peerDependencies:
       prettier: '>= 2'
+    dependencies:
+      prettier: 2.8.7
     dev: true
 
   /@eslint-community/eslint-utils/4.4.0_eslint@8.36.0:
@@ -829,9 +821,30 @@ packages:
     engines: {node: '>=8.6'}
     dev: true
 
+  /playwright-core/1.32.0:
+    resolution: {integrity: sha512-Z9Ij17X5Z3bjpp6XKujGBp9Gv4eViESac9aDmwgQFUEJBW0K80T21m/Z+XJQlu4cNsvPygw33b6V1Va6Bda5zQ==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
+
+  /playwright/1.32.0:
+    resolution: {integrity: sha512-zQVzxTGoC/ak2Zu0l3CeBGQ6z5oOka5ecUOk+5QbmAerih6CaVsjY9BjjhiN+UOImd3xLiNeCcmLEWcXlz1Dlg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      playwright-core: 1.32.0
+    dev: true
+
   /prelude-ls/1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+    dev: true
+
+  /prettier/2.8.7:
+    resolution: {integrity: sha512-yPngTo3aXUUmyuTjeTUT75txrf+aMh9FiD7q9ZE/i6r0bPb22g4FsE6Y338PQX1bmfy08i9QQCB7/rcUAVntfw==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /punycode/2.3.0:

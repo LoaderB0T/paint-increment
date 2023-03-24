@@ -4,19 +4,21 @@ ARG skipBuild=false
 
 FROM node:16.14.2-alpine3.15 AS builder
 
-ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
+# ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
 WORKDIR /app
 
+RUN npm i -g pnpm
+
 COPY ./app/package.json .
-COPY ./app/yarn.lock .
-RUN yarn install
+COPY ./app/pnpm-lock.yaml .
+RUN pnpm i
 
 COPY ./app .
 COPY ./api/swagger.json .
 
-RUN yarn codegen-docker
-RUN yarn build
+RUN pnpm run codegen-docker
+RUN pnpm run build
 
 # stage 2
 
