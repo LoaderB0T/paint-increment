@@ -44,11 +44,11 @@
     "@nestjs/swagger": "^6.2.1",
     "canvas": "^2.11.0",
     "mongodb": "^5.1.0",
+    "nanoid": "^4.0.1",
     "nodemailer": "^6.9.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
-    "socket.io": "^4.6.1",
-    "uuid": "^9.0.0"
+    "socket.io": "^4.6.1"
   },
   "devDependencies": {
     "@awdware/eslint-config-base": "^1.1.0",
@@ -63,7 +63,6 @@
     "@types/node": "^18.15.7",
     "@types/nodemailer": "^6.4.7",
     "@types/supertest": "^2.0.12",
-    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "cpy-cli": "^4.2.0",

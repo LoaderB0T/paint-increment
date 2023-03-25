@@ -1,5 +1,6 @@
 import * as saveAs from 'file-saver';
 import * as JSZip from 'jszip';
+import { safeLobbyName } from 'src/app/util/safe-lobby-name';
 import { LobbyResponse } from '../../.api/models/lobby-response';
 
 export const downloadIterations = (lobby: LobbyResponse, color: string, transparent: boolean) => {
@@ -33,6 +34,6 @@ export const downloadIterations = (lobby: LobbyResponse, color: string, transpar
     zip.file(`${i}.png`, imgString.split('base64,')[1], { base64: true });
   }
   zip.generateAsync({ type: 'blob' }).then(content => {
-    saveAs(content, `${lobby.name}_${color}${transparent ? '_T' : ''}.zip`);
+    saveAs(content, `${safeLobbyName(lobby.name)}_${color}${transparent ? '_T' : ''}.zip`);
   });
 };

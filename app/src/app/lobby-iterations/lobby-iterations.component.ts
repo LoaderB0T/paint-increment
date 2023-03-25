@@ -6,6 +6,7 @@ import { EditIterationComponent } from '../dialogs/edit-iteration/edit-iteration
 import { ActionItem } from '../models/action-item.model';
 import { DialogService } from '../services/dialog.service';
 import { IterationEditService } from '../services/iteration-edit.service';
+import { safeLobbyName } from '../util/safe-lobby-name';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -87,11 +88,11 @@ export class LobbyIterationsComponent implements AfterViewInit {
   }
 
   private back() {
-    this._router.navigate(['lobby', this.lobby.id]);
+    this._router.navigate(['lobby', safeLobbyName(this.lobby.name), this.lobby.id]);
   }
 
   private download() {
-    this._router.navigate(['lobby', this.lobby.id, 'download']);
+    this._router.navigate(['lobby', safeLobbyName(this.lobby.name), this.lobby.id, 'download']);
   }
 
   public editIteration(iteration: IterationModel) {

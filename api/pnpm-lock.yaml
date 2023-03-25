@@ -17,7 +17,6 @@ specifiers:
   '@types/node': ^18.15.7
   '@types/nodemailer': ^6.4.7
   '@types/supertest': ^2.0.12
-  '@types/uuid': ^9.0.1
   '@typescript-eslint/eslint-plugin': ^5.56.0
   '@typescript-eslint/parser': ^5.56.0
   canvas: ^2.11.0
@@ -30,6 +29,7 @@ specifiers:
   jest: ^29.5.0
   migrate-mongo: ^9.0.0
   mongodb: ^5.1.0
+  nanoid: ^4.0.1
   nodemailer: ^6.9.1
   prettier: ^2.8.7
   reflect-metadata: ^0.1.13
@@ -42,7 +42,6 @@ specifiers:
   ts-node: ^10.9.1
   tsconfig-paths: ^4.1.2
   typescript: ^4.9.5
-  uuid: ^9.0.0
   webpack: ^5.76.3
 
 dependencies:
@@ -52,11 +51,11 @@ dependencies:
   '@nestjs/swagger': 6.2.1_bgmtsjzu2jyijhogwtog4e3a6e
   canvas: 2.11.0
   mongodb: 5.1.0
+  nanoid: 4.0.1
   nodemailer: 6.9.1
   reflect-metadata: 0.1.13
   rxjs: 7.8.0
   socket.io: 4.6.1
-  uuid: 9.0.0
 
 devDependencies:
   '@awdware/eslint-config-base': 1.1.0_qwwmkapuahnydehyweh7uqmdhi
@@ -71,7 +70,6 @@ devDependencies:
   '@types/node': 18.15.7
   '@types/nodemailer': 6.4.7
   '@types/supertest': 2.0.12
-  '@types/uuid': 9.0.1
   '@typescript-eslint/eslint-plugin': 5.56.0_iskin7c6dxqunwflhstekcjqmq
   '@typescript-eslint/parser': 5.56.0_vgl77cfdswitgr47lm5swmv43m
   cpy-cli: 4.2.0
@@ -2213,10 +2211,6 @@ packages:
     resolution: {integrity: sha512-X3HPWTwXRerBZS7Mo1k6vMVR1Z6zmJcDVn5O/31whe0tnjE4te6ZJSJGq1RiqHPjzPdMTfjCFogDJmwng9xHaQ==}
     dependencies:
       '@types/superagent': 4.1.16
-    dev: true
-
-  /@types/uuid/9.0.1:
-    resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
     dev: true
 
   /@types/webidl-conversions/7.0.0:
@@ -5128,6 +5122,12 @@ packages:
     resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
     dev: false
 
+  /nanoid/4.0.1:
+    resolution: {integrity: sha512-udKGtCCUafD3nQtJg9wBhRP3KMbPglUsgV5JVsXhvyBs/oefqb4sqMEhKBBgqZncYowu58p1prsZQBYvAj/Gww==}
+    engines: {node: ^14 || ^16 || >=18}
+    hasBin: true
+    dev: false
+
   /natural-compare-lite/1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
     dev: true
@@ -6423,11 +6423,6 @@ packages:
     hasBin: true
     dev: true
     optional: true
-
-  /uuid/9.0.0:
-    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
-    hasBin: true
-    dev: false
 
   /v8-compile-cache-lib/3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}

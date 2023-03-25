@@ -16,6 +16,7 @@ import { ConfirmedOrRejectedComponent } from '../dialogs/confirmed-or-rejected/c
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { NoMobileComponent } from '../dialogs/no-mobile/no-mobile.component';
 import { TimeUpComponent } from '../dialogs/time-up/time-up.component';
+import { safeLobbyName } from '../util/safe-lobby-name';
 
 const canvasPatternColor = '#e3e3e3';
 
@@ -321,7 +322,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private viewIterations(): void {
-    this._router.navigate(['lobby', this.lobby.id, 'iterations']);
+    this._router.navigate(['lobby', safeLobbyName(this.lobby.name), this.lobby.id, 'iterations']);
   }
 
   private invalidateInviteCode() {
@@ -434,7 +435,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       })
       .then(code => {
         const origin = window.location.origin;
-        const codeToCopy = `${origin}/lobby/${this.lobby.id}?invite=${code.inviteCode}`;
+        const codeToCopy = `${origin}/lobby/${safeLobbyName(this.lobby.name)}/${this.lobby.id}?invite=${code.inviteCode}`;
         dialog.setCopyText(codeToCopy, copyCode);
       });
   }

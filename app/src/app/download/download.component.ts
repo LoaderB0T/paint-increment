@@ -7,6 +7,7 @@ import { renderBack } from './rendering/back';
 import { renderFront } from './rendering/front';
 import { BehaviorSubject } from 'rxjs';
 import { downloadIterations } from './rendering/all-iterations';
+import { safeLobbyName } from '../util/safe-lobby-name';
 
 @Component({
   templateUrl: './download.component.html',
@@ -166,6 +167,6 @@ export class DownloadComponent implements AfterViewInit {
   }
 
   private back() {
-    this._router.navigate(['lobby', this.lobby.id]);
+    this._router.navigate(['lobby', safeLobbyName(this.lobby.name), this.lobby.id]);
   }
 }
