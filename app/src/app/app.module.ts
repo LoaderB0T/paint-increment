@@ -26,7 +26,7 @@ import { NgLetModule } from 'ng-let';
     LobbyComponent,
     LobbyIterationsComponent,
     ActionsComponent,
-    DownloadComponent
+    DownloadComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,12 +34,14 @@ import { NgLetModule } from 'ng-let';
     AppRoutingModule,
     FormsModule,
     NgLetModule,
-    ApiModule.forRoot({ rootUrl: environment.apiUrl }),
+    ApiModule.forRoot({
+      rootUrl: process.env.APP_PORT ? `localhost:${process.env.APP_PORT}` : environment.apiUrl,
+    }),
     DialogsModule,
     ControlsModule,
-    TutorialModule
+    TutorialModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { PaintOnCanvasPage } from '../helper/paint-on-canvas-page';
-import { settings } from '../setup/application-url';
+import { settings } from './util/application-url';
 import clipboard from 'clipboardy';
 
 test.describe('Full Test', () => {
