@@ -2,7 +2,7 @@
 
 ARG skipBuild=false
 
-FROM node:16
+FROM node:18
 
 # ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
