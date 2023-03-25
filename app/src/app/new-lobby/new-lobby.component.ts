@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UntilDestroy } from '@ngneat/until-destroy';
+import { CreateLobbyRequest } from '../.api/models/create-lobby-request';
 
 import { ApiService } from '../.api/services/api.service';
 import { validityTexts } from '../controls/models/validity-texts.model';
@@ -50,19 +51,21 @@ export class NewLobbyComponent {
 
   public async createLobby() {
     this.clickedButton = true;
-    const lobby = await this._apiService.lobbyControllerPostLobby({
-      body: {
-        name: this.lobbyName,
-        ownerName: this.ownerName,
-        email: this.emailAddress,
-        uid: this._idService.id,
-        settings: {
-          maxPixels: this.maxPixels,
-          height: +this.size,
-          width: +this.size,
-          timeLimit: +this.timeLimit
-        }
+    const request: CreateLobbyRequest = {
+      name: this.lobbyName,
+      ownerName: this.ownerName,
+      email: this.emailAddress,
+      uid: this._idService.id,
+      settings: {
+        maxPixels: this.maxPixels,
+        height: +this.size,
+        width: +this.size,
+        timeLimit: +this.timeLimit
       }
+    };
+    console.log(request);
+    const lobby = await this._apiService.lobbyControllerPostLobby({
+      body: request
     });
     if (!lobby.isCreator) {
       throw new Error('Something went wrong, you should be the owner');

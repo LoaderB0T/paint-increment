@@ -39,6 +39,11 @@ export class MailService {
       attachments: img ? [{ path: img, filename: 'img.png', cid: '1' }] : undefined
     } as Mail.Options;
 
+    if (to.endsWith('example.com')) {
+      console.log('Not sending email to example.com');
+      return;
+    }
+
     this._mailTransporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error(error);

@@ -1,10 +1,11 @@
-<div id="lobby-actions"
-     class="action-button-container">
-  <button class="action-button"
-          *ngFor="let action of visibleActions"
-          [tooltip]="action.text"
-          (click)="action.action()">
-    <i aria-hidden="true"
-       class="action-button-icon far fa-{{action.icon}}"></i>
+<div id="lobby-actions" class="action-button-container">
+  <button
+    class="action-button"
+    *ngFor="let action of visibleActions"
+    [tooltip]="action.text"
+    [attr.data-testid]="action.text"
+    (click)="action.action()"
+  >
+    <i aria-hidden="true" class="action-button-icon far fa-{{ action.icon }}"></i>
   </button>
 </div>

@@ -3,25 +3,34 @@
     Copy and share this code with only one of your friends:
 
     <div id="copy-code-container">
-      <awd-textbox [class.new-code]="newCode"
-                   [class.copy-code]="isCopySuccess"
-                   [ngModel]="copyText"
-                   [readonly]="true"
-                   (click)="inputClicked()"
-                   #copyInput>
+      <awd-textbox
+        name="inviteCode"
+        [class.new-code]="newCode"
+        [class.copy-code]="isCopySuccess"
+        [ngModel]="copyText"
+        [readonly]="true"
+        (click)="inputClicked()"
+        #copyInput
+      >
       </awd-textbox>
       <div>
-        <button class="button "
-                (click)="copy()"
-                #copyButton>Copy</button>
-        <button class="button "
-                (click)="generateNewInviteCode()"
-                #newButton>New</button>
+        <button class="button" (click)="copy()" data-testid="copy-code-button" #copyButton>
+          Copy
+        </button>
+        <button
+          class="button"
+          (click)="generateNewInviteCode()"
+          data-testid="new-code-button"
+          #newButton
+        >
+          New
+        </button>
       </div>
     </div>
 
     This code is only usable once!
-    <button class="button close-button"
-            (click)="close()">Close</button>
+    <button class="button close-button" data-testid="close-code-button" (click)="close()">
+      Close
+    </button>
   </div>
 </div>

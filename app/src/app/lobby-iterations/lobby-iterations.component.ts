@@ -109,13 +109,17 @@ export class LobbyIterationsComponent implements AfterViewInit {
         if (newIteration) {
           if (newIteration.delete) {
             this._iterationEditService.deleteIteration(this.lobby.id, iteration.id);
+            this.lobby.pixelIterations.splice(index, 1);
             return;
           }
           if (newIteration.name !== iteration.name) {
             this._iterationEditService.changeIterationName(this.lobby.id, iteration.id, newIteration.name);
+            iteration.name = newIteration.name;
           }
           if (newIteration.index !== index) {
             this._iterationEditService.changeIterationIndex(this.lobby.id, iteration.id, newIteration.index);
+            this.lobby.pixelIterations.splice(index, 1);
+            this.lobby.pixelIterations.splice(newIteration.index, 0, iteration);
           }
         }
       });

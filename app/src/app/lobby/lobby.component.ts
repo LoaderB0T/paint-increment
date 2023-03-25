@@ -87,7 +87,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       visible: () => this.canPaint
     },
     {
-      text: 'Start Painting',
+      text: 'Start painting',
       icon: 'paint-brush-fine',
       action: () => this.startToPaint(),
       visible: () => this.canStartToPaint
@@ -105,7 +105,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       visible: () => this.isCreator && this.hasUnconfirmedIteration
     },
     {
-      text: 'Toggle Canvas Pattern',
+      text: 'Toggle canvas pattern',
       icon: 'game-board',
       action: () => this.toggleCanvasPattern(),
       visible: () => true

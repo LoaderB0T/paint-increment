@@ -53,7 +53,7 @@
   "devDependencies": {
     "@awdware/eslint-config-base": "^1.1.0",
     "@awdware/eslint-config-nodejs": "^1.0.0",
-    "@awdware/prettier-config": "^0.0.2",
+    "@awdware/prettier-config": "^1.0.0",
     "@nestjs/cli": "^9.3.0",
     "@nestjs/schematics": "^9.0.4",
     "@nestjs/testing": "^9.3.12",

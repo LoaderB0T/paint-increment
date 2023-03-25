@@ -4,4 +4,4 @@ import('nanoid').then(nanoidModule => {
   nanoid = nanoidModule.nanoid;
 });
 
-export const id = () => nanoid(12);
+export const id = () => nanoid(12).replace(/_/g, '-');
