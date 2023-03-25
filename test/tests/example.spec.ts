@@ -1,24 +1,15 @@
 import { test, expect } from '@playwright/test';
 
-import { TestContainer, StartedTestContainer, StoppedTestContainer, GenericContainer } from 'testcontainers';
+import { StartedTestContainer, GenericContainer } from 'testcontainers';
 
 test.describe('Redis', () => {
   let container: StartedTestContainer | undefined;
 
   test.beforeAll(async () => {
     test.setTimeout(15 * 60 * 1000);
-    const cntnr = await GenericContainer.fromDockerfile('..', 'app/Dockerfile')
+    container = await GenericContainer.fromDockerfile('..', 'app/Dockerfile')
       .build()
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
-    container = await cntnr
-      .withExposedPorts({
-        container: 80,
-        host: 4200
-      })
-      .start();
+      .then(c => c.withExposedPorts(80).start());
   });
 
   test.afterAll(async () => {
@@ -26,7 +17,8 @@ test.describe('Redis', () => {
   });
 
   test('works', async ({ page }) => {
-    await page.goto('http://localhost:4200/');
+    const url = `http://localhost:${container?.getMappedPort(80)}`;
+    await page.goto(url);
 
     // Expect a title "to contain" a substring.
     await expect(page).toHaveTitle(/Paint Increment/);

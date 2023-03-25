@@ -23,7 +23,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 RUN pnpm run codegen-docker
 RUN pnpm run build
 
-FROM base as deploy
+FROM nginx:alpine as deploy
 
 WORKDIR /app
 
