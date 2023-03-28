@@ -18,34 +18,28 @@ setup('Setup', async () => {
   }
 
   setup.setTimeout(5 * 60 * 1000);
-  mongoDBContainer = await GenericContainer.fromDockerfile(
-    '..',
-    'test/tests/setup/mongodb.Dockerfile'
-  )
-    .build()
-    .then(c => c.withExposedPorts(27017).start());
 
-  backendContainer = await GenericContainer.fromDockerfile('..', 'api/Dockerfile')
-    .build()
-    .then(c =>
-      c
-        .withEnvironment({
-          MONGODB_URI: 'mongodb://localhost:' + mongoDBContainer!.getFirstMappedPort(),
-        })
-        .withExposedPorts(80)
-        .start()
-    );
+  const [mongoDBContainerBuild, backendContainerBuild, frontendContainerBuild] = await Promise.all([
+    GenericContainer.fromDockerfile('..', 'test/tests/setup/mongodb.Dockerfile').build(),
+    GenericContainer.fromDockerfile('..', 'api/Dockerfile').build(),
+    GenericContainer.fromDockerfile('..', 'app/Dockerfile').build(),
+  ]);
 
-  frontendContainer = await GenericContainer.fromDockerfile('..', 'app/Dockerfile')
-    .build()
-    .then(c =>
-      c
-        .withEnvironment({
-          API_PORT: backendContainer!.getFirstMappedPort() + '',
-        })
-        .withExposedPorts(80)
-        .start()
-    );
+  mongoDBContainer = await mongoDBContainerBuild.withExposedPorts(27017).start();
+
+  backendContainer = await backendContainerBuild
+    .withEnvironment({
+      MONGODB_URI: 'mongodb://localhost:' + mongoDBContainer!.getFirstMappedPort(),
+    })
+    .withExposedPorts(80)
+    .start();
+
+  frontendContainer = await frontendContainerBuild
+    .withEnvironment({
+      API_PORT: backendContainer!.getFirstMappedPort() + '',
+    })
+    .withExposedPorts(80)
+    .start();
 
   settings.applicationUrl = `http://localhost:${frontendContainer?.getMappedPort(80)}`;
 });
