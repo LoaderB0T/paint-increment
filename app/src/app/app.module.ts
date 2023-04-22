@@ -35,7 +35,7 @@ import { NgLetModule } from 'ng-let';
     FormsModule,
     NgLetModule,
     ApiModule.forRoot({
-      rootUrl: process.env.APP_PORT ? `localhost:${process.env.APP_PORT}` : environment.apiUrl,
+      rootUrl: process?.env.APP_PORT ? `localhost:${process.env.APP_PORT}` : environment.apiUrl,
     }),
     DialogsModule,
     ControlsModule,
