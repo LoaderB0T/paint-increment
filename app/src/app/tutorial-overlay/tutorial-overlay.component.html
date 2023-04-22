@@ -1,61 +1,59 @@
 <div class="tutorial-backdrop">
   <div class="tutorial-overlay">
-    <div *ngIf="!showControls"
-         class="text-tutorial">
+    <div *ngIf="!showControls" class="text-tutorial">
       <h2>Help</h2>
       <div *ngIf="!hasInvite">
         <p>
-          You don't have a valid invite code. You can see this lobby and it's iterations but not contribute. To
-          contribute, you need to get an invite code from the lobby owner.
+          You don't have a valid invite code. You can see this lobby and it's iterations but not
+          contribute. To contribute, you need to get an invite code from the lobby owner.
         </p>
       </div>
       <div *ngIf="hasInvite">
-        <p>
-          You have a valid invite code.
-        </p>
+        <p>You have a valid invite code.</p>
         <div *ngIf="!lockedBySomeone && !lockedByMe && !pendingConfirm">
           <p>
-            Nobody else is drawing at the moment and the lobby is ready, so you can click on the "start paint <i
-               class="fa-regular fa-paint-brush-fine"
-               aria-hidden="true"></i>" button to start drawing.
+            Nobody else is drawing at the moment and the lobby is ready, so you can click on the
+            "start paint <i class="fa-regular fa-paint-brush-fine" aria-hidden="true"></i>" button
+            to start drawing.
           </p>
           <p>
-            Once you clicked on the button, you have 15 minutes to finish your drawing. You have to commit your drawing
-            by clicking on the "submit paint iteration <i class="fa-regular fa-layer-plus"
-               aria-hidden="true"></i>" button. Otherwise your
+            Once you clicked on the button, you have 15 minutes to finish your drawing. You have to
+            commit your drawing by clicking on the "submit paint iteration
+            <i class="fa-regular fa-layer-plus" aria-hidden="true"></i>" button. Otherwise your
             drawing will be discarded and you will have to start a new one.
           </p>
         </div>
       </div>
       <div *ngIf="lockedByMe">
         <p>
-          You already locked the lobby. You can see a timer next to the lobby name. This is the remaining time for you
-          to draw.
+          You already locked the lobby. You can see a timer next to the lobby name. This is the
+          remaining time for you to draw.
         </p>
         <p>
-          To draw, use the left mouse button, to erase, use the right mouse button. You can zoom in and out with the
-          mouse wheel and move the canvas by pressing down the mouse wheel and dragging it.
+          To draw, use the left mouse button, to erase, use the right mouse button. You can zoom in
+          and out with the mouse wheel and move the canvas by pressing down the mouse wheel and
+          dragging it.
         </p>
         <p>
-          To submit your drawing you can click on the "submit paint iteration <i class="fa-regular fa-layer-plus"
-             aria-hidden="true"></i>"
-          button.
+          To submit your drawing you can click on the "submit paint iteration
+          <i class="fa-regular fa-layer-plus" aria-hidden="true"></i>" button.
         </p>
         <p>
-          When the timer expires before you submit your drawing, your drawing will be discarded. In that case, you can
-          simply restart by clicking on the "start paint <i class="fa-regular fa-paint-brush-fine"
-             aria-hidden="true"></i>" button again.
+          When the timer expires before you submit your drawing, your drawing will be discarded. In
+          that case, you can simply restart by clicking on the "start paint
+          <i class="fa-regular fa-paint-brush-fine" aria-hidden="true"></i>" button again.
         </p>
       </div>
       <div *ngIf="lockedBySomeone">
         <p>
-          The lobby is currently locked by someone else. You have to wait until this person finishes drawing and the
-          lobby owner releases the lock.
+          The lobby is currently locked by someone else. You have to wait until this person finishes
+          drawing and the lobby owner releases the lock.
         </p>
       </div>
       <div *ngIf="pendingConfirm">
         <p>
-          The lobby owner has to confirm or reject the newest increment before you can start to draw.
+          The lobby owner has to confirm or reject the newest increment before you can start to
+          draw.
         </p>
       </div>
     </div>
@@ -63,29 +61,15 @@
     <div class="tutorial-content">
       <h2>Controls</h2>
       <div class="control-group">
-        <div>
-          <img src="assets/img/lmb.png"
-               alt="Left mouse button"> Draw
-        </div>
-        <div>
-          <img src="assets/img/rmb.png"
-               alt="Right mouse button"> Erase
-        </div>
-        <div>
-          <img src="assets/img/scroll.png"
-               alt="Scroll up or down"> Zoom
-        </div>
-        <div>
-          <img src="assets/img/mmb.png"
-               alt="Middle mouse button and drag"> Move
-        </div>
+        <div><img src="assets/img/lmb.png" alt="Left mouse button" /> Draw</div>
+        <div><img src="assets/img/rmb.png" alt="Right mouse button" /> Erase</div>
+        <div><img src="assets/img/scroll.png" alt="Scroll up or down" /> Zoom</div>
+        <div><img src="assets/img/mmb.png" alt="Middle mouse button and drag" /> Move</div>
       </div>
     </div>
 
-    <button class="button icon"
-            (click)="close()">
-      <i class="fa-solid fa-check"
-         aria-hidden="true"></i>
+    <button class="button icon" data-testid="close-tutorial-button" (click)="close()">
+      <i class="fa-solid fa-check" aria-hidden="true"></i>
     </button>
   </div>
 </div>

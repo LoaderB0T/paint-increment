@@ -8,5 +8,8 @@ export class ConfigService {
 
   constructor() {
     this.config = JSON.parse(readFileSync('config.json', 'utf8')) as Config;
+    if (process.env.MONGODB_URI) {
+      this.config.db.address = process.env.MONGODB_URI;
+    }
   }
 }

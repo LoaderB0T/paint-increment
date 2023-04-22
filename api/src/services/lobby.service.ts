@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { createCanvas } from 'canvas';
-import { v4 as uuid } from 'uuid';
+import { id } from '../util/id';
 
 import { AddPixelsRequest } from '../models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from '../models/dtos/confirm-increment-request.dto';
 import { CreateLobbyRequest } from '../models/dtos/create-lobby-request.dto';
-import { LobbyNameAvailableRequestDto } from '../models/dtos/lobby-name-available-request.dto';
 import { LobbyResponse } from '../models/dtos/lobby-response.dto';
 import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto';
 import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto';
@@ -20,6 +19,7 @@ import { WsState } from '../models/ws-state.model';
 import { ConfigService } from './config.service';
 import { DbService } from './db.service';
 import { MailService } from './mail.service';
+import { safeLobbyName } from '../util/safe-lobby-name';
 
 @Injectable()
 export class LobbyService {
@@ -46,25 +46,21 @@ export class LobbyService {
     }
 
     const lobby: PaintLobby = {
-      id: uuid(),
+      id: id(),
       name: request.name,
       increments: [],
       settings,
       creatorUids: [request.uid],
-      creatorSecret: uuid(),
+      creatorSecret: id(),
       creatorEmail: request.email,
       creatorName: request.ownerName,
       inviteCodes: []
     };
 
-    if (await this._dbService.lobbies.findOne({ name: request.name })) {
-      throw new Error('Lobby name already in use');
-    }
-
     await this._dbService.lobbies.insertOne(lobby);
 
     const url = this._configService.config.clientAddress;
-    const lobbyUrl = `${url}/lobby/${lobby.id}`;
+    const lobbyUrl = `${url}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}`;
     const creatorUrl = `${lobbyUrl}?creatorSecret=${lobby.creatorSecret}`;
 
     const html = `
@@ -94,10 +90,6 @@ export class LobbyService {
     return res;
   }
 
-  async lobbyNameAvailable(request: LobbyNameAvailableRequestDto): Promise<boolean> {
-    return !(await this._dbService.lobbies.findOne({ name: request.name }));
-  }
-
   async generateInvite(request: NewInviteCodeRequestDto): Promise<NewInviteCodeResponseDto> {
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
@@ -106,7 +98,7 @@ export class LobbyService {
     if (!lobby.creatorUids.includes(request.uid)) {
       throw new Error('Invalid creator token');
     }
-    const newCode = uuid();
+    const newCode = id();
 
     await this._dbService.lobbies.updateOne(
       { id: request.lobbyId },
@@ -178,11 +170,11 @@ export class LobbyService {
   public async addIncrement(request: AddPixelsRequest) {
     const newIncrement: PaintIncrement = {
       name: request.name,
-      id: uuid(),
+      id: id(),
       email: request.email,
       pixels: request.pixels.map(p => [p.x, p.y]),
       confirmed: false,
-      confirmCode: uuid()
+      confirmCode: id()
     };
 
     const lobby = await this.validateNewIncrement(request, newIncrement);
@@ -203,8 +195,8 @@ export class LobbyService {
 
     const imgData = this.getImageDataForNewIncrement(lobby, newIncrement);
     const url = this._configService.config.ownAddress;
-    const acceptUrl = `${url}/lobby/accept/${request.lobbyId}/${newIncrement.confirmCode}`;
-    const rejectUrl = `${url}/lobby/reject/${request.lobbyId}/${newIncrement.confirmCode}`;
+    const acceptUrl = `${url}/lobby/accept/${lobby.id}/${newIncrement.confirmCode}`;
+    const rejectUrl = `${url}/lobby/reject/${lobby.id}/${newIncrement.confirmCode}`;
 
     const html = `
     <h2>${request.name} has added a new iteration to ${lobby.name}</h2>
@@ -327,11 +319,11 @@ export class LobbyService {
   }
 
   async acceptInvite(lobbyId: string, code: string) {
-    this.acceptOrReject(lobbyId, code, true);
+    return this.acceptOrReject(lobbyId, code, true);
   }
 
   async rejectInvite(lobbyId: string, code: string) {
-    this.acceptOrReject(lobbyId, code, false);
+    return this.acceptOrReject(lobbyId, code, false);
   }
 
   private async acceptOrReject(lobbyId: string, code: string, accept: boolean) {
@@ -361,6 +353,7 @@ export class LobbyService {
         }
       );
     }
+    return lobby;
   }
 
   public deleteIteration(lobbyId: string, incrementId: string) {

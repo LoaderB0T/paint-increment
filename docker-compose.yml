@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  mongodb:
+    container_name: "mongodb"
+    restart: unless-stopped
+    image: mongo:6.0.1
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:
+    name: mongodb-data

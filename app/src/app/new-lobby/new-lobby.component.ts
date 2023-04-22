@@ -1,14 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BehaviorSubject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { UntilDestroy } from '@ngneat/until-destroy';
+import { CreateLobbyRequest } from '../.api/models/create-lobby-request';
 
 import { ApiService } from '../.api/services/api.service';
 import { validityTexts } from '../controls/models/validity-texts.model';
 import { IdService } from '../services/id.service';
 import { UserInfoService } from '../services/user-info.service';
+import { safeLobbyName } from '../util/safe-lobby-name';
 
 @UntilDestroy()
 @Component({
@@ -21,11 +21,9 @@ export class NewLobbyComponent {
   private readonly _idService: IdService;
   private readonly _userInfoService: UserInfoService;
 
-  private readonly _lobbyName = new BehaviorSubject('');
-  private readonly $lobbyName = this._lobbyName.asObservable().pipe(debounceTime(300), untilDestroyed(this));
-  private _checkingLobbyName = false;
   public lobbyNameAvailable: boolean = true;
   public maxPixels: number = 250;
+  public lobbyName = '';
   public size: number = 100;
   public timeLimit: number = 15;
   public emailAddress: string = '';
@@ -41,26 +39,10 @@ export class NewLobbyComponent {
     this._apiService = apiService;
     this._idService = idService;
     this._userInfoService = userInfoService;
-
-    this.$lobbyName.subscribe(name => {
-      this._apiService.lobbyControllerLobbyNameAvailable({ body: { name } }).then(available => {
-        this.lobbyNameAvailable = available;
-        this._checkingLobbyName = false;
-      });
-    });
-  }
-
-  public get lobbyName(): string {
-    return this._lobbyName.value;
-  }
-
-  public set lobbyName(value: string) {
-    this._checkingLobbyName = true;
-    this._lobbyName.next(value);
   }
 
   public get formDisabled(): boolean {
-    if (this.clickedButton || this._checkingLobbyName || !this.lobbyNameAvailable) {
+    if (this.clickedButton || !this.lobbyNameAvailable) {
       return true;
     }
 
@@ -69,24 +51,26 @@ export class NewLobbyComponent {
 
   public async createLobby() {
     this.clickedButton = true;
-    const lobby = await this._apiService.lobbyControllerPostLobby({
-      body: {
-        name: this.lobbyName,
-        ownerName: this.ownerName,
-        email: this.emailAddress,
-        uid: this._idService.id,
-        settings: {
-          maxPixels: this.maxPixels,
-          height: +this.size,
-          width: +this.size,
-          timeLimit: +this.timeLimit
-        }
+    const request: CreateLobbyRequest = {
+      name: this.lobbyName,
+      ownerName: this.ownerName,
+      email: this.emailAddress,
+      uid: this._idService.id,
+      settings: {
+        maxPixels: this.maxPixels,
+        height: +this.size,
+        width: +this.size,
+        timeLimit: +this.timeLimit
       }
+    };
+    console.log(request);
+    const lobby = await this._apiService.lobbyControllerPostLobby({
+      body: request
     });
     if (!lobby.isCreator) {
       throw new Error('Something went wrong, you should be the owner');
     }
     this._userInfoService.email = this.emailAddress;
-    this._router.navigate(['lobby', lobby.id]);
+    this._router.navigate(['lobby', safeLobbyName(lobby.name), lobby.id]);
   }
 }

@@ -13,12 +13,17 @@ export class DbService {
     const dbName = configService.config.db.database;
     const client = new MongoClient(dbAddress);
 
-    client.connect(err => {
-      assert.strictEqual(undefined, err);
-      console.log(`MongoDb: Connected successfully to server: ${dbAddress}`);
+    client
+      .connect()
+      .then(() => {
+        console.log(`MongoDb: Connected successfully to server: ${dbAddress}`);
 
-      this._db = client.db(dbName);
-    });
+        this._db = client.db(dbName);
+      })
+      .catch(err => {
+        console.error(`MongoDb: Error connecting to server: ${dbAddress}`);
+        assert.strictEqual(undefined, err);
+      });
   }
 
   public get lobbies() {

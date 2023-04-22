@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { v4 as uuid } from 'uuid';
+import { id } from '../src/util/id';
 
 module.exports = {
   async up(db: Db) {
@@ -7,7 +7,7 @@ module.exports = {
     for (const lobby of allLobbies) {
       for (const increment of lobby.increments) {
         if (!increment.id) {
-          increment.id = uuid();
+          increment.id = id();
         }
       }
       await db.collection('lobbies').updateOne({ _id: lobby._id }, { $set: lobby });

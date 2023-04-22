@@ -8,10 +8,10 @@ import { NewInviteCodeRequestDto } from './models/dtos/new-invite-code-request.d
 import { NewInviteCodeResponseDto } from './models/dtos/new-invite-code-response.dto';
 import { ValidateInviteCodeRequestDto } from './models/dtos/validate-invite-code-request.dto';
 import { ValidateInviteCodeResponseDto } from './models/dtos/validate-invite-code-response.dto';
-import { LobbyNameAvailableRequestDto } from './models/dtos/lobby-name-available-request.dto';
 import { ConfigService } from './services/config.service';
 import { ValidateCreatorSecretRequestDto } from './models/dtos/validate-creator-secret-request.dto';
 import { ValidateCreatorSecretResponseDto } from './models/dtos/validate-creator-secret-response.dto';
+import { safeLobbyName } from './util/safe-lobby-name';
 
 @Controller('lobby')
 export class LobbyController {
@@ -31,11 +31,6 @@ export class LobbyController {
   @Get(':lobbyId')
   async getLobby(@Param('lobbyId') lobbyId: string, @Query('uid') uid: string): Promise<LobbyResponse> {
     return this._lobbyService.getLobby(lobbyId, uid);
-  }
-
-  @Post('available')
-  async lobbyNameAvailable(@Body() request: LobbyNameAvailableRequestDto): Promise<boolean> {
-    return this._lobbyService.lobbyNameAvailable(request);
   }
 
   @Post('invite')
@@ -70,15 +65,15 @@ export class LobbyController {
 
   @Get('accept/:lobbyId/:code')
   async acceptInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
-    await this._lobbyService.acceptInvite(lobbyId, code);
-    const url = `${this._configService.config.clientAddress}/lobby/${lobbyId}?confirmed=true`;
+    const lobby = await this._lobbyService.acceptInvite(lobbyId, code);
+    const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}?confirmed=true`;
     return `<script>window.location.href = "${url}";</script>`;
   }
 
   @Get('reject/:lobbyId/:code')
   async rejectInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
-    await this._lobbyService.rejectInvite(lobbyId, code);
-    const url = `${this._configService.config.clientAddress}/lobby/${lobbyId}?rejected=true`;
+    const lobby = await this._lobbyService.rejectInvite(lobbyId, code);
+    const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}?rejected=true`;
     return `<script>window.location.href = "${url}";</script>`;
   }
 }

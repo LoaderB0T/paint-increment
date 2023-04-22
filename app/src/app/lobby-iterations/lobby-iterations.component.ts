@@ -6,6 +6,7 @@ import { EditIterationComponent } from '../dialogs/edit-iteration/edit-iteration
 import { ActionItem } from '../models/action-item.model';
 import { DialogService } from '../services/dialog.service';
 import { IterationEditService } from '../services/iteration-edit.service';
+import { safeLobbyName } from '../util/safe-lobby-name';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
@@ -87,11 +88,11 @@ export class LobbyIterationsComponent implements AfterViewInit {
   }
 
   private back() {
-    this._router.navigate(['lobby', this.lobby.id]);
+    this._router.navigate(['lobby', safeLobbyName(this.lobby.name), this.lobby.id]);
   }
 
   private download() {
-    this._router.navigate(['lobby', this.lobby.id, 'download']);
+    this._router.navigate(['lobby', safeLobbyName(this.lobby.name), this.lobby.id, 'download']);
   }
 
   public editIteration(iteration: IterationModel) {
@@ -108,13 +109,17 @@ export class LobbyIterationsComponent implements AfterViewInit {
         if (newIteration) {
           if (newIteration.delete) {
             this._iterationEditService.deleteIteration(this.lobby.id, iteration.id);
+            this.lobby.pixelIterations.splice(index, 1);
             return;
           }
           if (newIteration.name !== iteration.name) {
             this._iterationEditService.changeIterationName(this.lobby.id, iteration.id, newIteration.name);
+            iteration.name = newIteration.name;
           }
           if (newIteration.index !== index) {
             this._iterationEditService.changeIterationIndex(this.lobby.id, iteration.id, newIteration.index);
+            this.lobby.pixelIterations.splice(index, 1);
+            this.lobby.pixelIterations.splice(newIteration.index, 0, iteration);
           }
         }
       });

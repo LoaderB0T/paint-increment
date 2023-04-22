@@ -3,30 +3,40 @@
     Please enter your contact details to submit the increment:
 
     <div id="increment-details-container">
-
-      <awd-textbox inputType="TEXT"
-                   placeholder="Your Name"
-                   [(ngModel)]="name"
-                   required
-                   [fontSize]="36">
+      <awd-textbox
+        inputType="TEXT"
+        placeholder="Your Name"
+        [(ngModel)]="name"
+        required
+        name="yourName"
+        [fontSize]="36"
+      >
       </awd-textbox>
 
-      <awd-textbox inputType="EMAIL"
-                   *ngIf="!gotMail"
-                   placeholder="Your Email"
-                   [(ngModel)]="email"
-                   required
-                   [fontSize]="36">
+      <awd-textbox
+        inputType="EMAIL"
+        *ngIf="!gotMail"
+        placeholder="Your Email"
+        [(ngModel)]="email"
+        required
+        name="yourEmail"
+        [fontSize]="36"
+      >
       </awd-textbox>
     </div>
 
     <div class="actions">
-      <button class="button"
-              *ngIf="canDoLater"
-              (click)="cancel()">Later</button>
-      <button class="button"
-              [disabled]="!validInputs"
-              (click)="submit()">Submit</button>
+      <button class="button" data-testid="details-cancel" *ngIf="canDoLater" (click)="cancel()">
+        Later
+      </button>
+      <button
+        class="button"
+        data-testid="details-submit"
+        [disabled]="!validInputs"
+        (click)="submit()"
+      >
+        Submit
+      </button>
     </div>
   </div>
 </div>
