@@ -7,7 +7,7 @@ import {
   EventEmitter,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  SecurityContext
+  SecurityContext,
 } from '@angular/core';
 import { InputType } from '../models/input-type';
 import {
@@ -16,12 +16,16 @@ import {
   NG_VALIDATORS,
   Validator,
   AbstractControl,
-  ValidationErrors
+  ValidationErrors,
+  FormsModule,
 } from '@angular/forms';
 import { noop } from 'rxjs';
 import { ValidationDefinition } from '../models/validation-definition';
 import { ValidationErrorType } from '../models/validation-error-type';
 import { DomSanitizer } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { EqualWidthDirective } from '../equal-width.directive';
+import { TooltipDirective } from '../directives/tooltip';
 
 @Component({
   selector: 'awd-textbox',
@@ -29,9 +33,11 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./textbox.component.scss'],
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: TextboxComponent, multi: true },
-    { provide: NG_VALIDATORS, useExisting: TextboxComponent, multi: true }
+    { provide: NG_VALIDATORS, useExisting: TextboxComponent, multi: true },
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: true,
+  imports: [CommonModule, FormsModule, EqualWidthDirective, TooltipDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextboxComponent implements ControlValueAccessor, Validator {
   @Input() public validationDefinitions: ValidationDefinition[] = new Array<ValidationDefinition>();
@@ -125,7 +131,9 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
     if (this.shouldMatchValue) {
       if (this.value !== this.shouldMatchValue) {
         isInvalid = true;
-        const valDef = this.validationDefinitions.find(x => x.type === ValidationErrorType.EQUALITY_MISMATCH);
+        const valDef = this.validationDefinitions.find(
+          x => x.type === ValidationErrorType.EQUALITY_MISMATCH
+        );
         reason = valDef?.translationKey;
       }
     }
@@ -140,8 +148,8 @@ export class TextboxComponent implements ControlValueAccessor, Validator {
       return {
         error: {
           valid: false,
-          reason
-        }
+          reason,
+        },
       };
     } else {
       return null;

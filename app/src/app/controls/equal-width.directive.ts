@@ -1,7 +1,8 @@
 import { AfterViewInit, Directive, ElementRef, Input } from '@angular/core';
 
 @Directive({
-  selector: '[equalWidth]'
+  selector: '[equalWidth]',
+  standalone: true,
 })
 export class EqualWidthDirective implements AfterViewInit {
   @Input() equalWidth?: HTMLElement;

@@ -7,6 +7,7 @@ import { LobbyComponent } from './lobby/lobby.component';
 import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { lobbyResolver } from './resolver/lobby.resolver';
 import { isPaintingGuard } from './resolver/is-painting.guard';
+import { isLoggedInGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
   },
   {
     path: 'new',
+    canActivate: [isLoggedInGuard],
     component: NewLobbyComponent,
   },
   {
@@ -54,10 +56,6 @@ const routes: Routes = [
         },
       },
     ],
-  },
-  {
-    path: '**',
-    redirectTo: '',
   },
 ];
 

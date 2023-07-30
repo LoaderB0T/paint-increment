@@ -2,7 +2,8 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: '[tooltip]'
+  selector: '[tooltip]',
+  standalone: true,
 })
 export class TooltipDirective implements OnDestroy {
   public shown: boolean = false;
@@ -48,7 +49,8 @@ export class TooltipDirective implements OnDestroy {
 
     const tooltipPos = this._tooltip!.getBoundingClientRect();
 
-    const scrollPos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const scrollPos =
+      window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     let top = hostPos.top - tooltipPos.height - 10;
 

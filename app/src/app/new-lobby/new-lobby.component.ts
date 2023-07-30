@@ -13,7 +13,7 @@ import { safeLobbyName } from '../util/safe-lobby-name';
 @UntilDestroy()
 @Component({
   templateUrl: './new-lobby.component.html',
-  styleUrls: ['./new-lobby.component.scss']
+  styleUrls: ['./new-lobby.component.scss'],
 })
 export class NewLobbyComponent {
   private readonly _router: Router;
@@ -26,15 +26,18 @@ export class NewLobbyComponent {
   public lobbyName = '';
   public size: number = 100;
   public timeLimit: number = 15;
-  public emailAddress: string = '';
-  public ownerName: string = '';
   public clickedButton: boolean = false;
   public validityTexts = validityTexts;
 
   @ViewChild('newLobby', { static: true })
   private readonly _formElement!: NgForm;
 
-  constructor(router: Router, apiService: ApiService, idService: IdService, userInfoService: UserInfoService) {
+  constructor(
+    router: Router,
+    apiService: ApiService,
+    idService: IdService,
+    userInfoService: UserInfoService
+  ) {
     this._router = router;
     this._apiService = apiService;
     this._idService = idService;
@@ -53,24 +56,22 @@ export class NewLobbyComponent {
     this.clickedButton = true;
     const request: CreateLobbyRequest = {
       name: this.lobbyName,
-      ownerName: this.ownerName,
-      email: this.emailAddress,
       uid: this._idService.id,
       settings: {
         maxPixels: this.maxPixels,
         height: +this.size,
         width: +this.size,
-        timeLimit: +this.timeLimit
-      }
+        timeLimit: +this.timeLimit,
+      },
     };
     console.log(request);
     const lobby = await this._apiService.lobbyControllerPostLobby({
-      body: request
+      body: request,
     });
     if (!lobby.isCreator) {
       throw new Error('Something went wrong, you should be the owner');
     }
-    this._userInfoService.email = this.emailAddress;
+    // this._userInfoService.email = this.emailAddress;
     this._router.navigate(['lobby', safeLobbyName(lobby.name), lobby.id]);
   }
 }

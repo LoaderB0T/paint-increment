@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { LobbyService } from './services/lobby.service';
 import { AddPixelsRequest } from './models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from './models/dtos/confirm-increment-request.dto';
@@ -12,6 +12,9 @@ import { ConfigService } from './services/config.service';
 import { ValidateCreatorSecretRequestDto } from './models/dtos/validate-creator-secret-request.dto';
 import { ValidateCreatorSecretResponseDto } from './models/dtos/validate-creator-secret-response.dto';
 import { safeLobbyName } from './util/safe-lobby-name';
+import { AuthGuard } from './auth/auth.guard';
+import { SessionContainer } from 'supertokens-node/recipe/session';
+import { Session } from './auth/session.decorator';
 
 @Controller('lobby')
 export class LobbyController {
@@ -24,32 +27,48 @@ export class LobbyController {
   }
 
   @Get('test')
-  async test() {
+  @UseGuards(new AuthGuard())
+  async test(@Session() session: SessionContainer) {
+    console.log(await session.getAccessTokenPayload());
     return 'test';
   }
 
   @Get(':lobbyId')
-  async getLobby(@Param('lobbyId') lobbyId: string, @Query('uid') uid: string): Promise<LobbyResponse> {
+  async getLobby(
+    @Param('lobbyId') lobbyId: string,
+    @Query('uid') uid: string
+  ): Promise<LobbyResponse> {
     return this._lobbyService.getLobby(lobbyId, uid);
   }
 
   @Post('invite')
-  async generateInvite(@Body() request: NewInviteCodeRequestDto): Promise<NewInviteCodeResponseDto> {
+  async generateInvite(
+    @Body() request: NewInviteCodeRequestDto
+  ): Promise<NewInviteCodeResponseDto> {
     return this._lobbyService.generateInvite(request);
   }
 
   @Post('invite/validate')
-  async validateInvite(@Body() request: ValidateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
+  async validateInvite(
+    @Body() request: ValidateInviteCodeRequestDto
+  ): Promise<ValidateInviteCodeResponseDto> {
     return this._lobbyService.inviteValid(request);
   }
 
   @Post('creatorSecret/validate')
-  async validateCreatorSecret(@Body() request: ValidateCreatorSecretRequestDto): Promise<ValidateCreatorSecretResponseDto> {
+  async validateCreatorSecret(
+    @Body() request: ValidateCreatorSecretRequestDto
+  ): Promise<ValidateCreatorSecretResponseDto> {
     return this._lobbyService.creatorSecretValid(request);
   }
 
   @Post()
-  async postLobby(@Body() request: CreateLobbyRequest): Promise<LobbyResponse> {
+  @UseGuards(new AuthGuard())
+  async postLobby(
+    @Body() request: CreateLobbyRequest,
+    @Session() session: SessionContainer
+  ): Promise<LobbyResponse> {
+    console.log(await session.getSessionDataFromDatabase());
     return this._lobbyService.createLobby(request);
   }
 
@@ -66,14 +85,18 @@ export class LobbyController {
   @Get('accept/:lobbyId/:code')
   async acceptInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
     const lobby = await this._lobbyService.acceptInvite(lobbyId, code);
-    const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}?confirmed=true`;
+    const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${
+      lobby.id
+    }?confirmed=true`;
     return `<script>window.location.href = "${url}";</script>`;
   }
 
   @Get('reject/:lobbyId/:code')
   async rejectInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
     const lobby = await this._lobbyService.rejectInvite(lobbyId, code);
-    const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}?rejected=true`;
+    const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${
+      lobby.id
+    }?rejected=true`;
     return `<script>window.location.href = "${url}";</script>`;
   }
 }

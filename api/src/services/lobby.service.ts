@@ -38,7 +38,7 @@ export class LobbyService {
       height: request.settings.height ?? 128,
       width: request.settings.height ?? 128,
       maxPixels: request.settings.maxPixels,
-      timeLimit: request.settings.timeLimit ?? 15
+      timeLimit: request.settings.timeLimit ?? 15,
     };
 
     if (!settings.maxPixels || settings.maxPixels < 1) {
@@ -52,9 +52,9 @@ export class LobbyService {
       settings,
       creatorUids: [request.uid],
       creatorSecret: id(),
-      creatorEmail: request.email,
-      creatorName: request.ownerName,
-      inviteCodes: []
+      creatorEmail: 'request.email', // todo
+      creatorName: 'request.ownerName',
+      inviteCodes: [],
     };
 
     await this._dbService.lobbies.insertOne(lobby);
@@ -65,7 +65,9 @@ export class LobbyService {
 
     const html = `
     <h1>paint.awdware.de</h1>
-    <h2>Hi, ${request.ownerName}. You just successfully created the lobby '${lobby.name}'.</h2>
+    <h2>Hi, ${'request.ownerName' /** todo */}. You just successfully created the lobby '${
+      lobby.name
+    }'.</h2>
     
     <p>
       You can view the lobby with the following link:
@@ -85,7 +87,7 @@ export class LobbyService {
       name: lobby.name,
       pixelIterations: [],
       settings: lobby.settings,
-      isCreator: true
+      isCreator: true,
     };
     return res;
   }
@@ -103,7 +105,7 @@ export class LobbyService {
     await this._dbService.lobbies.updateOne(
       { id: request.lobbyId },
       {
-        $push: { inviteCodes: newCode }
+        $push: { inviteCodes: newCode },
       }
     );
 
@@ -119,7 +121,9 @@ export class LobbyService {
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
   }
 
-  async creatorSecretValid(request: ValidateCreatorSecretRequestDto): Promise<ValidateCreatorSecretResponseDto> {
+  async creatorSecretValid(
+    request: ValidateCreatorSecretRequestDto
+  ): Promise<ValidateCreatorSecretResponseDto> {
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
@@ -127,7 +131,10 @@ export class LobbyService {
     const isValid = lobby.creatorSecret === request.creatorSecret;
     if (isValid) {
       if (!lobby.creatorUids.includes(request.uid)) {
-        await this._dbService.lobbies.updateOne({ id: request.lobbyId }, { $push: { creatorUids: request.uid } });
+        await this._dbService.lobbies.updateOne(
+          { id: request.lobbyId },
+          { $push: { creatorUids: request.uid } }
+        );
       }
     }
 
@@ -149,11 +156,11 @@ export class LobbyService {
           id: i.id,
           pixels: i.pixels.map(ip => {
             return { x: ip[0], y: ip[1] };
-          })
+          }),
         };
       }),
       settings: lobby.settings,
-      isCreator: lobby.creatorUids.includes(uid)
+      isCreator: lobby.creatorUids.includes(uid),
     };
     return res;
   }
@@ -162,7 +169,7 @@ export class LobbyService {
     await this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $pull: { inviteCodes: code }
+        $pull: { inviteCodes: code },
       }
     );
   }
@@ -174,7 +181,7 @@ export class LobbyService {
       email: request.email,
       pixels: request.pixels.map(p => [p.x, p.y]),
       confirmed: false,
-      confirmCode: id()
+      confirmCode: id(),
     };
 
     const lobby = await this.validateNewIncrement(request, newIncrement);
@@ -186,7 +193,7 @@ export class LobbyService {
     await this._dbService.lobbies.updateOne(
       { id: request.lobbyId },
       {
-        $push: { increments: newIncrement }
+        $push: { increments: newIncrement },
       }
     );
 
@@ -231,7 +238,11 @@ export class LobbyService {
     return canvas.toDataURL();
   }
 
-  public async validateAccess(lobbyId: string, uid?: string, inviteCode?: string): Promise<PaintLobby> {
+  public async validateAccess(
+    lobbyId: string,
+    uid?: string,
+    inviteCode?: string
+  ): Promise<PaintLobby> {
     if (!uid) {
       throw new Error('No uid provided');
     }
@@ -273,12 +284,23 @@ export class LobbyService {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
-    if (!lobby.creatorUids.includes(request.uid ?? '-') && request.pixels.length > lobby.settings.maxPixels) {
-      throw new Error('Cannot add increment because it contains too many pixels and the iteration was not made by the creator');
+    if (
+      !lobby.creatorUids.includes(request.uid ?? '-') &&
+      request.pixels.length > lobby.settings.maxPixels
+    ) {
+      throw new Error(
+        'Cannot add increment because it contains too many pixels and the iteration was not made by the creator'
+      );
     }
 
-    if (request.pixels.some(p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height)) {
-      throw new Error('Cannot add increment because it contains pixels outside of the bounds of the lobby');
+    if (
+      request.pixels.some(
+        p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height
+      )
+    ) {
+      throw new Error(
+        'Cannot add increment because it contains pixels outside of the bounds of the lobby'
+      );
     }
     return lobby;
   }
@@ -286,7 +308,9 @@ export class LobbyService {
   private doesNewIncrementHavePixelConflict(request: AddPixelsRequest, lobby: PaintLobby) {
     return request.pixels.some(newPixel => {
       return lobby.increments.some(existingIncrement => {
-        return existingIncrement.pixels.some(existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y);
+        return existingIncrement.pixels.some(
+          existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y
+        );
       });
     });
   }
@@ -305,14 +329,14 @@ export class LobbyService {
       await this._dbService.lobbies.updateOne(
         { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
+          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null },
         }
       );
     } else {
       await this._dbService.lobbies.updateOne(
         { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $pull: { increments: { confirmed: false } }
+          $pull: { increments: { confirmed: false } },
         }
       );
     }
@@ -342,14 +366,14 @@ export class LobbyService {
       await this._dbService.lobbies.updateOne(
         { id: lobbyId, 'increments.confirmed': false },
         {
-          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
+          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null },
         }
       );
     } else {
       await this._dbService.lobbies.updateOne(
         { id: lobbyId, 'increments.confirmed': false },
         {
-          $pull: { increments: { confirmed: false } }
+          $pull: { increments: { confirmed: false } },
         }
       );
     }
@@ -360,7 +384,7 @@ export class LobbyService {
     return this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $pull: { increments: { id: incrementId } }
+        $pull: { increments: { id: incrementId } },
       }
     );
   }
@@ -369,7 +393,7 @@ export class LobbyService {
     return this._dbService.lobbies.updateOne(
       { id: lobbyId, 'increments.id': incrementId },
       {
-        $set: { 'increments.$.name': name }
+        $set: { 'increments.$.name': name },
       }
     );
   }
@@ -387,14 +411,14 @@ export class LobbyService {
     this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $pull: { increments: { id: incrementId } }
+        $pull: { increments: { id: incrementId } },
       }
     );
     // push the increment to the new index
     this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $push: { increments: { $each: [increment], $position: index } }
+        $push: { increments: { $each: [increment], $position: index } },
       }
     );
   }
