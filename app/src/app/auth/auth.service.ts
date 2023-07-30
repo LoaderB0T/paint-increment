@@ -1,9 +1,9 @@
 import SuperTokens from 'supertokens-web-js';
 import Session from 'supertokens-web-js/recipe/session';
-import ThirdPartyEmailPassword, {
+import ThirdParty, {
   getAuthorisationURLWithQueryParamsAndSetState,
-  thirdPartySignInAndUp,
-} from 'supertokens-web-js/recipe/thirdpartyemailpassword';
+  signInAndUp,
+} from 'supertokens-web-js/recipe/thirdparty';
 
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
@@ -24,7 +24,7 @@ export class AuthService {
         apiBasePath: '/auth',
         appName: 'paint-increment',
       },
-      recipeList: [Session.init(), ThirdPartyEmailPassword.init()],
+      recipeList: [Session.init(), ThirdParty.init()],
     });
   }
 
@@ -43,7 +43,7 @@ export class AuthService {
     }
   }
 
-  private handleThirdpartyCallback(response: Awaited<ReturnType<typeof thirdPartySignInAndUp>>) {
+  private handleThirdpartyCallback(response: Awaited<ReturnType<typeof signInAndUp>>) {
     if (response.status === 'OK') {
       const redirectTo = localStorage.getItem('returnUrl') || '/';
       this._router.navigate([redirectTo]);
@@ -77,7 +77,7 @@ export class AuthService {
 
   public async handleGoogleCallback() {
     try {
-      const response = await thirdPartySignInAndUp();
+      const response = await signInAndUp();
       this.handleThirdpartyCallback(response);
     } catch (err: any) {
       this.handleThirdpartyCallbackError(err);

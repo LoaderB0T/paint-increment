@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import supertokens from 'supertokens-node';
 import Session from 'supertokens-node/recipe/session';
-import ThirdPartyEmailPassword from 'supertokens-node/recipe/thirdpartyemailpassword';
+import ThirdParty from 'supertokens-node/recipe/thirdparty';
 import Dashboard from 'supertokens-node/recipe/dashboard';
+import UserMetadata from 'supertokens-node/recipe/usermetadata';
 
 import { ConfigService } from '../services/config.service';
 
@@ -22,23 +23,27 @@ export class SupertokensService {
         apiKey: configService.config.auth.apiKey,
       },
       recipeList: [
-        ThirdPartyEmailPassword.init({
-          providers: [
-            {
-              config: {
-                thirdPartyId: 'google',
-                clients: [
-                  {
-                    clientId: configService.config.auth.google.clientId,
-                    clientSecret: configService.config.auth.google.clientSecret,
-                  },
-                ],
+        ThirdParty.init({
+          signInAndUpFeature: {
+            providers: [
+              {
+                config: {
+                  thirdPartyId: 'google',
+                  clients: [
+                    {
+                      // https://console.cloud.google.com/apis/credentials
+                      clientId: configService.config.auth.google.clientId,
+                      clientSecret: configService.config.auth.google.clientSecret,
+                    },
+                  ],
+                },
               },
-            },
-          ],
+            ],
+          },
         }),
         Session.init(),
         Dashboard.init(),
+        UserMetadata.init(),
       ],
     });
   }

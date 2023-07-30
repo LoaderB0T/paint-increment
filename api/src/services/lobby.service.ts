@@ -33,7 +33,7 @@ export class LobbyService {
     this._configService = configService;
   }
 
-  async createLobby(request: CreateLobbyRequest) {
+  async createLobby(request: CreateLobbyRequest, email: string) {
     const settings: PaintLobbySettings = {
       height: request.settings.height ?? 128,
       width: request.settings.height ?? 128,
@@ -52,8 +52,8 @@ export class LobbyService {
       settings,
       creatorUids: [request.uid],
       creatorSecret: id(),
-      creatorEmail: 'request.email', // todo
-      creatorName: 'request.ownerName',
+      creatorEmail: email,
+      creatorName: request.ownerName,
       inviteCodes: [],
     };
 
@@ -65,9 +65,7 @@ export class LobbyService {
 
     const html = `
     <h1>paint.awdware.de</h1>
-    <h2>Hi, ${'request.ownerName' /** todo */}. You just successfully created the lobby '${
-      lobby.name
-    }'.</h2>
+    <h2>Hi, ${request.ownerName}. You just successfully created the lobby '${lobby.name}'.</h2>
     
     <p>
       You can view the lobby with the following link:

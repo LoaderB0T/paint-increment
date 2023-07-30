@@ -15,6 +15,7 @@ import { safeLobbyName } from './util/safe-lobby-name';
 import { AuthGuard } from './auth/auth.guard';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Session } from './auth/session.decorator';
+import { getUserById } from 'supertokens-node/recipe/thirdparty';
 
 @Controller('lobby')
 export class LobbyController {
@@ -29,7 +30,8 @@ export class LobbyController {
   @Get('test')
   @UseGuards(new AuthGuard())
   async test(@Session() session: SessionContainer) {
-    console.log(await session.getAccessTokenPayload());
+    const userInfo = await getUserById(session.getUserId());
+    console.log(userInfo);
     return 'test';
   }
 
@@ -68,8 +70,11 @@ export class LobbyController {
     @Body() request: CreateLobbyRequest,
     @Session() session: SessionContainer
   ): Promise<LobbyResponse> {
-    console.log(await session.getSessionDataFromDatabase());
-    return this._lobbyService.createLobby(request);
+    const userInfo = await getUserById(session.getUserId());
+    if (!userInfo) {
+      throw new Error('User not found');
+    }
+    return this._lobbyService.createLobby(request, userInfo.email);
   }
 
   @Post('increment')

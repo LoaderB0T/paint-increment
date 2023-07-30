@@ -24,6 +24,7 @@ export class NewLobbyComponent {
   public lobbyNameAvailable: boolean = true;
   public maxPixels: number = 250;
   public lobbyName = '';
+  public ownerName = '';
   public size: number = 100;
   public timeLimit: number = 15;
   public clickedButton: boolean = false;
@@ -56,6 +57,7 @@ export class NewLobbyComponent {
     this.clickedButton = true;
     const request: CreateLobbyRequest = {
       name: this.lobbyName,
+      ownerName: this.ownerName,
       uid: this._idService.id,
       settings: {
         maxPixels: this.maxPixels,

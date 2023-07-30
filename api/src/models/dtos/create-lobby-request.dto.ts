@@ -7,6 +7,7 @@ export class PaintLobbySettings {
 
 export class CreateLobbyRequest {
   name!: string;
+  ownerName!: string;
   settings!: PaintLobbySettings;
   uid!: string;
 }
