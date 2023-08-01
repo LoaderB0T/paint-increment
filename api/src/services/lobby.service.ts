@@ -20,6 +20,7 @@ import { ConfigService } from './config.service';
 import { DbService } from './db.service';
 import { MailService } from './mail.service';
 import { safeLobbyName } from '../util/safe-lobby-name';
+import { UserInfo } from '../auth/user-info.dto';
 
 @Injectable()
 export class LobbyService {
@@ -50,10 +51,7 @@ export class LobbyService {
       name: request.name,
       increments: [],
       settings,
-      creatorUids: [request.uid],
-      creatorSecret: id(),
       creatorEmail: email,
-      creatorName: request.ownerName,
       inviteCodes: [],
     };
 
@@ -61,7 +59,7 @@ export class LobbyService {
 
     const url = this._configService.config.clientAddress;
     const lobbyUrl = `${url}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}`;
-    const creatorUrl = `${lobbyUrl}?creatorSecret=${lobby.creatorSecret}`;
+    const creatorUrl = `${lobbyUrl}`;
 
     const html = `
     <h1>paint.awdware.de</h1>
@@ -90,13 +88,19 @@ export class LobbyService {
     return res;
   }
 
-  async generateInvite(request: NewInviteCodeRequestDto): Promise<NewInviteCodeResponseDto> {
+  async generateInvite(
+    request: NewInviteCodeRequestDto,
+    user?: UserInfo
+  ): Promise<NewInviteCodeResponseDto> {
+    if (!user) {
+      throw new Error('Cannot create invite if not logged in');
+    }
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    if (!lobby.creatorUids.includes(request.uid)) {
-      throw new Error('Invalid creator token');
+    if (lobby.creatorEmail !== user.email) {
+      throw new Error('Cannot edit lobby if not creator');
     }
     const newCode = id();
 
@@ -119,27 +123,22 @@ export class LobbyService {
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
   }
 
-  async creatorSecretValid(
-    request: ValidateCreatorSecretRequestDto
+  async validateCreator(
+    request: ValidateCreatorSecretRequestDto,
+    user?: UserInfo
   ): Promise<ValidateCreatorSecretResponseDto> {
+    if (!user) {
+      return { isValid: false };
+    }
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
-      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+      throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    const isValid = lobby.creatorSecret === request.creatorSecret;
-    if (isValid) {
-      if (!lobby.creatorUids.includes(request.uid)) {
-        await this._dbService.lobbies.updateOne(
-          { id: request.lobbyId },
-          { $push: { creatorUids: request.uid } }
-        );
-      }
-    }
-
+    const isValid = lobby.creatorEmail === user.email;
     return { isValid };
   }
 
-  async getLobby(lobbyId: string, uid: string): Promise<LobbyResponse> {
+  async getLobby(lobbyId: string, user?: UserInfo): Promise<LobbyResponse> {
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${lobbyId}`);
@@ -158,7 +157,7 @@ export class LobbyService {
         };
       }),
       settings: lobby.settings,
-      isCreator: lobby.creatorUids.includes(uid),
+      isCreator: lobby.creatorEmail === user?.email,
     };
     return res;
   }
@@ -172,7 +171,7 @@ export class LobbyService {
     );
   }
 
-  public async addIncrement(request: AddPixelsRequest) {
+  public async addIncrement(request: AddPixelsRequest, user?: UserInfo) {
     const newIncrement: PaintIncrement = {
       name: request.name,
       id: id(),
@@ -182,7 +181,7 @@ export class LobbyService {
       confirmCode: id(),
     };
 
-    const lobby = await this.validateNewIncrement(request, newIncrement);
+    const lobby = await this.validateNewIncrement(request, newIncrement, user);
 
     if (request.inviteCode) {
       await this.invalidateInvite(lobby.id, request.inviteCode);
@@ -238,21 +237,17 @@ export class LobbyService {
 
   public async validateAccess(
     lobbyId: string,
-    uid?: string,
+    user?: UserInfo,
     inviteCode?: string
   ): Promise<PaintLobby> {
-    if (!uid) {
-      throw new Error('No uid provided');
-    }
-
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${lobbyId}`);
     }
 
     if (!inviteCode) {
-      if (!lobby.creatorUids.includes(uid)) {
-        throw new Error('create increment without invite code or valid creator token');
+      if (lobby.creatorEmail !== user?.email) {
+        throw new Error('create increment without invite code or being creator');
       }
       if (lobby.increments.length > 0) {
         throw new Error('Creator token can only be used when no iterations have been added');
@@ -266,8 +261,12 @@ export class LobbyService {
     return lobby;
   }
 
-  private async validateNewIncrement(request: AddPixelsRequest, newIncrement: PaintIncrement) {
-    const lobby = await this.validateAccess(request.lobbyId, request.uid, request.inviteCode);
+  private async validateNewIncrement(
+    request: AddPixelsRequest,
+    newIncrement: PaintIncrement,
+    user?: UserInfo
+  ) {
+    const lobby = await this.validateAccess(request.lobbyId, user, request.inviteCode);
 
     if (!request.inviteCode) {
       newIncrement.confirmed = true;
@@ -282,10 +281,7 @@ export class LobbyService {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
-    if (
-      !lobby.creatorUids.includes(request.uid ?? '-') &&
-      request.pixels.length > lobby.settings.maxPixels
-    ) {
+    if (lobby.creatorEmail !== user?.email && request.pixels.length > lobby.settings.maxPixels) {
       throw new Error(
         'Cannot add increment because it contains too many pixels and the iteration was not made by the creator'
       );
@@ -313,13 +309,17 @@ export class LobbyService {
     });
   }
 
-  async confirmIncrement(request: ConfirmIncrementRequest): Promise<void> {
+  async confirmIncrement(request: ConfirmIncrementRequest, user?: UserInfo): Promise<void> {
+    if (!user) {
+      throw new Error('Cannot create invite if not logged in');
+    }
+
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
 
-    if (!lobby.creatorUids.includes(request.uid)) {
+    if (lobby.creatorEmail !== user.email) {
       throw new Error('Invalid creator token');
     }
 

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
   private readonly _router: Router;

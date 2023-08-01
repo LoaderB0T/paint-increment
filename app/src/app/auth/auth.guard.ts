@@ -1,25 +1,17 @@
 import { inject } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivateFn,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 import Session from 'supertokens-web-js/recipe/session';
+import { AuthService } from './auth.service';
 
-export const isLoggedInGuard: CanActivateFn = async (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
-  const router = inject(Router);
+export const isLoggedInGuard: CanActivateFn = async () => {
+  const authService = inject(AuthService);
   const isLoggedIn = await Session.doesSessionExist();
 
   if (isLoggedIn) {
     return true;
   } else {
-    const returnUrl = state.url;
-    localStorage.setItem('returnUrl', returnUrl);
-    router.navigate(['/auth']);
+    authService.navigateToLogin();
+
     return false;
   }
 };

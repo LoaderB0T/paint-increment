@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './auth.service';
 import { TextboxComponent } from '../controls/textbox/textbox.component';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
@@ -15,11 +15,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 export class AuthComponent {
   private readonly _authService: AuthService;
   private readonly _http: HttpClient;
-
-  public formGroup = new FormGroup({
-    email: new FormControl(''),
-    password: new FormControl(''),
-  });
 
   constructor(authService: AuthService, http: HttpClient) {
     this._authService = authService;

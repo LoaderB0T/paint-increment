@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthController } from './auth/auth.controller';
 import { LobbyController } from './lobby.controller';
 import { DbService } from './services/db.service';
 import { LobbyGateway } from './lobby.gateway';
@@ -11,7 +12,7 @@ import { ConfigModule } from './config.module';
 
 @Module({
   imports: [ConfigModule, AuthModule],
-  controllers: [LobbyController],
+  controllers: [AuthController, LobbyController],
   providers: [DbService, LobbyService, MailService, WsService, LobbyGateway, IterationEditGateway],
 })
 export class AppModule {}

@@ -19,6 +19,7 @@ import { DownloadComponent } from './download/download.component';
 import { NgLetModule } from 'ng-let';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { AuthInfoComponent } from './auth/auth-info/auth-info.component';
 
 async function initializeApp(authService: AuthService): Promise<any> {
   authService.init();
@@ -50,6 +51,7 @@ async function initializeApp(authService: AuthService): Promise<any> {
     DialogsModule,
     ControlsModule,
     TutorialModule,
+    AuthInfoComponent,
   ],
   providers: [
     {

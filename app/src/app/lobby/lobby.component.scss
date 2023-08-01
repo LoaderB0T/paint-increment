@@ -60,13 +60,4 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  color: #fff;
-  border-radius: $icon-button-border-radius;
-  background-color: $dark;
-  cursor: pointer;
-  padding: 25px;
-  font-size: 64px;
-  &:hover {
-    background-color: $lighDark;
-  }
 }

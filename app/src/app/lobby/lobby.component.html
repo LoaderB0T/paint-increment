@@ -1,64 +1,69 @@
 <div id="lobby-container">
   <span data-testid="lobby-name">{{ lobby.name }} {{ editTimeLeftLabel }}</span>
-  <div *ngIf="canPaint" class="pixels-left">
-    <div class="progres-bar" *ngIf="!isCreator" [style.width.%]="(pixelsLeft / lobby.settings.maxPixels) * 100"></div>
+  <div *ngIf="canPaint"
+       class="pixels-left">
+    <div class="progres-bar"
+         *ngIf="!isCreator"
+         [style.width.%]="(pixelsLeft / lobby.settings.maxPixels) * 100"></div>
   </div>
-  <span
-    *ngIf="isLockedBySomebodyElse"
-    class="infoText"
-    data-testid="locked-by-someone"
-    tooltip="The lobby is currently locked by someone else"
-  >
-    <i class="fa-regular fa-lock" aria-hidden="true"></i> Locked by: {{ isLockedByName }}
+  <span *ngIf="isLockedBySomebodyElse"
+        class="infoText"
+        data-testid="locked-by-someone"
+        tooltip="The lobby is currently locked by someone else">
+    <i class="fa-regular fa-lock"
+       aria-hidden="true"></i> Locked by: {{ isLockedByName }}
   </span>
-  <span *ngIf="isLockedByMe" data-testid="locked-by-me" class="infoText">
+  <span *ngIf="isLockedByMe"
+        data-testid="locked-by-me"
+        class="infoText">
     <div *ngIf="hoveredCoordinates">
-      <i class="fa-regular fa-location-crosshairs" aria-hidden="true"></i>
+      <i class="fa-regular fa-location-crosshairs"
+         aria-hidden="true"></i>
       <span data-testid="hovered-coordinates"> {{ hoveredCoordinates }} </span>
     </div>
     <div>&nbsp;</div>
   </span>
-  <span
-    *ngIf="hasUnconfirmedIteration"
-    class="locked"
-    data-testid="pending-confirmation"
-    tooltip="The lobby has an unconfirmed iteration"
-  >
-    <i class="fa-regular fa-clock" aria-hidden="true"></i> Pending confirmation
+  <span *ngIf="hasUnconfirmedIteration"
+        class="locked"
+        data-testid="pending-confirmation"
+        tooltip="The lobby has an unconfirmed iteration">
+    <i class="fa-regular fa-clock"
+       aria-hidden="true"></i> Pending confirmation
   </span>
   <div class="square-container">
-    <div #canvasContainer id="canvas-container">
-      <canvas
-        #canvas
-        id="paint-canvas"
-        [width]="width"
-        [height]="height"
-        (wheel)="gotWheel($event)"
-        (mousedown)="mouseDown($event)"
-        (mouseup)="mouseUp($event)"
-        (mouseleave)="mouseLeave()"
-        (mousemove)="mouseMove($event)"
-        (contextmenu)="(false)"
-        [style.--zoom]="zoom"
-        [style.--offsetX]="offsetX + 'px'"
-        [style.--offsetY]="offsetY + 'px'"
-      ></canvas>
+    <div #canvasContainer
+         id="canvas-container">
+      <canvas #canvas
+              id="paint-canvas"
+              [width]="width"
+              [height]="height"
+              (wheel)="gotWheel($event)"
+              (mousedown)="mouseDown($event)"
+              (mouseup)="mouseUp($event)"
+              (mouseleave)="mouseLeave()"
+              (mousemove)="mouseMove($event)"
+              (contextmenu)="(false)"
+              [style.--zoom]="zoom"
+              [style.--offsetX]="offsetX + 'px'"
+              [style.--offsetY]="offsetY + 'px'"></canvas>
     </div>
   </div>
 </div>
 
 <app-actions [actionItems]="actionItems"></app-actions>
 
-<app-tutorial-overlay
-  *ngIf="tutorialVisible"
-  [lockedBySomeone]="isLockedBySomebodyElse"
-  [lockedByMe]="isLockedByMe"
-  [hasInvite]="canStartToPaint"
-  [pendingConfirm]="hasUnconfirmedIteration"
-  [showControls]="explainControlsBeforeStart"
-  (closed)="hideTutorial()"
-></app-tutorial-overlay>
+<app-tutorial-overlay *ngIf="tutorialVisible"
+                      [lockedBySomeone]="isLockedBySomebodyElse"
+                      [lockedByMe]="isLockedByMe"
+                      [hasInvite]="canStartToPaint"
+                      [pendingConfirm]="hasUnconfirmedIteration"
+                      [showControls]="explainControlsBeforeStart"
+                      (closed)="hideTutorial()"></app-tutorial-overlay>
 
-<button class="button icon" id="show-tutorial" tooltip="Show help" (click)="showTutorial()">
-  <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+<button class="button icon action"
+        id="show-tutorial"
+        tooltip="Show help"
+        (click)="showTutorial()">
+  <i class="fa-regular fa-circle-question"
+     aria-hidden="true"></i>
 </button>

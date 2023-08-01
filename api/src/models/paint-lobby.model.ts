@@ -6,9 +6,6 @@ export interface PaintLobby {
   id: string;
   settings: PaintLobbySettings;
   increments: PaintIncrement[];
-  creatorUids: string[];
-  creatorSecret: string;
   creatorEmail: string;
-  creatorName: string;
   inviteCodes: string[];
 }

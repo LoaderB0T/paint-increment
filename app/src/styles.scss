@@ -45,6 +45,13 @@ button {
   &.icon {
     line-height: 0;
   }
+  &.action {
+    color: #fff;
+    border-radius: $icon-button-border-radius;
+    background-color: $dark;
+    padding: 25px;
+    font-size: 64px;
+  }
   font-family: Montserrat, sans-serif;
   font-size: 35px;
   margin: 0;
@@ -65,6 +72,9 @@ button {
     &:active {
       background-color: $dark;
       color: #fff;
+      &.action {
+        background-color: $lighDark;
+      }
     }
     &:focus {
       border: 2px solid $dark;

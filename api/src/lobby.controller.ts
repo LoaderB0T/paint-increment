@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { LobbyService } from './services/lobby.service';
 import { AddPixelsRequest } from './models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from './models/dtos/confirm-increment-request.dto';
@@ -38,16 +38,20 @@ export class LobbyController {
   @Get(':lobbyId')
   async getLobby(
     @Param('lobbyId') lobbyId: string,
-    @Query('uid') uid: string
+    @Session() session: SessionContainer
   ): Promise<LobbyResponse> {
-    return this._lobbyService.getLobby(lobbyId, uid);
+    const userInfo = await getUserById(session.getUserId());
+    return this._lobbyService.getLobby(lobbyId, userInfo);
   }
 
   @Post('invite')
+  @UseGuards(new AuthGuard())
   async generateInvite(
-    @Body() request: NewInviteCodeRequestDto
+    @Body() request: NewInviteCodeRequestDto,
+    @Session() session: SessionContainer
   ): Promise<NewInviteCodeResponseDto> {
-    return this._lobbyService.generateInvite(request);
+    const userInfo = await getUserById(session.getUserId());
+    return this._lobbyService.generateInvite(request, userInfo);
   }
 
   @Post('invite/validate')
@@ -57,11 +61,14 @@ export class LobbyController {
     return this._lobbyService.inviteValid(request);
   }
 
-  @Post('creatorSecret/validate')
-  async validateCreatorSecret(
-    @Body() request: ValidateCreatorSecretRequestDto
+  @Post('validateCreator')
+  @UseGuards(new AuthGuard())
+  async validateCreator(
+    @Body() request: ValidateCreatorSecretRequestDto,
+    @Session() session: SessionContainer
   ): Promise<ValidateCreatorSecretResponseDto> {
-    return this._lobbyService.creatorSecretValid(request);
+    const userInfo = await getUserById(session.getUserId());
+    return this._lobbyService.validateCreator(request, userInfo);
   }
 
   @Post()
@@ -83,8 +90,13 @@ export class LobbyController {
   }
 
   @Patch('increment/confirm')
-  async confirmIncrement(@Body() request: ConfirmIncrementRequest): Promise<void> {
-    return this._lobbyService.confirmIncrement(request);
+  @UseGuards(new AuthGuard())
+  async confirmIncrement(
+    @Body() request: ConfirmIncrementRequest,
+    @Session() session: SessionContainer
+  ): Promise<void> {
+    const userInfo = await getUserById(session.getUserId());
+    return this._lobbyService.confirmIncrement(request, userInfo);
   }
 
   @Get('accept/:lobbyId/:code')

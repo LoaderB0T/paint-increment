@@ -8,13 +8,16 @@ import ThirdParty, {
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
+import { ApiService } from '../.api/services/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly _router: Router;
+  private readonly _apiService: ApiService;
 
-  constructor(router: Router) {
+  constructor(router: Router, apiService: ApiService) {
     this._router = router;
+    this._apiService = apiService;
   }
 
   public init() {
@@ -28,9 +31,24 @@ export class AuthService {
     });
   }
 
-  public async signOut() {
+  public navigateToLogin() {
+    const returnUrl = this._router.url;
+    localStorage.setItem('returnUrl', returnUrl);
+    this._router.navigate(['/auth']);
+  }
+
+  public async hasSession() {
+    return await Session.doesSessionExist();
+  }
+
+  public async logout() {
     await Session.signOut();
     this._router.navigate(['/']);
+  }
+
+  public async getUserInfo() {
+    const user = this._apiService.authControllerGetUserInfo();
+    return user;
   }
 
   private handleThirdpartyInitiateError(error: any) {
