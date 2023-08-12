@@ -20,9 +20,11 @@ import { NgLetModule } from 'ng-let';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthInfoComponent } from './auth/auth-info/auth-info.component';
+import { WsService } from './services/ws.service';
 
-async function initializeApp(authService: AuthService): Promise<any> {
+async function initializeApp(authService: AuthService, wsService: WsService): Promise<any> {
   authService.init();
+  await wsService.init();
 }
 
 @NgModule({
@@ -56,8 +58,9 @@ async function initializeApp(authService: AuthService): Promise<any> {
   providers: [
     {
       provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => () => initializeApp(authService),
-      deps: [AuthService],
+      useFactory: (authService: AuthService, wsService: WsService) => () =>
+        initializeApp(authService, wsService),
+      deps: [AuthService, WsService],
       multi: true,
     },
   ],

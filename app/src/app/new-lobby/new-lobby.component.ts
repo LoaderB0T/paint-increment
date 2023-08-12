@@ -58,7 +58,6 @@ export class NewLobbyComponent {
     const request: CreateLobbyRequest = {
       name: this.lobbyName,
       ownerName: this.ownerName,
-      uid: this._idService.id,
       settings: {
         maxPixels: this.maxPixels,
         height: +this.size,

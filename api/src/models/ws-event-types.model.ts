@@ -23,7 +23,11 @@ export type WsReceiveMessage = WsCommunicationDefinitionsClientToServer['name'];
 export type WsSendMessage = WsCommunicationDefinitionsServerToClient['name'];
 
 export type ExtractPayload<A extends WsCommunication, T> = FlattenUnion<
-  A extends { name: T } ? ExtractPayloadInt<A> : never
+  A extends { name: T }
+    ? ExtractPayloadInt<A> & {
+        authToken?: string;
+      }
+    : never
 >;
 
 export type ExtractPayloadInt<A> = FlattenUnion<A extends { payload: any } ? A['payload'] : never>;

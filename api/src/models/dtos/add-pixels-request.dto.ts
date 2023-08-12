@@ -6,5 +6,4 @@ export class AddPixelsRequest {
   email!: string;
   pixels!: IncrementPixel[];
   inviteCode?: string;
-  uid?: string;
 }

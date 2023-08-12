@@ -1,25 +1,43 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import Session from 'supertokens-web-js/recipe/session';
 import { environment } from '../../environments/environment';
-import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../models/ws-event-types.model';
+import {
+  ExtractPayload,
+  WsCommunication,
+  WsReceiveMessage,
+  WsSendMessage,
+} from '../models/ws-event-types.model';
 import { IdService } from './id.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WsService {
-  private readonly _socket: Socket;
   private readonly _idService: IdService;
+  private __socket?: Socket;
   private readonly _listens: { [key: string]: any } = {};
+
+  private get _socket(): Socket {
+    if (!this.__socket) {
+      throw new Error('Socket is not initialized');
+    }
+    return this.__socket;
+  }
 
   constructor(idService: IdService) {
     this._idService = idService;
-    this._socket = io(environment.apiUrl, {
+  }
+
+  public async init() {
+    const authObj = {
+      uid: await this._idService.id,
+      accessToken: await Session.getAccessToken(),
+    };
+    this.__socket = io(environment.apiUrl, {
       transports: ['websocket'],
-      auth: {
-        'client-id': this._idService.id
-      }
+      auth: authObj,
     });
 
     this._socket.on('connect', () => {
@@ -29,23 +47,25 @@ export class WsService {
     });
   }
 
-  public init() {
-    // Do nothing, but class will be instantiated by DI
-  }
-
   public close() {
     this._socket.close();
   }
 
-  public send<T extends WsSendMessage>(method: T, payload: ExtractPayload<WsCommunication, T>): void {
-    payload.uid = this._idService.id;
+  public async send<T extends WsSendMessage>(
+    method: T,
+    payload: ExtractPayload<WsCommunication, T>
+  ): Promise<void> {
+    payload.authToken = await Session.getAccessToken();
+    payload.uid = await this._idService.id;
     this._socket.emit(method, payload);
     if (!environment.production) {
       console.log(`WS sent: ${method}`, payload);
     }
   }
 
-  public listen<T extends WsReceiveMessage>(method: T): Observable<ExtractPayload<WsCommunication, T>> {
+  public listen<T extends WsReceiveMessage>(
+    method: T
+  ): Observable<ExtractPayload<WsCommunication, T>> {
     const existingListener = this._listens[method];
     if (existingListener) {
       return existingListener;

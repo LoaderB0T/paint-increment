@@ -10,6 +10,5 @@ export const lobbyResolver: ResolveFn<LobbyResponse> = (route: ActivatedRouteSna
 
   return apiService.lobbyControllerGetLobby({
     lobbyId: route.params.id,
-    uid: idService.id,
   });
 };

@@ -163,11 +163,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     const creatorSecret = activatedRoute.snapshot.queryParams.creatorSecret as string | undefined;
     if (creatorSecret) {
       this._apiService
-        .lobbyControllerValidateCreatorSecret({
+        .lobbyControllerValidateCreator({
           body: {
-            creatorSecret,
             lobbyId: this.lobby.id,
-            uid: this._idService.id,
           },
         })
         .then(res => {
@@ -288,15 +286,13 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .lobbyLocked()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this._apiService
-          .lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id })
-          .then(l => {
-            this.isLockedBySomebodyElse = data.isLocked;
-            this.isLockedByName = data.lockedBy ?? 'Owner';
-            this.lobby = l;
-            this.prepareLobbyFields();
-            this.drawLobby();
-          });
+        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id }).then(l => {
+          this.isLockedBySomebodyElse = data.isLocked;
+          this.isLockedByName = data.lockedBy ?? 'Owner';
+          this.lobby = l;
+          this.prepareLobbyFields();
+          this.drawLobby();
+        });
       });
   }
 
@@ -434,7 +430,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._apiService
       .lobbyControllerGenerateInvite({
         body: {
-          uid: this._idService.id,
           lobbyId: this.lobby.id,
         },
       })
@@ -477,7 +472,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         lobbyId: this.lobby.id,
         name: contributorName,
         pixels: newPixels,
-        uid: this._idService.id,
       },
     });
 
@@ -518,13 +512,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     await this._apiService.lobbyControllerConfirmIncrement({
       body: {
         accept,
-        uid: this._idService.id,
         lobbyId: this.lobby.id,
       },
     });
     const l = await this._apiService.lobbyControllerGetLobby({
       lobbyId: this.lobby.id,
-      uid: this._idService.id,
     });
     this.lobby = l;
     this.prepareLobbyFields();

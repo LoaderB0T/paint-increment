@@ -22,6 +22,7 @@ export class AuthService {
 
   public init() {
     SuperTokens.init({
+      enableDebugLogs: true,
       appInfo: {
         apiDomain: environment.apiUrl,
         apiBasePath: '/auth',

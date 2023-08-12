@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { LobbyService } from './services/lobby.service';
 import { AddPixelsRequest } from './models/dtos/add-pixels-request.dto';
 import { ConfirmIncrementRequest } from './models/dtos/confirm-increment-request.dto';
@@ -14,7 +14,8 @@ import { ValidateCreatorSecretResponseDto } from './models/dtos/validate-creator
 import { safeLobbyName } from './util/safe-lobby-name';
 import { AuthGuard } from './auth/auth.guard';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { Session } from './auth/session.decorator';
+import { Session as SessionDecorator } from './auth/session.decorator';
+import Session from 'supertokens-node/recipe/session';
 import { getUserById } from 'supertokens-node/recipe/thirdparty';
 
 @Controller('lobby')
@@ -29,7 +30,7 @@ export class LobbyController {
 
   @Get('test')
   @UseGuards(new AuthGuard())
-  async test(@Session() session: SessionContainer) {
+  async test(@SessionDecorator() session: SessionContainer) {
     const userInfo = await getUserById(session.getUserId());
     console.log(userInfo);
     return 'test';
@@ -37,10 +38,13 @@ export class LobbyController {
 
   @Get(':lobbyId')
   async getLobby(
-    @Param('lobbyId') lobbyId: string,
-    @Session() session: SessionContainer
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Param('lobbyId') lobbyId: string
   ): Promise<LobbyResponse> {
-    const userInfo = await getUserById(session.getUserId());
+    const session = await Session.getSession(req, res, { sessionRequired: false });
+    const userInfo = session ? await getUserById(session.getUserId()) : undefined;
+
     return this._lobbyService.getLobby(lobbyId, userInfo);
   }
 
@@ -48,7 +52,7 @@ export class LobbyController {
   @UseGuards(new AuthGuard())
   async generateInvite(
     @Body() request: NewInviteCodeRequestDto,
-    @Session() session: SessionContainer
+    @SessionDecorator() session: SessionContainer
   ): Promise<NewInviteCodeResponseDto> {
     const userInfo = await getUserById(session.getUserId());
     return this._lobbyService.generateInvite(request, userInfo);
@@ -65,7 +69,7 @@ export class LobbyController {
   @UseGuards(new AuthGuard())
   async validateCreator(
     @Body() request: ValidateCreatorSecretRequestDto,
-    @Session() session: SessionContainer
+    @SessionDecorator() session: SessionContainer
   ): Promise<ValidateCreatorSecretResponseDto> {
     const userInfo = await getUserById(session.getUserId());
     return this._lobbyService.validateCreator(request, userInfo);
@@ -75,7 +79,7 @@ export class LobbyController {
   @UseGuards(new AuthGuard())
   async postLobby(
     @Body() request: CreateLobbyRequest,
-    @Session() session: SessionContainer
+    @SessionDecorator() session: SessionContainer
   ): Promise<LobbyResponse> {
     const userInfo = await getUserById(session.getUserId());
     if (!userInfo) {
@@ -85,15 +89,22 @@ export class LobbyController {
   }
 
   @Post('increment')
-  async addPointsToLobby(@Body() request: AddPixelsRequest): Promise<void> {
-    return this._lobbyService.addIncrement(request);
+  async addPointsToLobby(
+    @Body() request: AddPixelsRequest,
+
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<void> {
+    const session = await Session.getSession(req, res, { sessionRequired: false });
+    const userInfo = session ? await getUserById(session.getUserId()) : undefined;
+    return this._lobbyService.addIncrement(request, userInfo);
   }
 
   @Patch('increment/confirm')
   @UseGuards(new AuthGuard())
   async confirmIncrement(
     @Body() request: ConfirmIncrementRequest,
-    @Session() session: SessionContainer
+    @SessionDecorator() session: SessionContainer
   ): Promise<void> {
     const userInfo = await getUserById(session.getUserId());
     return this._lobbyService.confirmIncrement(request, userInfo);
