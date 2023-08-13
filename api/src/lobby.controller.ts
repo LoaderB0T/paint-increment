@@ -30,10 +30,7 @@ export class LobbyController {
   }
 
   @Get('test')
-  @UseGuards(new AuthGuard())
-  async test(@SessionDecorator() session: SessionContainer) {
-    const userInfo = await getUserById(session.getUserId());
-    console.log(userInfo);
+  async test() {
     return 'test';
   }
 
