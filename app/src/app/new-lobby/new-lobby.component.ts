@@ -72,7 +72,6 @@ export class NewLobbyComponent {
     if (!lobby.isCreator) {
       throw new Error('Something went wrong, you should be the owner');
     }
-    // this._userInfoService.email = this.emailAddress;
     this._router.navigate(['lobby', safeLobbyName(lobby.name), lobby.id]);
   }
 }

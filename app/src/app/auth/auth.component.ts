@@ -10,7 +10,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, TextboxComponent, ReactiveFormsModule, HttpClientModule],
   templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.scss'],
+  styleUrls: [],
 })
 export class AuthComponent {
   private readonly _authService: AuthService;

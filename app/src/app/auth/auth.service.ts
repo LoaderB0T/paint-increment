@@ -52,13 +52,15 @@ export class AuthService {
   }
 
   private handleThirdpartyInitiateError(error: any) {
-    if (error.isSuperTokensGeneralError === true) {
-      // this may be a custom error message sent from the API by you.
-      console.error(error);
-      // window.alert(error.message);
-    } else {
-      console.error(error);
-    }
+    console.error('Error initiating thirdparty login');
+    console.error(error);
+    // Future improvement: show a toast message if error.isSuperTokensGeneralError === true
+  }
+
+  private handleThirdpartyCallbackError(error: any) {
+    console.error('Error handling thirdparty login callback');
+    console.error(error);
+    // Future improvement: show a toast message if error.isSuperTokensGeneralError === true
   }
 
   private handleThirdpartyCallback(response: Awaited<ReturnType<typeof signInAndUp>>) {
@@ -67,16 +69,6 @@ export class AuthService {
       this._router.navigate([redirectTo]);
     } else {
       this._router.navigate(['auth']);
-    }
-  }
-
-  private handleThirdpartyCallbackError(error: any) {
-    if (error.isSuperTokensGeneralError === true) {
-      // this may be a custom error message sent from the API by you.
-      console.error(error);
-      // window.alert(error.message);
-    } else {
-      console.error(error);
     }
   }
 

@@ -6,8 +6,6 @@ import { UserInfo } from './user-info.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor() {}
-
   @Get('userinfo')
   @UseGuards(new AuthGuard())
   async getUserInfo(@Session() session: SessionContainer): Promise<UserInfo> {

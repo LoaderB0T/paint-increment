@@ -20,7 +20,7 @@ export class AuthInfoComponent {
   }
 
   public showUserInfo() {
-    const dialog = this._dialogService.showComponentDialog(UserInfoComponent, c => {
+    this._dialogService.showComponentDialog(UserInfoComponent, c => {
       c.canDoLater = true;
     });
   }
