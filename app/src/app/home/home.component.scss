@@ -3,7 +3,9 @@
     text-align: justify;
     width: 90%;
   }
-  button {
+  .bot-actions {
     margin: 58px;
+    display: flex;
+    gap: 32px;
   }
 }
