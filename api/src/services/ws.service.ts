@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../models/ws-event-types.model';
+import Session from 'supertokens-node/recipe/session';
+import {
+  ExtractPayload,
+  WsCommunication,
+  WsReceiveMessage,
+  WsSendMessage,
+} from '../models/ws-event-types.model';
 import { WsGateway } from '../models/ws-gateway.model';
 import { WsState } from '../models/ws-state.model';
 import { ConfigService } from './config.service';
@@ -20,10 +26,10 @@ export class WsService {
   public init(httpServer: HttpServer) {
     this._io = new Server(httpServer, {
       cors: {
-        origin: this._configService.config.origins
+        origin: this._configService.config.origins,
       },
       transports: ['websocket'],
-      serveClient: false
+      serveClient: false,
     });
 
     this._io.engine.on('connection_error', (err: any) => {
@@ -33,8 +39,19 @@ export class WsService {
       console.log(err.context); // some additional error context
     });
 
-    this._io.on('connection', (socket: Socket) => {
-      const clientId = socket.handshake.auth['client-id'] as string;
+    this._io.on('connection', async (socket: Socket) => {
+      const authToken = socket.handshake.auth['accessToken'] as string | undefined;
+      const uid = socket.handshake.auth['uid'] as string;
+
+      if (!authToken && !uid) {
+        socket.disconnect();
+        return;
+      }
+
+      const clientId = authToken
+        ? (await Session.getSessionWithoutRequestResponse(authToken)).getUserId()
+        : uid;
+
       WsState.clientState[clientId] = socket;
 
       this._registeredGateways.forEach(gateway => {
@@ -71,7 +88,11 @@ export class WsService {
     }
   }
 
-  public sendToClient<T extends WsSendMessage>(clientId: string, method: T, payload: ExtractPayload<WsCommunication, T>): void {
+  public sendToClient<T extends WsSendMessage>(
+    clientId: string,
+    method: T,
+    payload: ExtractPayload<WsCommunication, T>
+  ): void {
     const socket = WsState.getClientByUserId(clientId);
     socket.emit(method as string, payload);
   }
@@ -102,7 +123,10 @@ export class WsService {
   //   this._server.emit(method, payload);
   // }
 
-  public listen<T extends WsReceiveMessage>(socket: Socket, method: T): Observable<ExtractPayload<WsCommunication, T>> {
+  public listen<T extends WsReceiveMessage>(
+    socket: Socket,
+    method: T
+  ): Observable<ExtractPayload<WsCommunication, T>> {
     return new Observable<ExtractPayload<WsCommunication, T>>(observer => {
       socket.on(method as string, (data: ExtractPayload<WsCommunication, T>) => {
         console.log(`WS listened: ${method}`, data);

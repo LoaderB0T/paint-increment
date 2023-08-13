@@ -1,11 +1,14 @@
 {
+  "auth": {
+    "connectionURI": "https://try.supertokens.com"
+  },
   "mail": {
     "service": "gmail",
     "account": "something@gmail.com",
     "password": "password"
   },
   "db": {
-    "address": "mongodb://localhost:27017",
+    "address": "mongodb://127.0.0.1:27017",
     "database": "paint-increment"
   },
   "origins": ["localhost"],

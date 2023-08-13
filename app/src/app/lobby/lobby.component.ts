@@ -10,7 +10,7 @@ import { InviteCodeComponent } from '../dialogs/invite-code/invite-code.componen
 import { DialogService } from '../services/dialog.service';
 import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
-import { IncrementDetailsComponent } from '../dialogs/increment-details/increment-details.component';
+import { UserInfoComponent } from '../dialogs/user-info/user-info.component';
 import { UserInfoService } from '../services/user-info.service';
 import { ConfirmedOrRejectedComponent } from '../dialogs/confirmed-or-rejected/confirmed-or-rejected.component';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -23,7 +23,7 @@ const canvasPatternColor = '#e3e3e3';
 @UntilDestroy()
 @Component({
   templateUrl: './lobby.component.html',
-  styleUrls: ['./lobby.component.scss']
+  styleUrls: ['./lobby.component.scss'],
 })
 export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _activatedRoute: ActivatedRoute;
@@ -72,50 +72,50 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       text: 'Create new invite link',
       icon: 'share-alt',
       action: () => this.showInviteDialog(),
-      visible: () => this.isCreator && !this.canPaint
+      visible: () => this.isCreator && !this.canPaint,
     },
     {
       text: 'Reset image',
       icon: 'eraser',
       action: () => this.resetImage(),
-      visible: () => this.canPaint
+      visible: () => this.canPaint,
     },
     {
       text: 'Submit paint iteration',
       icon: 'layer-plus',
       action: () => this.commitIteration(),
-      visible: () => this.canPaint
+      visible: () => this.canPaint,
     },
     {
       text: 'Start painting',
       icon: 'paint-brush-fine',
       action: () => this.startToPaint(),
-      visible: () => this.canStartToPaint
+      visible: () => this.canStartToPaint,
     },
     {
       text: 'Accept paint iteration',
       icon: 'check',
       action: () => this.acceptIteration(),
-      visible: () => this.isCreator && this.hasUnconfirmedIteration
+      visible: () => this.isCreator && this.hasUnconfirmedIteration,
     },
     {
       text: 'Reject paint iteration',
       icon: 'xmark',
       action: () => this.rejectIteration(),
-      visible: () => this.isCreator && this.hasUnconfirmedIteration
+      visible: () => this.isCreator && this.hasUnconfirmedIteration,
     },
     {
       text: 'Toggle canvas pattern',
       icon: 'game-board',
       action: () => this.toggleCanvasPattern(),
-      visible: () => true
+      visible: () => true,
     },
     {
       text: 'View iterations',
       icon: 'layer-group',
       action: () => this.viewIterations(),
-      visible: () => !this.canPaint
-    }
+      visible: () => !this.canPaint,
+    },
   ];
 
   constructor(
@@ -141,17 +141,16 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
     this.prepareLobbyFields();
 
-    const inviteCode = (activatedRoute.snapshot.queryParams.invite ?? localStorage.getItem(`invite_${this.lobby.id}`)) as
-      | string
-      | undefined;
+    const inviteCode = (activatedRoute.snapshot.queryParams.invite ??
+      localStorage.getItem(`invite_${this.lobby.id}`)) as string | undefined;
     if (inviteCode) {
       localStorage.setItem(`invite_${this.lobby.id}`, inviteCode);
       this._apiService
         .lobbyControllerValidateInvite({
           body: {
             inviteCode,
-            lobbyId: this.lobby.id
-          }
+            lobbyId: this.lobby.id,
+          },
         })
         .then(res => {
           if (res.isValid) {
@@ -164,12 +163,10 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     const creatorSecret = activatedRoute.snapshot.queryParams.creatorSecret as string | undefined;
     if (creatorSecret) {
       this._apiService
-        .lobbyControllerValidateCreatorSecret({
+        .lobbyControllerValidateCreator({
           body: {
-            creatorSecret,
             lobbyId: this.lobby.id,
-            uid: this._idService.id
-          }
+          },
         })
         .then(res => {
           if (res.isValid) {
@@ -184,12 +181,15 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     if (confirmed || rejected) {
       this._lobbyLockService.unlock(this.lobby.id);
 
-      this._dialogService.showComponentDialog(ConfirmedOrRejectedComponent, c => (c.rejected = rejected));
+      this._dialogService.showComponentDialog(
+        ConfirmedOrRejectedComponent,
+        c => (c.rejected = rejected)
+      );
 
       this._router.navigate([], {
         relativeTo: this._activatedRoute,
         queryParams: { confirmed: null, rejected: null },
-        queryParamsHandling: 'merge'
+        queryParamsHandling: 'merge',
       });
     }
 
@@ -247,7 +247,9 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         if (this._editTimeLeft > 0) {
           const editMinutes = Math.floor(this._editTimeLeft / 60);
           const editSeconds = this._editTimeLeft % 60;
-          this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${editSeconds < 10 ? '0' : ''}${editSeconds}`;
+          this.editTimeLeftLabel = `${editMinutes < 10 ? '0' : ''}${editMinutes}:${
+            editSeconds < 10 ? '0' : ''
+          }${editSeconds}`;
         } else {
           this.editTimeLeftLabel = '';
           if (!this._timeUpComponent) {
@@ -284,7 +286,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       .lobbyLocked()
       .pipe(untilDestroyed(this))
       .subscribe(data => {
-        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id }).then(l => {
+        this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id }).then(l => {
           this.isLockedBySomebodyElse = data.isLocked;
           this.isLockedByName = data.lockedBy ?? 'Owner';
           this.lobby = l;
@@ -295,18 +297,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private async getUserDetails() {
-    const dialog = this._dialogService.showComponentDialog(IncrementDetailsComponent, c => {
-      c.gotMail = this._userInfoService.email !== '';
+    const dialog = this._dialogService.showComponentDialog(UserInfoComponent, c => {
       c.canDoLater = !this.isCreator;
     });
 
     const result = await dialog.result;
-    if (result) {
-      this._userInfoService.name = dialog.name;
-      this._userInfoService.email ||= dialog.email;
-      return true;
-    }
-    return false;
+    return result;
   }
 
   private resetLobby() {
@@ -331,7 +327,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._router.navigate([], {
       relativeTo: this._activatedRoute,
       queryParams: { invite: null },
-      queryParamsHandling: 'merge' // to replace all query params by provided ones (invite = null)
+      queryParamsHandling: 'merge', // to replace all query params by provided ones (invite = null)
     });
   }
 
@@ -402,7 +398,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public get canStartToPaint(): boolean {
-    return !this.isLockedByMe && !!this._inviteCode && !this.isLockedBySomebodyElse && !this.hasUnconfirmedIteration;
+    return (
+      !this.isLockedByMe &&
+      !!this._inviteCode &&
+      !this.isLockedBySomebodyElse &&
+      !this.hasUnconfirmedIteration
+    );
   }
 
   public get hasUnconfirmedIteration(): boolean {
@@ -429,13 +430,14 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._apiService
       .lobbyControllerGenerateInvite({
         body: {
-          uid: this._idService.id,
-          lobbyId: this.lobby.id
-        }
+          lobbyId: this.lobby.id,
+        },
       })
       .then(code => {
         const origin = window.location.origin;
-        const codeToCopy = `${origin}/lobby/${safeLobbyName(this.lobby.name)}/${this.lobby.id}?invite=${code.inviteCode}`;
+        const codeToCopy = `${origin}/lobby/${safeLobbyName(this.lobby.name)}/${
+          this.lobby.id
+        }?invite=${code.inviteCode}`;
         dialog.setCopyText(codeToCopy, copyCode);
       });
   }
@@ -470,8 +472,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
         lobbyId: this.lobby.id,
         name: contributorName,
         pixels: newPixels,
-        uid: this._idService.id
-      }
+      },
     });
 
     this._lobbyLockService.unlock(this.lobby.id);
@@ -511,11 +512,12 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     await this._apiService.lobbyControllerConfirmIncrement({
       body: {
         accept,
-        uid: this._idService.id,
-        lobbyId: this.lobby.id
-      }
+        lobbyId: this.lobby.id,
+      },
     });
-    const l = await this._apiService.lobbyControllerGetLobby({ lobbyId: this.lobby.id, uid: this._idService.id });
+    const l = await this._apiService.lobbyControllerGetLobby({
+      lobbyId: this.lobby.id,
+    });
     this.lobby = l;
     this.prepareLobbyFields();
     this.drawLobby();

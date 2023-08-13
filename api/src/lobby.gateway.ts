@@ -6,29 +6,34 @@ import { LobbyService } from './services/lobby.service';
 import { WsService } from './services/ws.service';
 
 @Injectable()
-export class LobbyGateway implements WsGateway {
-  private readonly _wsService: WsService;
+export class LobbyGateway extends WsGateway {
   private readonly _lobbyService: LobbyService;
 
   constructor(wsService: WsService, lobbyService: LobbyService) {
-    this._wsService = wsService;
+    super(wsService);
     this._lobbyService = lobbyService;
     this._wsService.addGateway(this);
   }
 
   public addSocket(client: Socket, clientId: string): void {
     this._wsService.listen(client, 'lookAtLobby').subscribe(async data => {
+      const uid = await this.getUid(data);
+      const user = await this.tryGetUserInfo(data);
       this._wsService.joinRoom(client, data.lobbyId);
-      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
+      WsState.lockState[data.lobbyId] ??= {
+        lookingAtLobby: [],
+        lockedBy: null,
+        lockedByName: null,
+      };
       const lockData = WsState.lockState[data.lobbyId];
-      lockData.lookingAtLobby.push(data.uid);
-      WsState.userState[data.uid] ??= { lobbies: [] };
-      WsState.userState[data.uid].lobbies.push(data.lobbyId);
+      lockData.lookingAtLobby.push(uid);
+      WsState.userState[uid] ??= { lobbies: [] };
+      WsState.userState[uid].lobbies.push(data.lobbyId);
 
-      const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      const lobby = await this._lobbyService.getLobby(data.lobbyId, user);
       if (lobby.pixelIterations.length === 0) {
         if (lobby.isCreator) {
-          lockData.lockedBy = data.uid;
+          lockData.lockedBy = uid;
           this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
         } else {
           this._wsService.sendToClient(clientId, 'lobbyLocked', { isLocked: true });
@@ -36,34 +41,43 @@ export class LobbyGateway implements WsGateway {
         return;
       }
 
-      if (lockData.lockedBy === data.uid) {
+      if (lockData.lockedBy === uid) {
         this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
       } else {
         this._wsService.sendToClient(clientId, 'lobbyLocked', {
           isLocked: !!lockData.lockedBy,
-          lockedBy: lockData.lockedByName ?? undefined
+          lockedBy: lockData.lockedByName ?? undefined,
         });
       }
     });
 
     this._wsService.listen(client, 'discardDrawing').subscribe(async data => {
+      const uid = await this.getUid(data);
+
       const lockData = WsState.lockState[data.lobbyId];
-      if (lockData.lockedBy !== data.uid) {
+      if (lockData.lockedBy !== uid) {
         return;
       }
       lockData.timeoutTime = 0;
     });
 
     this._wsService.listen(client, 'lockLobby').subscribe(async data => {
-      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
+      const uid = await this.getUid(data);
+      const user = await this.tryGetUserInfo(data);
+
+      WsState.lockState[data.lobbyId] ??= {
+        lookingAtLobby: [],
+        lockedBy: null,
+        lockedByName: null,
+      };
       const lockData = WsState.lockState[data.lobbyId];
       if (lockData.lockedBy) {
         this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
         return;
       }
-      const lobby = await this._lobbyService.validateAccess(data.lobbyId, data.uid, data.inviteCode);
+      const lobby = await this._lobbyService.validateAccess(data.lobbyId, user, data.inviteCode);
       const gracePeriod = 32; // 32 seconds, UI will only show 30 (like a grace period for the grace period...)
-      lockData.lockedBy = data.uid;
+      lockData.lockedBy = uid;
       lockData.lockedByName = data.name;
       lockData.timeoutTime = lobby.settings.timeLimit * 60 + gracePeriod; // configured time plus grace period
       lockData.interval = setInterval(async () => {
@@ -83,18 +97,30 @@ export class LobbyGateway implements WsGateway {
           lockData.lockedBy = null;
         } else {
           this._wsService.sendToClient(clientId, 'reservationTime', {
-            timeLeft: lockData.timeoutTime - gracePeriod // grace period subtracted
+            timeLeft: lockData.timeoutTime - gracePeriod, // grace period subtracted
           });
         }
       }, 1000) as any as number;
       this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: true });
-      this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: true, lockedBy: data.name });
+      this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', {
+        isLocked: true,
+        lockedBy: data.name,
+      });
     });
 
     this._wsService.listen(client, 'unlockLobby').subscribe(async data => {
-      WsState.lockState[data.lobbyId] ??= { lookingAtLobby: [], lockedBy: null, lockedByName: null };
+      const uid = await this.getUid(data);
+      const user = await this.tryGetUserInfo(data);
+      WsState.lockState[data.lobbyId] ??= {
+        lookingAtLobby: [],
+        lockedBy: null,
+        lockedByName: null,
+      };
       const lockData = WsState.lockState[data.lobbyId];
-      if (lockData.lockedBy === data.uid || (await this._lobbyService.getLobby(data.lobbyId, data.uid)).isCreator) {
+      if (
+        lockData.lockedBy === uid ||
+        (await this._lobbyService.getLobby(data.lobbyId, user)).isCreator
+      ) {
         WsState.deleteTimeout(lockData);
         lockData.interval = undefined;
         lockData.lockedBy = null;

@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -17,6 +17,15 @@ import { ControlsModule } from './controls/controls.module';
 import { TutorialModule } from './tutorial-overlay/tutorial.module';
 import { DownloadComponent } from './download/download.component';
 import { NgLetModule } from 'ng-let';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
+import { AuthInfoComponent } from './auth/auth-info/auth-info.component';
+import { WsService } from './services/ws.service';
+
+async function initializeApp(authService: AuthService, wsService: WsService): Promise<any> {
+  authService.init();
+  await wsService.init();
+}
 
 @NgModule({
   declarations: [
@@ -32,6 +41,7 @@ import { NgLetModule } from 'ng-let';
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
+    AuthModule,
     FormsModule,
     NgLetModule,
     ApiModule.forRoot({
@@ -43,8 +53,17 @@ import { NgLetModule } from 'ng-let';
     DialogsModule,
     ControlsModule,
     TutorialModule,
+    AuthInfoComponent,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (authService: AuthService, wsService: WsService) => () =>
+        initializeApp(authService, wsService),
+      deps: [AuthService, WsService],
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

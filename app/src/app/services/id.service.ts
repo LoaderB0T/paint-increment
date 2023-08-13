@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { v4 as uuid } from 'uuid';
+import Session from 'supertokens-web-js/recipe/session';
 
 @Injectable({ providedIn: 'root' })
 export class IdService {
@@ -10,7 +11,9 @@ export class IdService {
     localStorage.setItem('uid', uid);
   }
 
-  get id(): string {
-    return this._id;
+  get id(): Promise<string> {
+    return Session.doesSessionExist().then(hasSession =>
+      hasSession ? Session.getUserId().then(id => id ?? this._id) : this._id
+    );
   }
 }

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InviteCodeComponent } from './invite-code/invite-code.component';
-import { IncrementDetailsComponent } from './increment-details/increment-details.component';
+import { UserInfoComponent } from './user-info/user-info.component';
 import { FormsModule } from '@angular/forms';
 import { ControlsModule } from '../controls/controls.module';
 import { ConfirmedOrRejectedComponent } from './confirmed-or-rejected/confirmed-or-rejected.component';
@@ -12,12 +12,12 @@ import { EditIterationComponent } from './edit-iteration/edit-iteration.componen
 @NgModule({
   declarations: [
     InviteCodeComponent,
-    IncrementDetailsComponent,
+    UserInfoComponent,
     ConfirmedOrRejectedComponent,
     NoMobileComponent,
     TimeUpComponent,
-    EditIterationComponent
+    EditIterationComponent,
   ],
-  imports: [CommonModule, FormsModule, ControlsModule]
+  imports: [CommonModule, FormsModule, ControlsModule],
 })
 export class DialogsModule {}

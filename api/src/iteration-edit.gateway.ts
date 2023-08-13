@@ -5,19 +5,19 @@ import { LobbyService } from './services/lobby.service';
 import { WsService } from './services/ws.service';
 
 @Injectable()
-export class IterationEditGateway implements WsGateway {
-  private readonly _wsService: WsService;
+export class IterationEditGateway extends WsGateway {
   private readonly _lobbyService: LobbyService;
 
   constructor(wsService: WsService, lobbyService: LobbyService) {
-    this._wsService = wsService;
+    super(wsService);
     this._lobbyService = lobbyService;
     this._wsService.addGateway(this);
   }
 
   public addSocket(client: Socket): void {
     this._wsService.listen(client, 'deleteIteration').subscribe(async data => {
-      const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      const user = await this.getUserInfo(data);
+      const lobby = await this._lobbyService.getLobby(data.lobbyId, user);
       if (!lobby.isCreator) {
         throw new Error('You are not the creator of this lobby');
       }
@@ -29,7 +29,8 @@ export class IterationEditGateway implements WsGateway {
     });
 
     this._wsService.listen(client, 'changeIterationName').subscribe(async data => {
-      const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      const user = await this.getUserInfo(data);
+      const lobby = await this._lobbyService.getLobby(data.lobbyId, user);
       if (!lobby.isCreator) {
         throw new Error('You are not the creator of this lobby');
       }
@@ -41,7 +42,9 @@ export class IterationEditGateway implements WsGateway {
     });
 
     this._wsService.listen(client, 'changeIterationIndex').subscribe(async data => {
-      const lobby = await this._lobbyService.getLobby(data.lobbyId, data.uid);
+      const user = await this.getUserInfo(data);
+
+      const lobby = await this._lobbyService.getLobby(data.lobbyId, user);
       if (!lobby.isCreator) {
         throw new Error('You are not the creator of this lobby');
       }

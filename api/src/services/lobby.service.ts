@@ -20,6 +20,7 @@ import { ConfigService } from './config.service';
 import { DbService } from './db.service';
 import { MailService } from './mail.service';
 import { safeLobbyName } from '../util/safe-lobby-name';
+import { UserInfo } from '../auth/user-info.dto';
 
 @Injectable()
 export class LobbyService {
@@ -33,12 +34,12 @@ export class LobbyService {
     this._configService = configService;
   }
 
-  async createLobby(request: CreateLobbyRequest) {
+  async createLobby(request: CreateLobbyRequest, email: string) {
     const settings: PaintLobbySettings = {
       height: request.settings.height ?? 128,
       width: request.settings.height ?? 128,
       maxPixels: request.settings.maxPixels,
-      timeLimit: request.settings.timeLimit ?? 15
+      timeLimit: request.settings.timeLimit ?? 15,
     };
 
     if (!settings.maxPixels || settings.maxPixels < 1) {
@@ -50,18 +51,15 @@ export class LobbyService {
       name: request.name,
       increments: [],
       settings,
-      creatorUids: [request.uid],
-      creatorSecret: id(),
-      creatorEmail: request.email,
-      creatorName: request.ownerName,
-      inviteCodes: []
+      creatorEmail: email,
+      inviteCodes: [],
     };
 
     await this._dbService.lobbies.insertOne(lobby);
 
     const url = this._configService.config.clientAddress;
     const lobbyUrl = `${url}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}`;
-    const creatorUrl = `${lobbyUrl}?creatorSecret=${lobby.creatorSecret}`;
+    const creatorUrl = `${lobbyUrl}`;
 
     const html = `
     <h1>paint.awdware.de</h1>
@@ -85,25 +83,31 @@ export class LobbyService {
       name: lobby.name,
       pixelIterations: [],
       settings: lobby.settings,
-      isCreator: true
+      isCreator: true,
     };
     return res;
   }
 
-  async generateInvite(request: NewInviteCodeRequestDto): Promise<NewInviteCodeResponseDto> {
+  async generateInvite(
+    request: NewInviteCodeRequestDto,
+    user?: UserInfo
+  ): Promise<NewInviteCodeResponseDto> {
+    if (!user) {
+      throw new Error('Cannot create invite if not logged in');
+    }
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    if (!lobby.creatorUids.includes(request.uid)) {
-      throw new Error('Invalid creator token');
+    if (lobby.creatorEmail !== user.email) {
+      throw new Error('Cannot edit lobby if not creator');
     }
     const newCode = id();
 
     await this._dbService.lobbies.updateOne(
       { id: request.lobbyId },
       {
-        $push: { inviteCodes: newCode }
+        $push: { inviteCodes: newCode },
       }
     );
 
@@ -119,22 +123,22 @@ export class LobbyService {
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
   }
 
-  async creatorSecretValid(request: ValidateCreatorSecretRequestDto): Promise<ValidateCreatorSecretResponseDto> {
+  async validateCreator(
+    request: ValidateCreatorSecretRequestDto,
+    user?: UserInfo
+  ): Promise<ValidateCreatorSecretResponseDto> {
+    if (!user) {
+      return { isValid: false };
+    }
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
-      throw new Error(`Cannot find lobby with id${request.lobbyId}`);
+      throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
-    const isValid = lobby.creatorSecret === request.creatorSecret;
-    if (isValid) {
-      if (!lobby.creatorUids.includes(request.uid)) {
-        await this._dbService.lobbies.updateOne({ id: request.lobbyId }, { $push: { creatorUids: request.uid } });
-      }
-    }
-
+    const isValid = lobby.creatorEmail === user.email;
     return { isValid };
   }
 
-  async getLobby(lobbyId: string, uid: string): Promise<LobbyResponse> {
+  async getLobby(lobbyId: string, user?: UserInfo): Promise<LobbyResponse> {
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${lobbyId}`);
@@ -149,11 +153,11 @@ export class LobbyService {
           id: i.id,
           pixels: i.pixels.map(ip => {
             return { x: ip[0], y: ip[1] };
-          })
+          }),
         };
       }),
       settings: lobby.settings,
-      isCreator: lobby.creatorUids.includes(uid)
+      isCreator: lobby.creatorEmail === user?.email,
     };
     return res;
   }
@@ -162,22 +166,22 @@ export class LobbyService {
     await this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $pull: { inviteCodes: code }
+        $pull: { inviteCodes: code },
       }
     );
   }
 
-  public async addIncrement(request: AddPixelsRequest) {
+  public async addIncrement(request: AddPixelsRequest, user?: UserInfo) {
     const newIncrement: PaintIncrement = {
       name: request.name,
       id: id(),
       email: request.email,
       pixels: request.pixels.map(p => [p.x, p.y]),
       confirmed: false,
-      confirmCode: id()
+      confirmCode: id(),
     };
 
-    const lobby = await this.validateNewIncrement(request, newIncrement);
+    const lobby = await this.validateNewIncrement(request, newIncrement, user);
 
     if (request.inviteCode) {
       await this.invalidateInvite(lobby.id, request.inviteCode);
@@ -186,7 +190,7 @@ export class LobbyService {
     await this._dbService.lobbies.updateOne(
       { id: request.lobbyId },
       {
-        $push: { increments: newIncrement }
+        $push: { increments: newIncrement },
       }
     );
 
@@ -231,19 +235,19 @@ export class LobbyService {
     return canvas.toDataURL();
   }
 
-  public async validateAccess(lobbyId: string, uid?: string, inviteCode?: string): Promise<PaintLobby> {
-    if (!uid) {
-      throw new Error('No uid provided');
-    }
-
+  public async validateAccess(
+    lobbyId: string,
+    user?: UserInfo,
+    inviteCode?: string
+  ): Promise<PaintLobby> {
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${lobbyId}`);
     }
 
     if (!inviteCode) {
-      if (!lobby.creatorUids.includes(uid)) {
-        throw new Error('create increment without invite code or valid creator token');
+      if (lobby.creatorEmail !== user?.email) {
+        throw new Error('create increment without invite code or being creator');
       }
       if (lobby.increments.length > 0) {
         throw new Error('Creator token can only be used when no iterations have been added');
@@ -257,8 +261,12 @@ export class LobbyService {
     return lobby;
   }
 
-  private async validateNewIncrement(request: AddPixelsRequest, newIncrement: PaintIncrement) {
-    const lobby = await this.validateAccess(request.lobbyId, request.uid, request.inviteCode);
+  private async validateNewIncrement(
+    request: AddPixelsRequest,
+    newIncrement: PaintIncrement,
+    user?: UserInfo
+  ) {
+    const lobby = await this.validateAccess(request.lobbyId, user, request.inviteCode);
 
     if (!request.inviteCode) {
       newIncrement.confirmed = true;
@@ -273,12 +281,20 @@ export class LobbyService {
       throw new Error('Cannot add increment because some pixels are already occupied.');
     }
 
-    if (!lobby.creatorUids.includes(request.uid ?? '-') && request.pixels.length > lobby.settings.maxPixels) {
-      throw new Error('Cannot add increment because it contains too many pixels and the iteration was not made by the creator');
+    if (lobby.creatorEmail !== user?.email && request.pixels.length > lobby.settings.maxPixels) {
+      throw new Error(
+        'Cannot add increment because it contains too many pixels and the iteration was not made by the creator'
+      );
     }
 
-    if (request.pixels.some(p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height)) {
-      throw new Error('Cannot add increment because it contains pixels outside of the bounds of the lobby');
+    if (
+      request.pixels.some(
+        p => p.x < 0 || p.x >= lobby.settings.width || p.y < 0 || p.y >= lobby.settings.height
+      )
+    ) {
+      throw new Error(
+        'Cannot add increment because it contains pixels outside of the bounds of the lobby'
+      );
     }
     return lobby;
   }
@@ -286,18 +302,24 @@ export class LobbyService {
   private doesNewIncrementHavePixelConflict(request: AddPixelsRequest, lobby: PaintLobby) {
     return request.pixels.some(newPixel => {
       return lobby.increments.some(existingIncrement => {
-        return existingIncrement.pixels.some(existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y);
+        return existingIncrement.pixels.some(
+          existingPixel => existingPixel[0] === newPixel.x && existingPixel[1] === newPixel.y
+        );
       });
     });
   }
 
-  async confirmIncrement(request: ConfirmIncrementRequest): Promise<void> {
+  async confirmIncrement(request: ConfirmIncrementRequest, user?: UserInfo): Promise<void> {
+    if (!user) {
+      throw new Error('Cannot create invite if not logged in');
+    }
+
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
     }
 
-    if (!lobby.creatorUids.includes(request.uid)) {
+    if (lobby.creatorEmail !== user.email) {
       throw new Error('Invalid creator token');
     }
 
@@ -305,14 +327,14 @@ export class LobbyService {
       await this._dbService.lobbies.updateOne(
         { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
+          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null },
         }
       );
     } else {
       await this._dbService.lobbies.updateOne(
         { id: request.lobbyId, 'increments.confirmed': false },
         {
-          $pull: { increments: { confirmed: false } }
+          $pull: { increments: { confirmed: false } },
         }
       );
     }
@@ -342,14 +364,14 @@ export class LobbyService {
       await this._dbService.lobbies.updateOne(
         { id: lobbyId, 'increments.confirmed': false },
         {
-          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null }
+          $set: { 'increments.$.confirmed': true, 'increments.$.confirmCode': null },
         }
       );
     } else {
       await this._dbService.lobbies.updateOne(
         { id: lobbyId, 'increments.confirmed': false },
         {
-          $pull: { increments: { confirmed: false } }
+          $pull: { increments: { confirmed: false } },
         }
       );
     }
@@ -360,7 +382,7 @@ export class LobbyService {
     return this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $pull: { increments: { id: incrementId } }
+        $pull: { increments: { id: incrementId } },
       }
     );
   }
@@ -369,7 +391,7 @@ export class LobbyService {
     return this._dbService.lobbies.updateOne(
       { id: lobbyId, 'increments.id': incrementId },
       {
-        $set: { 'increments.$.name': name }
+        $set: { 'increments.$.name': name },
       }
     );
   }
@@ -387,14 +409,14 @@ export class LobbyService {
     this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $pull: { increments: { id: incrementId } }
+        $pull: { increments: { id: incrementId } },
       }
     );
     // push the increment to the new index
     this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
-        $push: { increments: { $each: [increment], $position: index } }
+        $push: { increments: { $each: [increment], $position: index } },
       }
     );
   }

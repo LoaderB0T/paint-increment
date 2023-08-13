@@ -5,105 +5,84 @@
     <p>Create a new lobby to start a new drawing with your friends.</p>
     <p>Enter a name for the new lobby below and click the 'Create Lobby' button to get started.</p>
     <p>
-      Afterwards draw the initial few pixels to start of the drawing. Remeber not to draw too much so that your friends have
+      Afterwards draw the initial few pixels to start of the drawing. Remeber not to draw too much so that your friends
+      have
       enough free space remaining to draw their iterations. Also tell your friends not to draw too much.
     </p>
   </span>
 
-  <form class="side-by-side" #newLobby="ngForm" (ngSubmit)="createLobby()">
-    <awd-textbox
-      inputType="TEXT"
-      placeholder="Lobby Name"
-      required
-      [fontSize]="35"
-      icon="pencil"
-      icon2="input-text"
-      name="lobbyName"
-      [minLength]="3"
-      [maxLength]="100"
-      [(ngModel)]="lobbyName"
-      [validationDefinitions]="validityTexts"
-      [disabled]="clickedButton"
-    ></awd-textbox>
+  <form class="side-by-side"
+        #newLobby="ngForm"
+        (ngSubmit)="createLobby()">
+    <awd-textbox inputType="TEXT"
+                 placeholder="Lobby Name"
+                 required
+                 [fontSize]="35"
+                 icon="pencil"
+                 icon2="input-text"
+                 name="lobbyName"
+                 [minLength]="3"
+                 [maxLength]="100"
+                 [(ngModel)]="lobbyName"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <awd-textbox
-      inputType="TEXT"
-      placeholder="Your Name"
-      required
-      [fontSize]="35"
-      icon="pencil"
-      icon2="at"
-      name="ownerName"
-      [(ngModel)]="ownerName"
-      [validationDefinitions]="validityTexts"
-      [disabled]="clickedButton"
-    ></awd-textbox>
 
-    <awd-textbox
-      inputType="EMAIL"
-      placeholder="Email Address"
-      required
-      [fontSize]="35"
-      icon="pencil"
-      icon2="at"
-      name="ownerEmail"
-      [(ngModel)]="emailAddress"
-      [validationDefinitions]="validityTexts"
-      [disabled]="clickedButton"
-    ></awd-textbox>
+    <awd-textbox inputType="TEXT"
+                 placeholder="Your Name"
+                 required
+                 [fontSize]="35"
+                 icon="pencil"
+                 icon2="at"
+                 name="ownerName"
+                 [(ngModel)]="ownerName"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <awd-textbox
-      inputType="NUMERIC"
-      placeholder="Max Pixels"
-      required
-      [fontSize]="35"
-      icon="pencil"
-      icon2="tally"
-      name="maxPixels"
-      [minValue]="1"
-      [maxValue]="99999"
-      [(ngModel)]="maxPixels"
-      [validationDefinitions]="validityTexts"
-      [disabled]="clickedButton"
-    ></awd-textbox>
+    <awd-textbox inputType="NUMERIC"
+                 placeholder="Max Pixels"
+                 required
+                 [fontSize]="35"
+                 icon="pencil"
+                 icon2="tally"
+                 name="maxPixels"
+                 [minValue]="1"
+                 [maxValue]="99999"
+                 [(ngModel)]="maxPixels"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <awd-textbox
-      inputType="NUMERIC"
-      placeholder="Size"
-      required
-      [fontSize]="35"
-      icon="pencil"
-      icon2="ruler-combined"
-      name="size"
-      [minValue]="50"
-      [maxValue]="200"
-      [(ngModel)]="size"
-      [validationDefinitions]="validityTexts"
-      [disabled]="clickedButton"
-    ></awd-textbox>
+    <awd-textbox inputType="NUMERIC"
+                 placeholder="Size"
+                 required
+                 [fontSize]="35"
+                 icon="pencil"
+                 icon2="ruler-combined"
+                 name="size"
+                 [minValue]="50"
+                 [maxValue]="200"
+                 [(ngModel)]="size"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <awd-textbox
-      inputType="NUMERIC"
-      placeholder="Time limit in minutes"
-      required
-      [fontSize]="35"
-      icon="hourglass-start"
-      icon2="hourglass-end"
-      name="timeLimit"
-      [minValue]="1"
-      [maxValue]="60"
-      [(ngModel)]="timeLimit"
-      [validationDefinitions]="validityTexts"
-      [disabled]="clickedButton"
-    ></awd-textbox>
+    <awd-textbox inputType="NUMERIC"
+                 placeholder="Time limit in minutes"
+                 required
+                 [fontSize]="35"
+                 icon="hourglass-start"
+                 icon2="hourglass-end"
+                 name="timeLimit"
+                 [minValue]="1"
+                 [maxValue]="60"
+                 [(ngModel)]="timeLimit"
+                 [validationDefinitions]="validityTexts"
+                 [disabled]="clickedButton"></awd-textbox>
 
-    <input
-      type="submit"
-      class="button"
-      id="submit-lobby"
-      value="Create Lobby"
-      [disabled]="formDisabled"
-      data-testid="lobby-submit"
-    />
+    <input type="submit"
+           class="button"
+           id="submit-lobby"
+           value="Create Lobby"
+           [disabled]="formDisabled"
+           data-testid="lobby-submit" />
   </form>
 </div>
