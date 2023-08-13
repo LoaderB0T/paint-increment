@@ -31,6 +31,7 @@ export class SupertokensService {
                   thirdPartyId: 'google',
                   clients: [
                     {
+                      // https://support.google.com/cloud/answer/6158849?hl=en
                       // https://console.cloud.google.com/apis/credentials
                       clientId: configService.config.auth.google.clientId,
                       clientSecret: configService.config.auth.google.clientSecret,
