@@ -17,7 +17,6 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Session as SessionDecorator } from './auth/session.decorator';
 import Session from 'supertokens-node/recipe/session';
 import { getUserById } from 'supertokens-node/recipe/thirdparty';
-import { PaintLobby } from './models/paint-lobby.model';
 import { LobbyPreviewResponse } from './models/dtos/lobby-preview-response.dto';
 
 @Controller('lobby')

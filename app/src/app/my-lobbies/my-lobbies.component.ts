@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../.api/services/api.service';
-import { BehaviorSubject } from 'rxjs';
 import { LobbyPreviewResponse } from '../.api/models/lobby-preview-response';
 import { Router } from '@angular/router';
 import { safeLobbyName } from '../util/safe-lobby-name';
