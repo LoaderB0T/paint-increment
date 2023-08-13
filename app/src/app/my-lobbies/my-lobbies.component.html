@@ -1,0 +1,10 @@
+<div>
+  My Lobbies
+  <div class="lobby-list">
+    <button class="button"
+            *ngFor="let lobby of lobbies()"
+            (click)="openLobby(lobby)">
+      {{lobby.name}}
+    </button>
+  </div>
+</div>

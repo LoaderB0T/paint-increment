@@ -21,6 +21,7 @@ import { DbService } from './db.service';
 import { MailService } from './mail.service';
 import { safeLobbyName } from '../util/safe-lobby-name';
 import { UserInfo } from '../auth/user-info.dto';
+import { LobbyPreviewResponse } from '../models/dtos/lobby-preview-response.dto';
 
 @Injectable()
 export class LobbyService {
@@ -419,5 +420,16 @@ export class LobbyService {
         $push: { increments: { $each: [increment], $position: index } },
       }
     );
+  }
+
+  public async getLobbiesOfUser(user: UserInfo): Promise<LobbyPreviewResponse[]> {
+    const lobbyIds = (
+      await this._dbService.lobbies.find({ creatorEmail: user.email }).toArray()
+    ).map(l => l.id);
+    const lobbies = lobbyIds.map(l => this.getLobby(l, user));
+    return (await Promise.all(lobbies)).map(l => ({
+      id: l.id,
+      name: l.name,
+    }));
   }
 }

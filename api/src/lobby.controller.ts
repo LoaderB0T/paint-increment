@@ -17,6 +17,8 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { Session as SessionDecorator } from './auth/session.decorator';
 import Session from 'supertokens-node/recipe/session';
 import { getUserById } from 'supertokens-node/recipe/thirdparty';
+import { PaintLobby } from './models/paint-lobby.model';
+import { LobbyPreviewResponse } from './models/dtos/lobby-preview-response.dto';
 
 @Controller('lobby')
 export class LobbyController {
@@ -126,5 +128,15 @@ export class LobbyController {
       lobby.id
     }?rejected=true`;
     return `<script>window.location.href = "${url}";</script>`;
+  }
+
+  @Post('my-lobbies')
+  @UseGuards(new AuthGuard())
+  async myLobbies(@SessionDecorator() session: SessionContainer): Promise<LobbyPreviewResponse[]> {
+    const userInfo = await getUserById(session.getUserId());
+    if (!userInfo) {
+      throw new Error('User not found');
+    }
+    return this._lobbyService.getLobbiesOfUser(userInfo);
   }
 }

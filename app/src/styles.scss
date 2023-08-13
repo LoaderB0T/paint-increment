@@ -41,16 +41,28 @@ button {
   color: unset;
 }
 
-.button {
-  &.icon {
-    line-height: 0;
-  }
-  &.action {
+.action-button-group {
+  border-radius: $icon-button-border-radius;
+  overflow: hidden;
+
+  .button {
     color: #fff;
-    border-radius: $icon-button-border-radius;
+    border-radius: unset;
     background-color: $dark;
     padding: 25px;
     font-size: 64px;
+    &:not(:disabled) {
+      &:hover,
+      &:active {
+        background-color: $lighDark;
+      }
+    }
+  }
+}
+
+.button {
+  &.icon {
+    line-height: 0;
   }
   font-family: Montserrat, sans-serif;
   font-size: 35px;

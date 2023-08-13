@@ -1,0 +1,11 @@
+.lobby-list {
+  padding: 20px;
+  width: calc(100% - 20px);
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}

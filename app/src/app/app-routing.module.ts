@@ -8,6 +8,7 @@ import { NewLobbyComponent } from './new-lobby/new-lobby.component';
 import { lobbyResolver } from './resolver/lobby.resolver';
 import { isPaintingGuard } from './resolver/is-painting.guard';
 import { isLoggedInGuard } from './auth/auth.guard';
+import { MyLobbiesComponent } from './my-lobbies/my-lobbies.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,11 @@ const routes: Routes = [
     path: 'new',
     canActivate: [isLoggedInGuard],
     component: NewLobbyComponent,
+  },
+  {
+    path: 'my-lobbies',
+    canActivate: [isLoggedInGuard],
+    component: MyLobbiesComponent,
   },
   {
     matcher: url => {

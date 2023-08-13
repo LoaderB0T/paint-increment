@@ -21,6 +21,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { AuthInfoComponent } from './auth/auth-info/auth-info.component';
 import { WsService } from './services/ws.service';
+import { MyLobbiesComponent } from './my-lobbies/my-lobbies.component';
 
 async function initializeApp(authService: AuthService, wsService: WsService): Promise<any> {
   authService.init();
@@ -54,6 +55,7 @@ async function initializeApp(authService: AuthService, wsService: WsService): Pr
     ControlsModule,
     TutorialModule,
     AuthInfoComponent,
+    MyLobbiesComponent,
   ],
   providers: [
     {

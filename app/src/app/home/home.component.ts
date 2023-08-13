@@ -15,4 +15,8 @@ export class HomeComponent {
   public navigateToNewLobby() {
     this._router.navigate(['new']);
   }
+
+  public navigateToMyLobbies() {
+    this._router.navigate(['my-lobbies']);
+  }
 }
