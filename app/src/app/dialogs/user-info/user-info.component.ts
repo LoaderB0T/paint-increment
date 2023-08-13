@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject, firstValueFrom } from 'rxjs';
 import { BaseDialog } from '../../models/base-dialog.model';
 import { AuthService } from '../../auth/auth.service';

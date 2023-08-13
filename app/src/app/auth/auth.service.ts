@@ -31,9 +31,8 @@ export class AuthService {
     });
   }
 
-  public navigateToLogin() {
-    const returnUrl = this._router.url;
-    localStorage.setItem('returnUrl', returnUrl);
+  public navigateToLogin(url?: string) {
+    localStorage.setItem('returnUrl', url ?? '');
     this._router.navigate(['/auth']);
   }
 
