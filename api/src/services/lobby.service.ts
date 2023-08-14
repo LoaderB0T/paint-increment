@@ -60,7 +60,6 @@ export class LobbyService {
 
     const url = this._configService.config.clientAddress;
     const lobbyUrl = `${url}/lobby/${safeLobbyName(lobby.name)}/${lobby.id}`;
-    const creatorUrl = `${lobbyUrl}`;
 
     const html = `
     <h1>paint.awdware.de</h1>
@@ -69,10 +68,6 @@ export class LobbyService {
     <p>
       You can view the lobby with the following link:
       <a href="${lobbyUrl}">Lobby link</a>
-    </p>
-    <p>
-      You can gain creator rights on a different device by using the link below. Don't share this link with anyone else.
-      <a href="${creatorUrl}">Creator Link</a>
     </p>
 
     `;
