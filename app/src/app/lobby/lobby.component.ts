@@ -2,7 +2,6 @@ import { AfterViewInit, Component, OnInit, WritableSignal, computed, signal } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
-import { IncrementPixel } from '../.api/models/increment-pixel';
 import { LobbyResponse } from '../.api/models/lobby-response';
 import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
@@ -17,6 +16,7 @@ import { NoMobileComponent } from '../dialogs/no-mobile/no-mobile.component';
 import { TimeUpComponent } from '../dialogs/time-up/time-up.component';
 import { safeLobbyName } from '../util/safe-lobby-name';
 import { CanvasSettings, Layer } from '../canvas/canvas.component';
+import { pixelArrayToIncrementPixel } from '../util/pixel-array-to-increment-pixel';
 
 @UntilDestroy()
 @Component({
@@ -449,16 +449,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private async sendIncrementToServer(contributorEmail: string, contributorName: string) {
-    const newPixels: IncrementPixel[] = [];
-    for (let x = 0; x < this._drawLayer().pixels.length; x++) {
-      const row = this._drawLayer().pixels[x];
-      for (let y = 0; y < row.length; y++) {
-        const element = row[y];
-        if (element) {
-          newPixels.push({ x, y });
-        }
-      }
-    }
+    const newPixels = pixelArrayToIncrementPixel(this._drawLayer().pixels);
     await this._apiService.lobbyControllerAddPointsToLobby({
       body: {
         email: contributorEmail,

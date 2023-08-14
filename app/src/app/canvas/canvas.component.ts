@@ -53,6 +53,7 @@ export class CanvasComponent implements AfterViewInit {
 
   @Output() public hoveredCoords = new EventEmitter<[number, number] | undefined>();
   @Output() public drawCount = new EventEmitter<number>();
+  @Output() public changed = new EventEmitter<void>();
 
   public zoom: number = 1;
 
@@ -182,7 +183,8 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   private drawLayers(ctx: CanvasRenderingContext2D) {
-    for (const layer of this._layers()) {
+    const layers = [...this._layers()].reverse();
+    for (const layer of layers) {
       this.drawLayer(ctx, layer);
     }
   }
@@ -277,6 +279,7 @@ export class CanvasComponent implements AfterViewInit {
     drawLayer.pixels[x][y] = !erase;
     this._drawnCount += erase ? -1 : 1;
     this.drawCount.emit(this._drawnCount);
+    this.changed.emit();
 
     if (erase) {
       if ((x + y) % 2 === 0) {

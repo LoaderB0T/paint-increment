@@ -3,7 +3,12 @@
        *ngIf="iteration">
     Edit iteration {{ iteration.id }} of {{ iteration.name || '[not set]' }}
 
-
+    <div class="edit-iteration-pixels">
+      <app-canvas [layers]="lobbyLayers"
+                  [canPaint]="true"
+                  (changed)="onCanvasChanged()"
+                  [settings]="canvasSettings"></app-canvas>
+    </div>
 
     <div class="side-by-side">
       <awd-textbox inputType="TEXT"

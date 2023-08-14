@@ -4,18 +4,13 @@
   gap: 20px;
   align-items: center;
 
-  .canvas-container {
+  .edit-iteration-pixels {
+    position: relative;
     display: flex;
-    width: 80vmin;
-    max-width: 100%;
-    overflow: hidden;
-    .paint-canvas {
-      height: 100%;
-      width: 100%;
-      image-rendering: pixelated;
-      image-rendering: -moz-crisp-edges;
-      transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
-    }
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    width: 500px;
   }
 
   .actions {
