@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, WritableSignal, computed, signal } from '@angular/core';
+import { Component, OnInit, WritableSignal, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
@@ -23,7 +23,7 @@ import { pixelArrayToIncrementPixel } from '../util/pixel-array-to-increment-pix
   templateUrl: './lobby.component.html',
   styleUrls: ['./lobby.component.scss'],
 })
-export class LobbyComponent implements AfterViewInit, OnInit {
+export class LobbyComponent implements OnInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _apiService: ApiService;
   private readonly _router: Router;
@@ -37,7 +37,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private _timeUpComponent?: TimeUpComponent;
 
   private readonly _drawLayer = signal<Layer>({
-    color: '#00FF00',
+    color: '#000000',
     pixels: [],
   });
   private readonly _draftLayer = signal<Layer>({
@@ -335,7 +335,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
           this.isLockedByName = data.lockedBy ?? 'Owner';
           this.lobby = l;
           this.prepareLobbyFields();
-          this.drawLobby();
         });
       });
   }
@@ -352,13 +351,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private resetLobby() {
     this.invalidateInviteCode();
     this.resetDrawLayer();
-    this.drawLobby();
     this._timeUpComponent?.close();
     this._timeUpComponent = undefined;
-  }
-
-  public ngAfterViewInit(): void {
-    this.drawLobby();
   }
 
   private viewIterations(): void {
@@ -374,8 +368,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
       queryParamsHandling: 'merge', // to replace all query params by provided ones (invite = null)
     });
   }
-
-  private drawLobby() {}
 
   public get width(): number {
     return this.lobby.settings.width!;
@@ -441,7 +433,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   private resetImage() {
     this.resetDrawLayer();
     this.drawCount = 0;
-    this.drawLobby();
   }
 
   private commitIteration(): void {
@@ -505,7 +496,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     });
     this.lobby = l;
     this.prepareLobbyFields();
-    this.drawLobby();
     this._lobbyLockService.unlock(this.lobby.id);
   }
 

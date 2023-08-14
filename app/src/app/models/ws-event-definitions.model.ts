@@ -4,8 +4,14 @@ export type WsCommunicationDefinitionsClientToServer =
   | { name: 'unlockLobby'; payload: { lobbyId: string } }
   | { name: 'lookAtLobby'; payload: { lobbyId: string } }
   | { name: 'deleteIteration'; payload: { lobbyId: string; iterationId: string } }
-  | { name: 'changeIterationName'; payload: { lobbyId: string; iterationId: string; newName: string } }
-  | { name: 'changeIterationIndex'; payload: { lobbyId: string; iterationId: string; newIndex: number } };
+  | {
+      name: 'changeIterationName';
+      payload: { lobbyId: string; iterationId: string; newName: string };
+    }
+  | {
+      name: 'changeIterationIndex';
+      payload: { lobbyId: string; iterationId: string; newIndex: number };
+    };
 
 export type WsCommunicationDefinitionsServerToClient =
   | { name: 'lobbyLocked'; payload: { isLocked: boolean; lockedBy?: string } }
