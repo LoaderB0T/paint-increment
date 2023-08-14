@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, WritableSignal, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
@@ -8,7 +8,6 @@ import { ApiService } from '../.api/services/api.service';
 import { ActionItem } from '../models/action-item.model';
 import { InviteCodeComponent } from '../dialogs/invite-code/invite-code.component';
 import { DialogService } from '../services/dialog.service';
-import { IdService } from '../services/id.service';
 import { LobbyLockService } from '../services/lobby-lock.service';
 import { UserInfoComponent } from '../dialogs/user-info/user-info.component';
 import { UserInfoService } from '../services/user-info.service';
@@ -17,8 +16,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 import { NoMobileComponent } from '../dialogs/no-mobile/no-mobile.component';
 import { TimeUpComponent } from '../dialogs/time-up/time-up.component';
 import { safeLobbyName } from '../util/safe-lobby-name';
-
-const canvasPatternColor = '#e3e3e3';
+import { CanvasSettings, Layer } from '../canvas/canvas.component';
 
 @UntilDestroy()
 @Component({
@@ -28,41 +26,47 @@ const canvasPatternColor = '#e3e3e3';
 export class LobbyComponent implements AfterViewInit, OnInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _apiService: ApiService;
-  private readonly _idService: IdService;
   private readonly _router: Router;
   private readonly _dialogService: DialogService;
   private readonly _lobbyLockService: LobbyLockService;
   private readonly _userInfoService: UserInfoService;
   private readonly _deviceService: DeviceDetectorService;
 
-  private _lobbyImg!: boolean[][];
-  private _originalLobbyImg!: boolean[][];
   private _inviteCode?: string;
-  private _dragging: boolean = false;
-  private _drawing: boolean = false;
-  private _erasing: boolean = false;
-  private _lastDrawX: number = 0;
-  private _lastDrawY: number = 0;
-  private _hoveredX?: number;
-  private _hoveredY?: number;
-  private _canvasPattern: boolean = true;
-  private _drawnCount: number = 0;
   private _editTimeLeft: number = 0;
   private _timeUpComponent?: TimeUpComponent;
 
-  private _ctx?: CanvasRenderingContext2D;
-  @ViewChild('canvas', { static: true })
-  public canvas?: ElementRef<HTMLCanvasElement>;
-  @ViewChild('canvasContainer', { static: true })
-  public canvasContainer?: ElementRef<HTMLDivElement>;
+  private readonly _drawLayer = signal<Layer>({
+    color: '#00FF00',
+    pixels: [],
+  });
+  private readonly _draftLayer = signal<Layer>({
+    color: '#FF0042',
+    pixels: [],
+  });
+  private readonly _committedLayer = signal<Layer>({
+    color: '#000000',
+    pixels: [],
+  });
+  public readonly lobbyLayers = computed<Layer[]>(() => [
+    this._drawLayer(),
+    this._draftLayer(),
+    this._committedLayer(),
+  ]);
 
+  public canvasSettings: CanvasSettings = {
+    canvasPattern: true,
+    height: 0,
+    width: 0,
+    maxPixels: 0,
+  };
+
+  public hoveredCoords?: [number, number];
+  public drawCount: number = 0;
   public lobby: LobbyResponse;
   public isLockedByMe: boolean = false;
   public isLockedBySomebodyElse: boolean = false;
   public isLockedByName: string | undefined;
-  public zoom: number = 1;
-  public offsetX: number = 0;
-  public offsetY: number = 0;
   public editTimeLeftLabel: string = '';
   public tutorialVisible: boolean = false;
   public explainControlsBeforeStart: boolean = false;
@@ -121,7 +125,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   constructor(
     activatedRoute: ActivatedRoute,
     apiService: ApiService,
-    idService: IdService,
     router: Router,
     dialogService: DialogService,
     lobbyLockService: LobbyLockService,
@@ -130,7 +133,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   ) {
     this._activatedRoute = activatedRoute;
     this._apiService = apiService;
-    this._idService = idService;
     this._router = router;
     this._dialogService = dialogService;
     this._lobbyLockService = lobbyLockService;
@@ -138,6 +140,13 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this._deviceService = deviceService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby;
+
+    this.canvasSettings = {
+      canvasPattern: true,
+      width: this.lobby.settings.width,
+      height: this.lobby.settings.height,
+      maxPixels: this.lobby.settings.maxPixels,
+    };
 
     this.prepareLobbyFields();
 
@@ -206,21 +215,56 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     if (this.isCreator) {
       return 1; // Creator can always paint
     }
-    return (this.lobby.settings.maxPixels ?? 100) - this._drawnCount;
+    return (this.lobby.settings.maxPixels ?? 100) - this.drawCount;
+  }
+
+  public toggleCanvasPattern() {
+    this.canvasSettings = {
+      ...this.canvasSettings,
+      canvasPattern: !this.canvasSettings.canvasPattern,
+    };
+  }
+  private resetLayer(layer: WritableSignal<Layer>) {
+    layer.update(l => ({
+      ...l,
+      pixels: new Array(this.lobby.settings.height)
+        .fill(false)
+        .map(() => new Array(this.lobby.settings.width).fill(false)),
+    }));
+  }
+
+  private resetDrawLayer() {
+    this.resetLayer(this._drawLayer);
   }
 
   private prepareLobbyFields() {
-    this._lobbyImg = new Array(this.lobby.settings.height)
-      .fill(false)
-      .map(() => new Array(this.lobby.settings.width).fill(false));
+    this.resetDrawLayer();
+    this.resetLayer(this._draftLayer);
+    this.resetLayer(this._committedLayer);
 
-    this.lobby.pixelIterations.forEach(i => {
-      i.pixels.forEach(ip => {
-        this._lobbyImg[ip.x][ip.y] = true;
-      });
+    this._draftLayer.update(l => {
+      const unconfirmedIteration = this.lobby.pixelIterations.find(x => !x.confirmed);
+      if (unconfirmedIteration) {
+        unconfirmedIteration.pixels.forEach(ip => {
+          l.pixels[ip.x][ip.y] = true;
+        });
+      } else {
+        l.pixels = new Array(this.lobby.settings.height)
+          .fill(false)
+          .map(() => new Array(this.lobby.settings.width).fill(false));
+      }
+      return l;
     });
-
-    this._originalLobbyImg = JSON.parse(JSON.stringify(this._lobbyImg)) as boolean[][];
+    this._committedLayer.update(l => {
+      this.lobby.pixelIterations
+        .filter(x => x.confirmed)
+        .forEach(i => {
+          i.pixels.forEach(ip => {
+            l.pixels[ip.x][ip.y] = true;
+          });
+        });
+      return l;
+    });
   }
 
   public ngOnInit() {
@@ -307,7 +351,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   private resetLobby() {
     this.invalidateInviteCode();
-    this._lobbyImg = JSON.parse(JSON.stringify(this._originalLobbyImg)) as boolean[][];
+    this.resetDrawLayer();
     this.drawLobby();
     this._timeUpComponent?.close();
     this._timeUpComponent = undefined;
@@ -331,55 +375,7 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     });
   }
 
-  private drawLobby() {
-    if (!this.canvas || !this.canvasContainer) {
-      throw new Error('Canvas or canvasContainer not initialized yet');
-    }
-    this._ctx = this.canvas.nativeElement.getContext('2d')!;
-    this._ctx.fillStyle = '#ffffff';
-    this._ctx.fillRect(0, 0, this.width, this.height);
-    if (this._canvasPattern) {
-      this.drawCanvasPattern(this._ctx);
-    }
-    this.drawCurrentUnsavedImage(this._ctx);
-    this.drawExistingIterations(this._ctx);
-  }
-
-  private drawExistingIterations(ctx: CanvasRenderingContext2D) {
-    this.lobby.pixelIterations.forEach(x => {
-      ctx.fillStyle = x.confirmed ? 'black' : 'green';
-      x.pixels.forEach(p => {
-        ctx.fillRect(p.x, p.y, 1, 1);
-      });
-    });
-  }
-
-  private drawCurrentUnsavedImage(ctx: CanvasRenderingContext2D) {
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if (this._lobbyImg[x][y]) {
-          ctx.fillStyle = 'black';
-          ctx?.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-  }
-
-  private drawCanvasPattern(ctx: CanvasRenderingContext2D) {
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if ((x + y) % 2 === 0) {
-          ctx.fillStyle = canvasPatternColor;
-          ctx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
-  }
-
-  private toggleCanvasPattern(): void {
-    this._canvasPattern = !this._canvasPattern;
-    this.drawLobby();
-  }
+  private drawLobby() {}
 
   public get width(): number {
     return this.lobby.settings.width!;
@@ -411,8 +407,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   public get hoveredCoordinates(): string {
-    if (this._hoveredX !== undefined && this._hoveredY !== undefined) {
-      return `${this._hoveredX + 1} | ${this._hoveredY + 1}`;
+    if (this.hoveredCoords) {
+      return `${this.hoveredCoords[0] + 1} | ${this.hoveredCoords[1] + 1}`;
     } else {
       return '';
     }
@@ -443,8 +439,8 @@ export class LobbyComponent implements AfterViewInit, OnInit {
   }
 
   private resetImage() {
-    this._lobbyImg = JSON.parse(JSON.stringify(this._originalLobbyImg)) as boolean[][];
-    this._drawnCount = 0;
+    this.resetDrawLayer();
+    this.drawCount = 0;
     this.drawLobby();
   }
 
@@ -454,13 +450,11 @@ export class LobbyComponent implements AfterViewInit, OnInit {
 
   private async sendIncrementToServer(contributorEmail: string, contributorName: string) {
     const newPixels: IncrementPixel[] = [];
-    for (let x = 0; x < this._lobbyImg.length; x++) {
-      const row = this._lobbyImg[x];
-      const originalRow = this._originalLobbyImg[x];
+    for (let x = 0; x < this._drawLayer().pixels.length; x++) {
+      const row = this._drawLayer().pixels[x];
       for (let y = 0; y < row.length; y++) {
-        const originalElement = originalRow[y];
         const element = row[y];
-        if (element && !originalElement) {
+        if (element) {
           newPixels.push({ x, y });
         }
       }
@@ -522,144 +516,6 @@ export class LobbyComponent implements AfterViewInit, OnInit {
     this.prepareLobbyFields();
     this.drawLobby();
     this._lobbyLockService.unlock(this.lobby.id);
-  }
-
-  public gotWheel(event: WheelEvent) {
-    if (event.deltaY < 0) {
-      this.zoom *= 1.1;
-    } else {
-      this.zoom *= 0.9;
-    }
-    if (this.zoom < 1) {
-      this.zoom = 1;
-    } else if (this.zoom > 20) {
-      this.zoom = 20;
-    }
-    this.fixOffsets();
-    event.preventDefault();
-  }
-
-  public mouseDown(event: MouseEvent) {
-    this._dragging = event.button === 1;
-    if (this.canPaint) {
-      this._drawing = event.button === 0;
-      this._erasing = event.button === 2;
-      if (this._drawing || this._erasing) {
-        this.draw(event.offsetX, event.offsetY, this._erasing, true);
-      }
-    }
-    event.preventDefault();
-  }
-  public mouseUp(event: MouseEvent) {
-    this._dragging = false;
-    this._drawing = false;
-    this._erasing = false;
-    event.preventDefault();
-  }
-  public mouseLeave() {
-    this._dragging = false;
-    this._drawing = false;
-    this._erasing = false;
-    this._hoveredX = undefined;
-    this._hoveredY = undefined;
-  }
-
-  private draw(rawX: number, rawY: number, erase: boolean, startPoint: boolean) {
-    const { x, y } = this.getRealCoordinates(rawX, rawY);
-    this._ctx?.restore();
-    if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
-      return;
-    }
-
-    this.drawPixel(x, y, erase);
-
-    if (startPoint) {
-      this._lastDrawX = x;
-      this._lastDrawY = y;
-      return;
-    }
-    const deltaX = x - this._lastDrawX;
-    const deltaY = y - this._lastDrawY;
-
-    const largerDelta = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-
-    for (let i = 0; i < largerDelta; i++) {
-      const x_ = this._lastDrawX + Math.floor((deltaX / largerDelta) * i);
-      const y_ = this._lastDrawY + Math.floor((deltaY / largerDelta) * i);
-      this.drawPixel(x_, y_, erase);
-    }
-    this._lastDrawX = x;
-    this._lastDrawY = y;
-  }
-
-  private drawPixel(x: number, y: number, erase: boolean) {
-    if (!erase && this.pixelsLeft <= 0) {
-      // No more pixels left
-      return;
-    }
-    if (this._originalLobbyImg[x][y]) {
-      // We cannot draw on a pixel that is already painted (nor erase it)
-      return;
-    }
-    if (this._lobbyImg[x][y] === !erase) {
-      // Pixel is unchanged
-      return;
-    }
-
-    this._lobbyImg[x][y] = !erase;
-    this._drawnCount += erase ? -1 : 1;
-    if (erase) {
-      if ((x + y) % 2 === 0) {
-        this._ctx!.fillStyle = canvasPatternColor;
-      } else {
-        this._ctx!.fillStyle = '#ffffff';
-      }
-    } else {
-      this._ctx!.fillStyle = 'black';
-    }
-    this._ctx?.fillRect(x, y, 1, 1);
-  }
-
-  public mouseMove(event: MouseEvent) {
-    if (this._dragging) {
-      this.offsetX += event.movementX / this.zoom;
-      this.offsetY += event.movementY / this.zoom;
-      this.fixOffsets();
-      return;
-    }
-
-    if (this._drawing || this._erasing) {
-      this.draw(event.offsetX, event.offsetY, this._erasing, false);
-    }
-    const { x, y } = this.getRealCoordinates(event.offsetX, event.offsetY);
-    this._hoveredX = x;
-    this._hoveredY = y;
-  }
-
-  private getRealCoordinates(offsetX: number, offsetY: number) {
-    const x = Math.floor((offsetX / this.canvas!.nativeElement.clientWidth) * this.width);
-    const y = Math.floor((offsetY / this.canvas!.nativeElement.clientHeight) * this.height);
-    return { x, y };
-  }
-
-  private fixOffsets() {
-    this._ctx?.save();
-    const canvasWidth = this.canvas!.nativeElement.clientWidth;
-    const actualCanvasWidth = canvasWidth * this.zoom;
-    const maxOffsetX = (actualCanvasWidth - canvasWidth) / 2 / this.zoom;
-    const canvasHeight = this.canvas!.nativeElement.clientHeight;
-    const actualCanvasHeight = canvasHeight * this.zoom;
-    const maxOffsetY = (actualCanvasHeight - canvasHeight) / 2 / this.zoom;
-    if (this.offsetX > maxOffsetX) {
-      this.offsetX = maxOffsetX;
-    } else if (this.offsetX < -maxOffsetX) {
-      this.offsetX = -maxOffsetX;
-    }
-    if (this.offsetY > maxOffsetY) {
-      this.offsetY = maxOffsetY;
-    } else if (this.offsetY < -maxOffsetY) {
-      this.offsetY = -maxOffsetY;
-    }
   }
 
   public hideTutorial() {

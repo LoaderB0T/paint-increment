@@ -39,20 +39,6 @@
       display: block;
       padding-bottom: 100%;
     }
-    #canvas-container {
-      position: absolute;
-      display: flex;
-      width: 80vmin;
-      max-width: 100%;
-      overflow: hidden;
-      #paint-canvas {
-        height: 100%;
-        width: 100%;
-        image-rendering: pixelated;
-        image-rendering: -moz-crisp-edges;
-        transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
-      }
-    }
   }
 }
 

@@ -31,22 +31,11 @@
        aria-hidden="true"></i> Pending confirmation
   </span>
   <div class="square-container">
-    <div #canvasContainer
-         id="canvas-container">
-      <canvas #canvas
-              id="paint-canvas"
-              [width]="width"
-              [height]="height"
-              (wheel)="gotWheel($event)"
-              (mousedown)="mouseDown($event)"
-              (mouseup)="mouseUp($event)"
-              (mouseleave)="mouseLeave()"
-              (mousemove)="mouseMove($event)"
-              (contextmenu)="(false)"
-              [style.--zoom]="zoom"
-              [style.--offsetX]="offsetX + 'px'"
-              [style.--offsetY]="offsetY + 'px'"></canvas>
-    </div>
+    <app-canvas [layers]="lobbyLayers()"
+                (drawCount)="drawCount = $event"
+                (hoveredCoords)="hoveredCoords = $event"
+                [canPaint]="canPaint"
+                [settings]="canvasSettings"></app-canvas>
   </div>
 </div>
 

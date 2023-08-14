@@ -6,10 +6,12 @@ import { BaseDialog } from '../../models/base-dialog.model';
 
 @Component({
   templateUrl: './edit-iteration.component.html',
-  styleUrls: ['./edit-iteration.component.scss']
+  styleUrls: ['./edit-iteration.component.scss'],
 })
 export class EditIterationComponent extends BaseDialog {
-  private readonly _result = new Subject<{ name: string; index: number; delete: boolean } | undefined>();
+  private readonly _result = new Subject<
+    { name: string; index: number; delete: boolean } | undefined
+  >();
   public result = firstValueFrom(this._result);
   public lobby?: LobbyResponse;
   public iterationId?: string;
@@ -32,6 +34,14 @@ export class EditIterationComponent extends BaseDialog {
       throw new Error('Iteration not found');
     }
     return iteration;
+  }
+
+  public get width(): number {
+    return this.lobby?.settings.width ?? 0;
+  }
+
+  public get height(): number {
+    return this.lobby?.settings.height ?? 0;
   }
 
   public get newName(): string {
