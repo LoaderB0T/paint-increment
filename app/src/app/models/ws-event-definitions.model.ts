@@ -16,4 +16,5 @@ export type WsCommunicationDefinitionsClientToServer =
 export type WsCommunicationDefinitionsServerToClient =
   | { name: 'lobbyLocked'; payload: { isLocked: boolean; lockedBy?: string } }
   | { name: 'reservationTime'; payload: { timeLeft: number } }
-  | { name: 'lobbyReserved'; payload: { isReserved: boolean } };
+  | { name: 'lobbyReserved'; payload: { isReserved: boolean } }
+  | { name: '401'; payload: { message: string } };

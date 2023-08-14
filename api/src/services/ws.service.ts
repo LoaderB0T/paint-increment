@@ -48,9 +48,20 @@ export class WsService {
         return;
       }
 
-      const clientId = authToken
-        ? (await Session.getSessionWithoutRequestResponse(authToken)).getUserId()
-        : uid;
+      let userIdFromSession: string | undefined = undefined;
+      try {
+        if (authToken) {
+          userIdFromSession = (
+            await Session.getSessionWithoutRequestResponse(authToken)
+          ).getUserId();
+        }
+      } catch (error) {
+        console.log(error);
+        this.sendToClient(socket, '401', { message: 'Invalid access token (expired?)' });
+        socket.disconnect();
+      }
+
+      const clientId = userIdFromSession || uid;
 
       WsState.clientState[clientId] = socket;
 
@@ -74,7 +85,7 @@ export class WsService {
     this._registeredGateways.push(gateway);
   }
 
-  private disconnect(client: Socket) {
+  public disconnect(client: Socket) {
     if (!WsState.userState[client.id]) {
       return;
     }
@@ -89,11 +100,11 @@ export class WsService {
   }
 
   public sendToClient<T extends WsSendMessage>(
-    clientId: string,
+    clientId: string | Socket,
     method: T,
     payload: ExtractPayload<WsCommunication, T>
   ): void {
-    const socket = WsState.getClientByUserId(clientId);
+    const socket = clientId instanceof Socket ? clientId : WsState.getClientByUserId(clientId);
     socket.emit(method as string, payload);
   }
 

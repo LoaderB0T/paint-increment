@@ -18,6 +18,7 @@ export class WsService {
   private readonly _idService: IdService;
   private __socket?: Socket;
   private readonly _listens: { [key: string]: any } = {};
+  private _lastRetryTime: number = 0;
 
   private get _socket(): Socket {
     if (!this.__socket) {
@@ -38,6 +39,24 @@ export class WsService {
     this.__socket = io(environment.apiUrl, {
       transports: ['websocket'],
       auth: authObj,
+    });
+
+    this.listen('401').subscribe(async () => {
+      await Session.attemptRefreshingSession();
+      if (this._lastRetryTime && Date.now() - this._lastRetryTime > 1000 * 60) {
+        this._lastRetryTime = 0;
+      }
+      if (this._lastRetryTime) {
+        await Session.signOut();
+        console.warn('Could not refresh access token, signing out.');
+      }
+
+      this._lastRetryTime = Date.now();
+      this._socket.auth = {
+        uid: await this._idService.id,
+        accessToken: await Session.getAccessToken(),
+      };
+      this._socket.connect();
     });
 
     this._socket.on('connect', () => {
