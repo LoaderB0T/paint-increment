@@ -1,0 +1,17 @@
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 80vmin;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  .paint-canvas {
+    height: 100%;
+    width: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
+  }
+}

@@ -7,15 +7,18 @@ import { ActionItem } from '../models/action-item.model';
 import { DialogService } from '../services/dialog.service';
 import { IterationEditService } from '../services/iteration-edit.service';
 import { safeLobbyName } from '../util/safe-lobby-name';
+import { ApiService } from '../.api/services/api.service';
+import { pixelArrayToIncrementPixel } from '../util/pixel-array-to-increment-pixel';
 
 @Component({
   templateUrl: './lobby-iterations.component.html',
-  styleUrls: ['./lobby-iterations.component.scss']
+  styleUrls: ['./lobby-iterations.component.scss'],
 })
 export class LobbyIterationsComponent implements AfterViewInit {
   private readonly _activatedRoute: ActivatedRoute;
   private readonly _router: Router;
   private readonly _dialogService: DialogService;
+  private readonly _apiService: ApiService;
   private readonly _iterationEditService: IterationEditService;
   public lobby: LobbyResponse;
 
@@ -28,25 +31,27 @@ export class LobbyIterationsComponent implements AfterViewInit {
       text: 'Back to lobby',
       icon: 'left',
       action: () => this.back(),
-      visible: () => true
+      visible: () => true,
     },
     {
       text: 'Download Images',
       icon: 'download',
       action: () => this.download(),
-      visible: () => true
-    }
+      visible: () => true,
+    },
   ];
 
   constructor(
     activatedRoute: ActivatedRoute,
     router: Router,
     dialogService: DialogService,
+    apiService: ApiService,
     iterationEditService: IterationEditService
   ) {
     this._activatedRoute = activatedRoute;
     this._router = router;
     this._dialogService = dialogService;
+    this._apiService = apiService;
     this._iterationEditService = iterationEditService;
 
     this.lobby = this._activatedRoute.snapshot.data.lobby as LobbyResponse;
@@ -113,13 +118,33 @@ export class LobbyIterationsComponent implements AfterViewInit {
             return;
           }
           if (newIteration.name !== iteration.name) {
-            this._iterationEditService.changeIterationName(this.lobby.id, iteration.id, newIteration.name);
+            this._iterationEditService.changeIterationName(
+              this.lobby.id,
+              iteration.id,
+              newIteration.name
+            );
             iteration.name = newIteration.name;
           }
           if (newIteration.index !== index) {
-            this._iterationEditService.changeIterationIndex(this.lobby.id, iteration.id, newIteration.index);
+            this._iterationEditService.changeIterationIndex(
+              this.lobby.id,
+              iteration.id,
+              newIteration.index
+            );
             this.lobby.pixelIterations.splice(index, 1);
             this.lobby.pixelIterations.splice(newIteration.index, 0, iteration);
+          }
+          if (newIteration.pixels.length) {
+            const newPixels = pixelArrayToIncrementPixel(newIteration.pixels);
+            this._apiService.lobbyControllerEditLobbyPoints({
+              body: {
+                incrementId: iteration.id,
+                lobbyId: this.lobby.id,
+                pixels: newPixels,
+              },
+            });
+            iteration.pixels = newPixels;
+            this.ngAfterViewInit();
           }
         }
       });

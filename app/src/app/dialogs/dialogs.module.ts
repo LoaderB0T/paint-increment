@@ -8,6 +8,7 @@ import { ConfirmedOrRejectedComponent } from './confirmed-or-rejected/confirmed-
 import { NoMobileComponent } from './no-mobile/no-mobile.component';
 import { TimeUpComponent } from './time-up/time-up.component';
 import { EditIterationComponent } from './edit-iteration/edit-iteration.component';
+import { CanvasComponent } from '../canvas/canvas.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,6 @@ import { EditIterationComponent } from './edit-iteration/edit-iteration.componen
     TimeUpComponent,
     EditIterationComponent,
   ],
-  imports: [CommonModule, FormsModule, ControlsModule],
+  imports: [CommonModule, FormsModule, ControlsModule, CanvasComponent],
 })
 export class DialogsModule {}

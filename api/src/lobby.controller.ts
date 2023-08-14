@@ -18,6 +18,7 @@ import { Session as SessionDecorator } from './auth/session.decorator';
 import Session from 'supertokens-node/recipe/session';
 import { getUserById } from 'supertokens-node/recipe/thirdparty';
 import { LobbyPreviewResponse } from './models/dtos/lobby-preview-response.dto';
+import { EditPixelsRequest } from './models/dtos/edit-pixels-request.dto';
 
 @Controller('lobby')
 export class LobbyController {
@@ -96,6 +97,19 @@ export class LobbyController {
     const session = await Session.getSession(req, res, { sessionRequired: false });
     const userInfo = session ? await getUserById(session.getUserId()) : undefined;
     return this._lobbyService.addIncrement(request, userInfo);
+  }
+
+  @Patch('increment')
+  @UseGuards(new AuthGuard())
+  async editLobbyPoints(
+    @Body() request: EditPixelsRequest,
+    @SessionDecorator() session: SessionContainer
+  ): Promise<void> {
+    const userInfo = await getUserById(session.getUserId());
+    if (!userInfo) {
+      throw new Error('User not found');
+    }
+    return this._lobbyService.editIncrement(request, userInfo);
   }
 
   @Patch('increment/confirm')

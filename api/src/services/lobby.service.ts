@@ -22,6 +22,7 @@ import { MailService } from './mail.service';
 import { safeLobbyName } from '../util/safe-lobby-name';
 import { UserInfo } from '../auth/user-info.dto';
 import { LobbyPreviewResponse } from '../models/dtos/lobby-preview-response.dto';
+import { EditPixelsRequest } from '../models/dtos/edit-pixels-request.dto';
 
 @Injectable()
 export class LobbyService {
@@ -206,6 +207,28 @@ export class LobbyService {
     `;
 
     this._mailService.sendMail(lobby.creatorEmail, 'New iteration added to lobby', html, imgData);
+  }
+
+  public async editIncrement(request: EditPixelsRequest, user: UserInfo) {
+    const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
+    if (!lobby) {
+      throw new Error(`Cannot find lobby with id ${request.lobbyId}`);
+    }
+    if (lobby.creatorEmail !== user.email) {
+      throw new Error('Cannot edit increment if not lobby owner');
+    }
+
+    const increment = lobby.increments.find(x => x.id === request.incrementId);
+    if (!increment) {
+      throw new Error(`Cannot find increment with id ${request.incrementId}`);
+    }
+
+    await this._dbService.lobbies.updateOne(
+      { id: request.lobbyId, 'increments.id': request.incrementId },
+      {
+        $set: { 'increments.$.pixels': request.pixels.map(p => [p.x, p.y]) },
+      }
+    );
   }
 
   private getImageDataForNewIncrement(lobby: PaintLobby, newIncrement: PaintIncrement) {
