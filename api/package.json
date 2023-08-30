@@ -43,7 +43,7 @@
     "@nestjs/platform-express": "^10.1.2",
     "@nestjs/swagger": "^7.1.4",
     "canvas": "^2.11.2",
-    "mongodb": "^5.7.0",
+    "mongodb": "^5.8.0",
     "nanoid": "^4.0.2",
     "nodemailer": "^6.9.4",
     "reflect-metadata": "^0.1.13",
