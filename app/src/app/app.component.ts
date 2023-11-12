@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef } from '@angular/core';
+import { Component, ViewContainerRef, inject } from '@angular/core';
 import { DialogService } from './services/dialog.service';
 import { Router } from '@angular/router';
 
@@ -10,7 +10,11 @@ import { Router } from '@angular/router';
 export class AppComponent {
   private readonly _router: Router;
 
-  constructor(dialogService: DialogService, viewContainerRef: ViewContainerRef, router: Router) {
+  constructor() {
+    const dialogService = inject(DialogService);
+    const viewContainerRef = inject(ViewContainerRef);
+    const router = inject(Router);
+
     dialogService.setRootViewContainerRef(viewContainerRef);
     this._router = router;
   }

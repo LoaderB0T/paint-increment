@@ -1,20 +1,19 @@
 <div class="checkbox-root"
-     (click)="clicked($event)"
-     (keypress)="clicked($event)">
+     (blur)="onBlur()">
   <input type="checkbox"
-         class="checkbox-{{ identifier }}"
-         name="{{ identifier }}"
-         id="{{ identifier }}"
-         tabindex="{{ inputTabIndex }}"
-         [(ngModel)]="checkedBoolValue" />
-  <label class="{{ identifier }}Lbl"
-         for="{{ identifier }}">
+         [name]="identifierSig()"
+         (blur)="onBlur()"
+         [id]="identifierSig()"
+         [tabindex]="inputTabIndexSig()"
+         [ngModel]="isCheckedSig()"
+         (ngModelChange)="setIsChecked($event)" />
+  <label [for]="identifierSig()">
     <span class="checkIconBg"
-          [style.background]="color">
-      <i class="fa-{{ iconName }} checkIcon fal"></i>
+          [style.background]="colorSig()">
+      <i class="fa-{{ iconNameSig() }} checkIcon fal"></i>
     </span>
     <span class="checkDescription">
-      {{ labelText }}
+      {{ labelTextSig() }}
     </span>
   </label>
 </div>
