@@ -1,4 +1,12 @@
-import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  Input,
+  OnDestroy,
+  Renderer2,
+  inject,
+} from '@angular/core';
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
@@ -7,16 +15,11 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from
 })
 export class TooltipDirective implements OnDestroy {
   public shown: boolean = false;
-  private readonly _renderer: Renderer2;
-  private readonly _el: ElementRef<any>;
+  private readonly _renderer = inject(Renderer2);
+  private readonly _el = inject(ElementRef);
   private _tooltip?: HTMLSpanElement;
 
   @Input('tooltip') tooltipTitle: string = '';
-
-  constructor(el: ElementRef, renderer: Renderer2) {
-    this._el = el;
-    this._renderer = renderer;
-  }
 
   @HostListener('mouseenter') onMouseEnter() {
     if (!this.shown) {
