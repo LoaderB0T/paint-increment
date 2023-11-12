@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import Session from 'supertokens-web-js/recipe/session';
@@ -14,14 +14,9 @@ import { AuthService } from '../auth.service';
   styleUrls: [],
 })
 export class AuthCallbackComponent implements OnInit {
-  private readonly _route: ActivatedRoute;
-  private readonly _authService: AuthService;
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _authService = inject(AuthService);
   public isAlreadyLoggedIn = false;
-
-  constructor(route: ActivatedRoute, authService: AuthService) {
-    this._route = route;
-    this._authService = authService;
-  }
 
   public async ngOnInit() {
     const isLoggedIn = await Session.doesSessionExist();

@@ -5,20 +5,15 @@ import ThirdParty, {
   signInAndUp,
 } from 'supertokens-web-js/recipe/thirdparty';
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { ApiService } from '../.api/services/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly _router: Router;
-  private readonly _apiService: ApiService;
-
-  constructor(router: Router, apiService: ApiService) {
-    this._router = router;
-    this._apiService = apiService;
-  }
+  private readonly _router = inject(Router);
+  private readonly _apiService = inject(ApiService);
 
   public init() {
     SuperTokens.init({

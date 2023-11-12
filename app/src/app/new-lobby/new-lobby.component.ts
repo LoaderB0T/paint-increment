@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UntilDestroy } from '@ngneat/until-destroy';
@@ -6,8 +6,6 @@ import { CreateLobbyRequest } from '../.api/models/create-lobby-request';
 
 import { ApiService } from '../.api/services/api.service';
 import { validityTexts } from '../controls/models/validity-texts.model';
-import { IdService } from '../services/id.service';
-import { UserInfoService } from '../services/user-info.service';
 import { safeLobbyName } from '../util/safe-lobby-name';
 
 @UntilDestroy()
@@ -16,10 +14,8 @@ import { safeLobbyName } from '../util/safe-lobby-name';
   styleUrls: ['./new-lobby.component.scss'],
 })
 export class NewLobbyComponent {
-  private readonly _router: Router;
-  private readonly _apiService: ApiService;
-  private readonly _idService: IdService;
-  private readonly _userInfoService: UserInfoService;
+  private readonly _router = inject(Router);
+  private readonly _apiService = inject(ApiService);
 
   public lobbyNameAvailable: boolean = true;
   public maxPixels: number = 250;
@@ -32,18 +28,6 @@ export class NewLobbyComponent {
 
   @ViewChild('newLobby', { static: true })
   private readonly _formElement!: NgForm;
-
-  constructor(
-    router: Router,
-    apiService: ApiService,
-    idService: IdService,
-    userInfoService: UserInfoService
-  ) {
-    this._router = router;
-    this._apiService = apiService;
-    this._idService = idService;
-    this._userInfoService = userInfoService;
-  }
 
   public get formDisabled(): boolean {
     if (this.clickedButton || !this.lobbyNameAvailable) {

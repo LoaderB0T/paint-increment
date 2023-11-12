@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, Input } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, inject } from '@angular/core';
 
 @Directive({
   selector: '[equalWidth]',
@@ -6,11 +6,7 @@ import { AfterViewInit, Directive, ElementRef, Input } from '@angular/core';
 })
 export class EqualWidthDirective implements AfterViewInit {
   @Input() equalWidth?: HTMLElement;
-  private readonly _el: ElementRef<HTMLElement>;
-
-  constructor(el: ElementRef<HTMLElement>) {
-    this._el = el;
-  }
+  private readonly _el: ElementRef<HTMLElement> = inject(ElementRef);
 
   ngAfterViewInit(): void {
     if (this.equalWidth) {

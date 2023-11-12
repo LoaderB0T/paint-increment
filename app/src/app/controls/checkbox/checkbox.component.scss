@@ -4,9 +4,13 @@ $boxsize: 50;
 $padding: 3;
 $scaleUnchecked: 0.35;
 $scaleHover: 0.45;
+$scaleChecked: 1;
+$scaleCheckedHover: 0.9;
 
 input[type='checkbox'] + label span .checkIcon {
-  transition: all 0.15s cubic-bezier(0.5, 0, 0, 1.5), transform 0.35s cubic-bezier(0.5, 0, 0, 3);
+  transition:
+    all 0.15s cubic-bezier(0.5, 0, 0, 1.5),
+    transform 0.35s cubic-bezier(0.5, 0, 0, 3);
   width: $boxsize - 2 * $padding + px;
   height: $boxsize - 2 * $padding + px;
   transform: scale($scaleUnchecked);
@@ -41,6 +45,10 @@ input[type='checkbox']:not(:empty):focus + label span .checkIcon:hover,
 input[type='checkbox'] + label:hover span .checkIcon {
   transform: scale($scaleHover);
 }
+input[type='checkbox']:checked:not(:empty):focus + label span .checkIcon:hover,
+input[type='checkbox']:checked + label:hover span .checkIcon {
+  transform: scale($scaleCheckedHover);
+}
 
 input[type='checkbox']:focus + label .checkIconBg,
 input[type='checkbox']:active + label .checkIconBg {
@@ -56,7 +64,7 @@ input[type='checkbox'] + label {
 
 input[type='checkbox']:checked + label span .checkIcon {
   color: $dark;
-  transform: scale(1);
+  transform: scale($scaleChecked);
 }
 
 input[type='checkbox']:not(:checked) + label .checkIcon {

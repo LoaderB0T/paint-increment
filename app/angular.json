@@ -62,10 +62,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "paint-increment-client:build:production"
+              "buildTarget": "paint-increment-client:build:production"
             },
             "development": {
-              "browserTarget": "paint-increment-client:build:development"
+              "buildTarget": "paint-increment-client:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -73,7 +73,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "paint-increment-client:build"
+            "buildTarget": "paint-increment-client:build"
           }
         },
         "lint": {
