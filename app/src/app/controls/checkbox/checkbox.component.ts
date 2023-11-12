@@ -74,7 +74,6 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnDestro
   }
 
   protected setIsChecked(value: boolean) {
-    console.log('setIsChecked', value);
     if (value === null || value === undefined) {
       this._checked.set(this.allowUndefinedState ? CheckedState.UNDEFINED : CheckedState.UNCHECKED);
     } else {
@@ -89,7 +88,6 @@ export class CheckboxComponent implements OnInit, ControlValueAccessor, OnDestro
   }
 
   public writeValue(value: any): void {
-    console.log('writeValue', value);
     if (value === null || value === undefined) {
       this._checked.set(this.allowUndefinedState ? CheckedState.UNDEFINED : CheckedState.UNCHECKED);
     } else if (value !== this._checked) {
