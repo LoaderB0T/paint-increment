@@ -27,8 +27,8 @@ dependencies:
     specifier: ^4.0.2
     version: 4.0.2
   nodemailer:
-    specifier: ^6.9.4
-    version: 6.9.4
+    specifier: ^6.9.9
+    version: 6.9.9
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
@@ -5514,8 +5514,8 @@ packages:
     resolution: {integrity: sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==}
     dev: true
 
-  /nodemailer@6.9.4:
-    resolution: {integrity: sha512-CXjQvrQZV4+6X5wP6ZIgdehJamI63MFoYFGGPtHudWym9qaEHDNdPzaj5bfMCvxG1vhAileSWW90q7nL0N36mA==}
+  /nodemailer@6.9.9:
+    resolution: {integrity: sha512-dexTll8zqQoVJEZPwQAKzxxtFn0qTnjdQTchoU6Re9BUUGBJiOy3YMn/0ShTW6J5M0dfQ1NeDeRTTl4oIWgQMA==}
     engines: {node: '>=6.0.0'}
     dev: false
 
@@ -6860,7 +6860,7 @@ packages:
       inflation: 2.0.0
       jose: 4.14.4
       libphonenumber-js: 1.10.38
-      nodemailer: 6.9.4
+      nodemailer: 6.9.9
       pkce-challenge: 3.1.0
       psl: 1.8.0
       raw-body: 2.5.2
