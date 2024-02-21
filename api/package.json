@@ -45,7 +45,7 @@
     "canvas": "^2.11.2",
     "mongodb": "^5.8.0",
     "nanoid": "^4.0.2",
-    "nodemailer": "^6.9.4",
+    "nodemailer": "^6.9.9",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.1",
