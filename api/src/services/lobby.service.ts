@@ -1,28 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { createCanvas } from 'canvas';
-import { id } from '../util/id';
 
-import { AddPixelsRequest } from '../models/dtos/add-pixels-request.dto';
-import { ConfirmIncrementRequest } from '../models/dtos/confirm-increment-request.dto';
-import { CreateLobbyRequest } from '../models/dtos/create-lobby-request.dto';
-import { LobbyResponse } from '../models/dtos/lobby-response.dto';
-import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto';
-import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto';
-import { ValidateCreatorSecretRequestDto } from '../models/dtos/validate-creator-secret-request.dto';
-import { ValidateCreatorSecretResponseDto } from '../models/dtos/validate-creator-secret-response.dto';
-import { ValidateInviteCodeRequestDto } from '../models/dtos/validate-invite-code-request.dto';
-import { ValidateInviteCodeResponseDto } from '../models/dtos/validate-invite-code-response.dto';
-import { PaintIncrement } from '../models/paint-increment.model';
-import { PaintLobbySettings } from '../models/paint-lobby-settings.model';
-import { PaintLobby } from '../models/paint-lobby.model';
-import { WsState } from '../models/ws-state.model';
-import { ConfigService } from './config.service';
-import { DbService } from './db.service';
-import { MailService } from './mail.service';
-import { safeLobbyName } from '../util/safe-lobby-name';
-import { UserInfo } from '../auth/user-info.dto';
-import { LobbyPreviewResponse } from '../models/dtos/lobby-preview-response.dto';
-import { EditPixelsRequest } from '../models/dtos/edit-pixels-request.dto';
+import { ConfigService } from './config.service.js';
+import { DbService } from './db.service.js';
+import { MailService } from './mail.service.js';
+import { UserInfo } from '../auth/user-info.dto.js';
+import { AddPixelsRequest } from '../models/dtos/add-pixels-request.dto.js';
+import { ConfirmIncrementRequest } from '../models/dtos/confirm-increment-request.dto.js';
+import { CreateLobbyRequest } from '../models/dtos/create-lobby-request.dto.js';
+import { EditPixelsRequest } from '../models/dtos/edit-pixels-request.dto.js';
+import { LobbyPreviewResponse } from '../models/dtos/lobby-preview-response.dto.js';
+import { LobbyResponse } from '../models/dtos/lobby-response.dto.js';
+import { NewInviteCodeRequestDto } from '../models/dtos/new-invite-code-request.dto.js';
+import { NewInviteCodeResponseDto } from '../models/dtos/new-invite-code-response.dto.js';
+import { ValidateCreatorSecretRequestDto } from '../models/dtos/validate-creator-secret-request.dto.js';
+import { ValidateCreatorSecretResponseDto } from '../models/dtos/validate-creator-secret-response.dto.js';
+import { ValidateInviteCodeRequestDto } from '../models/dtos/validate-invite-code-request.dto.js';
+import { ValidateInviteCodeResponseDto } from '../models/dtos/validate-invite-code-response.dto.js';
+import { PaintIncrement } from '../models/paint-increment.model.js';
+import { PaintLobbySettings } from '../models/paint-lobby-settings.model.js';
+import { PaintLobby } from '../models/paint-lobby.model.js';
+import { WsState } from '../models/ws-state.model.js';
+import { id } from '../util/id.js';
+import { safeLobbyName } from '../util/safe-lobby-name.js';
 
 @Injectable()
 export class LobbyService {

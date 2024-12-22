@@ -1,7 +1,7 @@
 import {
   WsCommunicationDefinitionsClientToServer,
   WsCommunicationDefinitionsServerToClient,
-} from './ws-event-definitions.model';
+} from './ws-event-definitions.model.js';
 
 type FlattenUnion<T> = {} extends T
   ? never

@@ -1,17 +1,19 @@
+import { Server as HttpServer } from 'http';
+
 import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-import { Server as HttpServer } from 'http';
 import Session from 'supertokens-node/recipe/session';
+
+import { ConfigService } from './config.service.js';
 import {
   ExtractPayload,
   WsCommunication,
   WsReceiveMessage,
   WsSendMessage,
-} from '../models/ws-event-types.model';
-import { WsGateway } from '../models/ws-gateway.model';
-import { WsState } from '../models/ws-state.model';
-import { ConfigService } from './config.service';
+} from '../models/ws-event-types.model.js';
+import { WsGateway } from '../models/ws-gateway.model.js';
+import { WsState } from '../models/ws-state.model.js';
 
 @Injectable()
 export class WsService {

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { WsGateway } from './models/ws-gateway.model';
-import { WsState } from './models/ws-state.model';
-import { LobbyService } from './services/lobby.service';
-import { WsService } from './services/ws.service';
+
+import { WsGateway } from './models/ws-gateway.model.js';
+import { WsState } from './models/ws-state.model.js';
+import { LobbyService } from './services/lobby.service.js';
+import { WsService } from './services/ws.service.js';
 
 @Injectable()
 export class LobbyGateway extends WsGateway {

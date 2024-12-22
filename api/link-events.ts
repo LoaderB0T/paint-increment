@@ -1,7 +1,8 @@
 import { exec } from 'child_process';
 import { platform } from 'os';
-import * as fs from 'fs-extra';
 import { exit } from 'process';
+
+import * as fs from 'fs-extra';
 
 const execAsync = (command: string) => {
   return new Promise<void>((resolve, reject) => {

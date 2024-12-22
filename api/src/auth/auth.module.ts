@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { AuthMiddleware } from './auth.middleware';
-import { SupertokensService } from './auth.service';
-import { ConfigModule } from '../config.module';
+import { AuthMiddleware } from './auth.middleware.js';
+import { SupertokensService } from './auth.service.js';
+import { ConfigModule } from '../config.module.js';
 
 @Module({
   imports: [ConfigModule],

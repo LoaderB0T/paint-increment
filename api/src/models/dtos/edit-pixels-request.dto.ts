@@ -1,4 +1,4 @@
-import { IncrementPixel } from './increment-pixel.dto';
+import { IncrementPixel } from './increment-pixel.dto.js';
 
 export class EditPixelsRequest {
   lobbyId!: string;

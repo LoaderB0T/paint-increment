@@ -1,13 +1,13 @@
 import { writeFileSync } from 'fs';
-import supertokens from 'supertokens-node';
 
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import supertokens from 'supertokens-node';
 
-import { AppModule } from './app.module';
-import { ConfigService } from './services/config.service';
-import { WsService } from './services/ws.service';
-import { SupertokensExceptionFilter } from './auth/auth.filter';
+import { AppModule } from './app.module.js';
+import { SupertokensExceptionFilter } from './auth/auth.filter.js';
+import { ConfigService } from './services/config.service.js';
+import { WsService } from './services/ws.service.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

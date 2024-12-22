@@ -1,9 +1,0 @@
-{
-  "extends": ["@awdware/eslint-config-angular"],
-  "parserOptions": {
-    "project": "tsconfig.app.json"
-  },
-  "rules": {
-    "@typescript-eslint/no-non-null-assertion": "off"
-  }
-}

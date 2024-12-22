@@ -1,8 +1,10 @@
-import { Db, MongoClient } from 'mongodb';
-import assert = require('assert');
+import assert from 'assert';
+
 import { Injectable } from '@nestjs/common';
-import { PaintLobby } from '../models/paint-lobby.model';
-import { ConfigService } from './config.service';
+import { Db, MongoClient } from 'mongodb';
+
+import { ConfigService } from './config.service.js';
+import { PaintLobby } from '../models/paint-lobby.model.js';
 
 @Injectable()
 export class DbService {

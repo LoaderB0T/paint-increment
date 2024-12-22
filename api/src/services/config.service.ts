@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
-import { Config } from '../models/config.model';
+
+import { Injectable } from '@nestjs/common';
+
+import { Config } from '../models/config.model.js';
 
 @Injectable()
 export class ConfigService {

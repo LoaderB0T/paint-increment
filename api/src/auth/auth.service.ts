@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import supertokens from 'supertokens-node';
+import Dashboard from 'supertokens-node/recipe/dashboard';
 import Session from 'supertokens-node/recipe/session';
 import ThirdParty from 'supertokens-node/recipe/thirdparty';
-import Dashboard from 'supertokens-node/recipe/dashboard';
 import UserMetadata from 'supertokens-node/recipe/usermetadata';
 
-import { ConfigService } from '../services/config.service';
+import { ConfigService } from '../services/config.service.js';
 
 @Injectable()
 export class SupertokensService {

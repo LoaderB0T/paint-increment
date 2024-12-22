@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { ConfigService } from './config.service';
+
+import { ConfigService } from './config.service.js';
 
 @Injectable()
 export class MailService {
@@ -17,8 +18,8 @@ export class MailService {
       service: this._configService.config.mail.service,
       auth: {
         user: this._configService.config.mail.account,
-        pass: this._configService.config.mail.password
-      }
+        pass: this._configService.config.mail.password,
+      },
     });
 
     this._mailTransporter.verify(error => {
@@ -36,7 +37,7 @@ export class MailService {
       to,
       subject,
       html: body,
-      attachments: img ? [{ path: img, filename: 'img.png', cid: '1' }] : undefined
+      attachments: img ? [{ path: img, filename: 'img.png', cid: '1' }] : undefined,
     } as Mail.Options;
 
     if (to.endsWith('example.com')) {

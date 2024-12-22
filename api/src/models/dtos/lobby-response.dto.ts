@@ -1,5 +1,5 @@
-import { PaintLobbySettings } from './create-lobby-request.dto';
-import { IterationModel } from './iteration-model.dto';
+import { PaintLobbySettings } from './create-lobby-request.dto.js';
+import { IterationModel } from './iteration-model.dto.js';
 
 export class LobbyResponse {
   id!: string;

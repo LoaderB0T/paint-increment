@@ -1,4 +1,4 @@
-export class UserInfo {
-  email!: string;
-  id!: string;
-}
+export type UserInfo = {
+  email: string;
+  id: string;
+};

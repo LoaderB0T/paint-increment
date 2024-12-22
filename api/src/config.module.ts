@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from './services/config.service';
+
+import { ConfigService } from './services/config.service.js';
 
 @Module({
   imports: [],

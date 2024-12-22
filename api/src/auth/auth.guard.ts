@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Error as STError } from 'supertokens-node';
-
-import { verifySession } from 'supertokens-node/recipe/session/framework/express';
 import { VerifySessionOptions } from 'supertokens-node/recipe/session';
+import { verifySession } from 'supertokens-node/recipe/session/framework/express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

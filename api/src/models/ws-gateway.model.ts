@@ -1,8 +1,9 @@
 import { Socket } from 'socket.io';
 import Session from 'supertokens-node/recipe/session';
-import { WsService } from '../services/ws.service';
-import { UserInfo } from '../auth/user-info.dto';
-import { getUserById } from 'supertokens-node/recipe/thirdparty';
+
+import { UserInfo } from '../auth/user-info.dto.js';
+import { WsService } from '../services/ws.service.js';
+import { getUserInfo } from '../util/get-user-info.js';
 
 export abstract class WsGateway {
   protected readonly _wsService: WsService;
@@ -34,7 +35,7 @@ export abstract class WsGateway {
   ): Promise<UserInfo | undefined> {
     const uid = await this.getUid(data);
 
-    const res = await getUserById(uid);
+    const res = await getUserInfo(uid);
 
     return res
       ? {

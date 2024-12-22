@@ -1,25 +1,12 @@
-import { Component, ViewContainerRef, inject } from '@angular/core';
-import { DialogService } from './services/dialog.service';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  private readonly _router: Router;
-
-  constructor() {
-    const dialogService = inject(DialogService);
-    const viewContainerRef = inject(ViewContainerRef);
-    const router = inject(Router);
-
-    dialogService.setRootViewContainerRef(viewContainerRef);
-    this._router = router;
-  }
-
-  public home() {
-    this._router.navigate(['']);
-  }
+  title = 'awd-paint';
 }
