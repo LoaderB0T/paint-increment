@@ -34,6 +34,9 @@
               "src/environment.json"
             ],
             "styles": ["src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/shared/styles"]
+            },
             "scripts": [],
             "server": "src/main.server.ts",
             "ssr": {

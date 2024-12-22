@@ -1,1 +1,33 @@
 <router-outlet></router-outlet>
+
+<svg style="width: 0; height: 0">
+  <filter id="paperFilter">
+    <feTurbulence
+      type="fractalNoise"
+      baseFrequency="0.04"
+      result="noise"
+      numOctaves="5"
+    />
+
+    <feDiffuseLighting in="noise" lighting-color="#fff" surfaceScale="2">
+      <feDistantLight azimuth="45" [attr.elevation]="65" />
+    </feDiffuseLighting>
+  </filter>
+  @for (i of squigglies; track i) {
+    <filter [id]="'squiggly-' + i">
+      <feTurbulence
+        id="turbulence"
+        baseFrequency="0.01"
+        numOctaves="3"
+        result="noise"
+        [attr.seed]="i"
+      />
+      <feDisplacementMap
+        id="displacement"
+        in="SourceGraphic"
+        in2="noise"
+        scale="2"
+      />
+    </filter>
+  }
+</svg>

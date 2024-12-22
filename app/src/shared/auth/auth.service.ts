@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService as ApiAuthService } from '@awd/shared/api';
-import { environment } from '@awd/shared/env';
 import SuperTokens from 'supertokens-web-js';
 import Session from 'supertokens-web-js/recipe/session';
 import ThirdParty, {
   getAuthorisationURLWithQueryParamsAndSetState,
   signInAndUp,
 } from 'supertokens-web-js/recipe/thirdparty';
+
+import { AuthService as ApiAuthService } from '../api';
+import { environment } from '../env';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

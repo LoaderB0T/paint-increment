@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+
+@use "vars";
+
+body,
+html {
+  font-weight: vars.$fontWeightNormal;
+  font-size: vars.$fontSizeNormal;
+  font-family: vars.$fontFamily;
+  font-optical-sizing: auto;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  color: vars.$colorContent1;
+}
+
+body {
+  backdrop-filter: url(#paperFilter);
+}

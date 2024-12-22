@@ -45,11 +45,4 @@ export default [
       ],
     },
   },
-  {
-    files: ["**/lib/generated/**/*.ts"],
-    rules: {
-      "unused-imports/no-unused-imports": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
 ];

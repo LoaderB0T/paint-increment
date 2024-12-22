@@ -1,8 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { inject } from '@angular/core';
-import { objectKeys } from '@awd/shared/utils';
 
 import { environment } from './environment';
+import { objectKeys } from '../utils';
 
 export async function loadEnv() {
   const win = inject(DOCUMENT).defaultView;

@@ -8,7 +8,7 @@ import {
   withEventReplay,
 } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { loadEnv } from '@awd/shared/env';
+import { loadEnv } from '@shared/env';
 
 import { routes } from './app.routes';
 

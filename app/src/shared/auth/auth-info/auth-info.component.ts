@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+
 import { TooltipDirective } from '../../controls/directives/tooltip';
-import { DialogService } from '../../services/dialog.service';
 import { UserInfoComponent } from '../../dialogs/user-info/user-info.component';
+import { DialogService } from '../../services/dialog.service';
 
 @Component({
   selector: 'app-auth-info',
@@ -16,7 +17,7 @@ export class AuthInfoComponent {
   private readonly _dialogService = inject(DialogService);
 
   public showUserInfo() {
-    this._dialogService.showComponentDialog(UserInfoComponent, c => {
+    this._dialogService.showComponentDialog(UserInfoComponent, (c) => {
       c.canDoLater = true;
     });
   }
