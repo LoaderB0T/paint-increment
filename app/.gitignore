@@ -42,4 +42,4 @@ testem.log
 Thumbs.db
 
 # codegen
-src/app/api
+src/shared/api/.api

@@ -16,7 +16,22 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022"
+    "baseUrl": "./",
+    "module": "ES2022",
+    "paths": {
+      "@awd/shared/api": [
+        "src/shared/api/index.ts"
+      ],
+      "@awd/shared/auth": [
+        "src/shared/auth/index.ts"
+      ],
+      "@awd/shared/env": [
+        "src/shared/env/index.ts"
+      ],
+      "@awd/shared/utils": [
+        "src/shared/utils/index.ts"
+      ],
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -5,7 +5,7 @@ import {
 } from '@goast/typescript';
 
 async function main() {
-  const generator = new OpenApiGenerator({ outputDir: 'src/app/api' })
+  const generator = new OpenApiGenerator({ outputDir: 'src/shared/api/.api' })
     // Add a generator using a class
     .useType(TypeScriptModelsGenerator)
     .useType(TypeScriptAngularServicesGenerator);
