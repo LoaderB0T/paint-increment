@@ -7,6 +7,7 @@ export default [
       "**/assets/modules",
       "**/jest.config.ts",
       "**/index.html",
+      "src/app/api",
     ],
   },
   {

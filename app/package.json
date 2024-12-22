@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:awd-paint": "node dist/awd-paint/server/server.mjs",
-    "codegen": "node --loader ts-node/esm ./tools/codegen.ts"
+    "codegen": "node --loader ts-node/esm ./tools/codegen.ts",
+    "lint": "eslint src"
   },
   "private": true,
   "type": "module",
