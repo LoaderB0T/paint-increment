@@ -11,7 +11,7 @@ export async function loadEnv() {
   });
   const env = (await file.json()) as typeof environment;
 
-  objectKeys(env).forEach((k) => {
+  objectKeys(env).forEach(k => {
     (environment[k] as any) = env[k];
   });
 }

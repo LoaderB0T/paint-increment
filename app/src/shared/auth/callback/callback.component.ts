@@ -9,12 +9,8 @@ import { AuthService } from '../auth.service';
   selector: 'app-auth',
   standalone: true,
   imports: [CommonModule],
-  template: `<ng-container *ngIf="isAlreadyLoggedIn"
-      >Already signed in</ng-container
-    >
-    <ng-container *ngIf="!isAlreadyLoggedIn"
-      >Please wait while we sign you in...</ng-container
-    >`,
+  template: `<ng-container *ngIf="isAlreadyLoggedIn">Already signed in</ng-container>
+    <ng-container *ngIf="!isAlreadyLoggedIn">Please wait while we sign you in...</ng-container>`,
   styleUrls: [],
 })
 export class AuthCallbackComponent implements OnInit {

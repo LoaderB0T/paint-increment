@@ -2,12 +2,7 @@
 
 <svg style="width: 0; height: 0; position: absolute">
   <filter id="paperFilter">
-    <feTurbulence
-      type="fractalNoise"
-      baseFrequency="0.04"
-      result="noise"
-      numOctaves="5"
-    />
+    <feTurbulence type="fractalNoise" baseFrequency="0.04" result="noise" numOctaves="5" />
 
     <feDiffuseLighting in="noise" lighting-color="#fff" surfaceScale="2">
       <feDistantLight azimuth="45" [attr.elevation]="65" />
@@ -22,12 +17,7 @@
         result="noise"
         [attr.seed]="i"
       />
-      <feDisplacementMap
-        id="displacement"
-        in="SourceGraphic"
-        in2="noise"
-        scale="5"
-      />
+      <feDisplacementMap id="displacement" in="SourceGraphic" in2="noise" scale="5" />
     </filter>
   }
 </svg>

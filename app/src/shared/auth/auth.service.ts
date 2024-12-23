@@ -57,9 +57,7 @@ export class AuthService {
     // Future improvement: show a toast message if error.isSuperTokensGeneralError === true
   }
 
-  private handleThirdpartyCallback(
-    response: Awaited<ReturnType<typeof signInAndUp>>,
-  ) {
+  private handleThirdpartyCallback(response: Awaited<ReturnType<typeof signInAndUp>>) {
     if (response.status === 'OK') {
       const redirectTo = localStorage.getItem('returnUrl') || '/';
       this._router.navigate([redirectTo]);

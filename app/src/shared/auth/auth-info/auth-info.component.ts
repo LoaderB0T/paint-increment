@@ -17,7 +17,7 @@ export class AuthInfoComponent {
   private readonly _dialogService = inject(DialogService);
 
   public showUserInfo() {
-    this._dialogService.showComponentDialog(UserInfoComponent, (c) => {
+    this._dialogService.showComponentDialog(UserInfoComponent, c => {
       c.canDoLater = true;
     });
   }
