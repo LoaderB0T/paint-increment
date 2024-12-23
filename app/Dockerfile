@@ -1,10 +1,6 @@
-ARG skipBuild=false
-
-FROM node:18.15.0-alpine3.17 AS base
+FROM node:22-alpine3.20 AS base
 
 RUN npm i -g pnpm
-
-FROM base as dependencies
 
 WORKDIR /app
 
@@ -12,13 +8,13 @@ COPY ./app/package.json .
 COPY ./app/pnpm-lock.yaml .
 RUN pnpm i
 
-FROM base AS build
+FROM base AS builder
 
 WORKDIR /app
 
 COPY ./app .
 COPY ./api/swagger.json .
-COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=base /app/node_modules ./node_modules
 
 RUN pnpm run codegen-docker
 RUN pnpm run build
