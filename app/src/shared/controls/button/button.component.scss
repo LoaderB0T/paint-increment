@@ -2,15 +2,17 @@
 
 button {
   font-family: vars.$fontFamily;
+  font-weight: vars.$fontWeightBold;
   @include vars.fontSize(vars.$fontSizeNormal);
   border: none;
   position: relative;
   background: transparent;
-  padding: 12px;
+  padding: 16px;
   cursor: pointer;
   &:hover {
     @include vars.squiggly;
   }
+  @include vars.static-squiggle(s);
   &::before {
     content: '';
     position: absolute;
@@ -21,7 +23,6 @@ button {
     border: 5px solid black;
     outline: 5px white solid;
     border-radius: 40px;
-    --squiggle-amount: 1.5px;
-    @include vars.static-squiggle;
+    @include vars.static-squiggle(l);
   }
 }

@@ -5,13 +5,27 @@
     @content;
   }
 }
+@mixin not-firefox {
+  @supports not (-moz-appearance: none) {
+    @content;
+  }
+}
 
 $squigglyCount: 20;
 $timePerSquiggle: 80ms;
 $animationTime: $squigglyCount * $timePerSquiggle;
 @mixin squiggleFilter($i) {
-  filter: url('#squiggly-#{$i}') blur(var(--squiggle-amount, calc(var(--font-size, 32px) * 0.03)))
-    contrast(30);
+  @include not-firefox {
+    --blurMultiplier: 0.03;
+    --contrast: 3;
+  }
+  @include firefox {
+    --contrast: 2;
+    --blurMultiplier: 0.01;
+  }
+  filter: url('#squiggly-#{$i}')
+    blur(var(--squiggle-amount, calc(var(--font-size, 32px) * var(--blurMultiplier))))
+    contrast(var(--contrast));
 }
 @mixin squiggly-init {
   @keyframes squiggly {
@@ -28,10 +42,10 @@ $animationTime: $squigglyCount * $timePerSquiggle;
   mix-blend-mode: multiply;
 }
 
-@mixin static-squiggle {
+@mixin static-squiggle($amount: m) {
   background: white;
   mix-blend-mode: multiply;
-  @include squiggleFilter(1);
+  @include squiggleFilter($amount);
 }
 
 @mixin fontSize($size) {

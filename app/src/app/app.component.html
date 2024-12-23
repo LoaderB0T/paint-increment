@@ -8,6 +8,18 @@
       <feDistantLight azimuth="45" [attr.elevation]="65" />
     </feDiffuseLighting>
   </filter>
+  <filter id="squiggly-s">
+    <feTurbulence id="turbulence" baseFrequency="0.01" numOctaves="3" result="noise" seed="0" />
+    <feDisplacementMap id="displacement" in="SourceGraphic" in2="noise" scale="2" />
+  </filter>
+  <filter id="squiggly-m">
+    <feTurbulence id="turbulence" baseFrequency="0.02" numOctaves="3" result="noise" seed="0" />
+    <feDisplacementMap id="displacement" in="SourceGraphic" in2="noise" scale="5" />
+  </filter>
+  <filter id="squiggly-l">
+    <feTurbulence id="turbulence" baseFrequency="0.01" numOctaves="2" result="noise" seed="0" />
+    <feDisplacementMap id="displacement" in="SourceGraphic" in2="noise" scale="15" />
+  </filter>
   @for (i of squigglyCount; track i) {
     <filter [id]="'squiggly-' + i">
       <feTurbulence
