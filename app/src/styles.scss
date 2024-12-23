@@ -56,6 +56,14 @@ h6 {
 ::view-transition-old(paper) {
   animation-name: out-paper;
 }
+::view-transition-group(cursor),
+::view-transition-group(cursor-bg) {
+  animation: none;
+}
+::view-transition-group(cursor-bg) {
+  margin-top: -14px; // For some reason, the cursor-bg is off while doing view transitions
+  margin-left: -8px;
+}
 
 @keyframes in-paper {
   0% {

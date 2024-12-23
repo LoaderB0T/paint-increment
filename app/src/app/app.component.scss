@@ -3,6 +3,7 @@
 $padding: 8px;
 
 .cursor-img {
+  view-transition-name: cursor;
   position: fixed;
   z-index: 100000;
   pointer-events: none;
@@ -17,6 +18,7 @@ $padding: 8px;
     padding: $padding;
   }
   &.bg {
+    view-transition-name: cursor-bg;
     filter: blur(3px) brightness(0.5) contrast(30) brightness(5) invert(1);
     mix-blend-mode: lighten;
   }
