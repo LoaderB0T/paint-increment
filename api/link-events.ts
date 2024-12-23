@@ -31,7 +31,7 @@ const createFileLink = async (linkPath: string, realPath: string): Promise<void>
 fs.remove('./src/models/ws-event-definitions.model.ts').then(() => {
   createFileLink(
     './src/models/ws-event-definitions.model.ts',
-    '../app/src/app/models/ws-event-definitions.model.ts'
+    '../app/src/shared/api/ws/ws-event-definitions.model.ts'
   ).catch(error => {
     console.error(error);
     exit(1);

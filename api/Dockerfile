@@ -17,7 +17,7 @@ RUN node -v
 RUN pnpm i
 
 COPY ./api .
-COPY ./app/src/app/models/ws-event-definitions.model.ts ./src/models
+COPY ./app/src/shared/api/ws/ws-event-definitions.model.ts ./src/models
 
 RUN pnpm run build
 
