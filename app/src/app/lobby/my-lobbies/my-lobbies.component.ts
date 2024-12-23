@@ -31,11 +31,13 @@ export class MyLobbiesComponent {
         return;
       }
       const lobbies = assertBody(response);
-      const mapped = lobbies.map(lobby => ({
-        ...lobby,
-        link: ['..', safeLobbyName(lobby.name), lobby.id],
-      }));
-      this.lobbies.set([...mapped, ...mapped, ...mapped]);
+      const mapped = lobbies
+        .map(lobby => ({
+          ...lobby,
+          link: ['..', safeLobbyName(lobby.name), lobby.id],
+        }))
+        .reverse();
+      this.lobbies.set(mapped);
     });
   }
 
