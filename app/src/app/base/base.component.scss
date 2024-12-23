@@ -11,8 +11,6 @@
     position: relative;
     padding: 16px;
     box-shadow: 0 0 32px 0 rgba(0, 0, 0, 0.25);
-    // background: url(public/paper1.jpg) repeat; // https://www.imgonline.com.ua/eng/make-seamless-texture-result.php
-    // performance issues with backdrop-filter
     &::before {
       content: '';
       z-index: -1;
@@ -24,7 +22,8 @@
       filter: url(#paperFilter);
       clip-path: border-box;
       @include vars.firefox {
-        filter: url(#paperFilter) contrast(0.5) brightness(1.35); // paper filter is way too strong in Firefox, so we need to tone it down
+        // paper filter is way too strong in Firefox, so we need to tone it down
+        filter: url(#paperFilter) contrast(0.5) brightness(1.35);
       }
     }
     &.paper-main {
