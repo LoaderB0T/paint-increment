@@ -16,7 +16,7 @@ COPY ./app .
 COPY ./api/swagger.json .
 COPY --from=base /app/node_modules ./node_modules
 
-RUN pnpm run codegen-docker
+RUN pnpm run codegen
 RUN pnpm run build
 
 
