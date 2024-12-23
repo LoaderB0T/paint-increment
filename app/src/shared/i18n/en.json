@@ -1,13 +1,16 @@
 {
   "home": {
-    "createLobby": "Create Lobby",
-    "myLobbies": "My Lobbies"
+    "title": "Welcome to awd paint!",
+    "createLobby": "Create lobby",
+    "myLobbies": "My lobbies"
   },
   "newLobby": {
+    "title": "Create new lobby",
     "name": "Lobby name",
     "maxPixels": "Max pixels",
     "size": "Size",
     "timeLimit": "Time limit (minutes)",
-    "create": "Create"
+    "create": "Create",
+    "goHome": "Go home"
   }
 }

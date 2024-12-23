@@ -36,6 +36,11 @@ h5,
 h6 {
   --cursor: text;
 }
+h1 {
+  font-size: vars.$fontSizeGiant;
+  font-weight: vars.$fontWeightBold;
+  margin: 0 0 20px 0;
+}
 
 @include vars.squiggly-init;
 .squiggly {
@@ -80,5 +85,19 @@ h6 {
 }
 @keyframes out-paper {
   to {
+  }
+}
+
+.paper-container {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  .actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-bottom: 12px;
   }
 }

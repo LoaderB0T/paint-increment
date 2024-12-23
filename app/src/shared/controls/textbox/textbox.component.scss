@@ -4,6 +4,7 @@
   display: flex;
   gap: 12px;
   position: relative;
+  flex-wrap: wrap;
   &::after {
     content: '';
     position: absolute;
@@ -12,7 +13,7 @@
     right: 0;
     border-bottom: 5px solid black;
     outline: 5px solid white;
-    @include vars.static-squiggle;
+    @include vars.static-squiggle(s);
   }
   &:has(input:focus) {
     &::after {
@@ -24,8 +25,12 @@
   }
 
   label {
-    white-space: nowrap;
     @include vars.fontSize(var(--font-size));
+  }
+
+  .input-container {
+    display: flex;
+    flex-grow: 1;
   }
 
   input {
@@ -33,13 +38,18 @@
     border: none;
     font-family: vars.$fontFamily;
     @include vars.fontSize(var(--font-size));
-    min-width: 100px;
-    width: 100%;
+    width: 200px;
+    flex-grow: 1;
     outline: none;
     caret-color: white;
     &:focus {
       @include vars.squiggly;
     }
+  }
+
+  .error {
+    color: red;
+    @include vars.squiggly;
   }
 }
 

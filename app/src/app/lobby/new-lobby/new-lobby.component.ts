@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ButtonComponent } from '@shared/controls/button/button.component';
 import { TextboxComponent } from '@shared/controls/textbox/textbox.component';
 import { TranslateService } from '@shared/i18n/translate.service';
+import { objectKeys } from '@shared/utils';
 
 @Component({
   selector: 'awd-new-lobby',
-  imports: [ReactiveFormsModule, TextboxComponent],
+  imports: [ReactiveFormsModule, TextboxComponent, ButtonComponent],
   templateUrl: 'new-lobby.component.html',
   styleUrls: ['new-lobby.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +34,10 @@ export class NewLobbyComponent {
   });
 
   protected createLobby() {
+    const objKeys = objectKeys(this.form.controls);
+    objKeys.forEach(key => {
+      this.form.controls[key].markAsTouched();
+    });
     if (this.form.invalid) {
       return;
     }

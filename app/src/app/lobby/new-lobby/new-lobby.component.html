@@ -1,50 +1,59 @@
-<form class="side-by-side" [formGroup]="form" (ngSubmit)="createLobby()">
-  <awd-textbox
-    inputType="text"
-    [placeholder]="i18n.newLobby_name()"
-    required
-    [fontSize]="35"
-    icon="pencil"
-    icon2="input-text"
-    formControlName="name"
-  />
+<div class="paper-container">
+  <div class="content">
+    <h1>{{ i18n.newLobby_title() }}</h1>
+    <form [formGroup]="form">
+      <awd-textbox
+        inputType="text"
+        [placeholder]="i18n.newLobby_name()"
+        required
+        [fontSize]="35"
+        icon="pencil"
+        icon2="input-text"
+        formControlName="name"
+      />
 
-  <awd-textbox
-    inputType="number"
-    [placeholder]="i18n.newLobby_maxPixels()"
-    required
-    [fontSize]="35"
-    icon="pencil"
-    icon2="tally"
-    formControlName="maxPixels"
-  />
+      <awd-textbox
+        inputType="number"
+        [placeholder]="i18n.newLobby_maxPixels()"
+        required
+        [fontSize]="35"
+        icon="pencil"
+        icon2="tally"
+        formControlName="maxPixels"
+      />
 
-  <awd-textbox
-    inputType="number"
-    [placeholder]="i18n.newLobby_size()"
-    required
-    [fontSize]="35"
-    icon="pencil"
-    icon2="ruler-combined"
-    formControlName="size"
-  />
+      <awd-textbox
+        inputType="number"
+        [placeholder]="i18n.newLobby_size()"
+        required
+        [fontSize]="35"
+        icon="pencil"
+        icon2="ruler-combined"
+        formControlName="size"
+      />
 
-  <awd-textbox
-    inputType="number"
-    [placeholder]="i18n.newLobby_timeLimit()"
-    required
-    [fontSize]="35"
-    icon="hourglass-start"
-    icon2="hourglass-end"
-    formControlName="timeLimit"
-  />
+      <awd-textbox
+        inputType="number"
+        [placeholder]="i18n.newLobby_timeLimit()"
+        required
+        [fontSize]="35"
+        icon="hourglass-start"
+        icon2="hourglass-end"
+        formControlName="timeLimit"
+      />
+    </form>
+  </div>
 
-  <input
-    type="submit"
-    class="button"
-    id="submit-lobby"
-    value="Create Lobby"
-    data-testid="lobby-submit"
-  />
-</form>
-<button (click)="goToHome()">Go home</button>
+  <div class="actions">
+    <awd-button
+      data-testid="my-lobbies-button"
+      (onClick)="goToHome()"
+      [text]="i18n.newLobby_goHome()"
+    />
+    <awd-button
+      data-testid="create-lobby-button"
+      (onClick)="createLobby()"
+      [text]="i18n.newLobby_create()"
+    />
+  </div>
+</div>

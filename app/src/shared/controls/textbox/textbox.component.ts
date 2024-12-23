@@ -11,9 +11,14 @@ import {
   ElementRef,
   viewChild,
   afterRenderEffect,
+  AfterViewInit,
+  inject,
+  Injector,
+  DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NgControl, ValidationErrors } from '@angular/forms';
+import { extractTouched } from '@shared/utils';
 import { TextareaSelectionBounds } from 'textarea-selection-bounds';
 
 export type InputType = 'text' | 'password' | 'number' | 'email';
@@ -26,7 +31,9 @@ export type InputType = 'text' | 'password' | 'number' | 'email';
   imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextboxComponent implements ControlValueAccessor, OnInit {
+export class TextboxComponent implements ControlValueAccessor, OnInit, AfterViewInit {
+  private readonly _control: NgControl;
+  private readonly _injector = inject(Injector);
   public readonly fontSize = input<number>(16);
   public readonly formControlName = input<string>('');
   public readonly name = input<string>('');
@@ -46,6 +53,9 @@ export class TextboxComponent implements ControlValueAccessor, OnInit {
   private readonly _validationStatus = signal<ValidationErrors | null>(null);
   private readonly _inputElement = viewChild.required<ElementRef<HTMLInputElement>>('inputField');
 
+  protected readonly errorCount = computed(
+    () => Object.keys(this._validationStatus() ?? {}).length
+  );
   protected readonly firstValidationError = computed(() => {
     const errors = this._validationStatus();
     if (!errors) {
@@ -61,15 +71,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit {
     } else {
       throw new Error('NgControl is required');
     }
-    control.statusChanges?.pipe(takeUntilDestroyed()).subscribe(() => {
-      const validatorFn = control.control?.validator;
-      if (!validatorFn) {
-        this._validationStatus.set(null);
-        return;
-      }
-      const errors = validatorFn(control.control);
-      this._validationStatus.set(errors);
-    });
+    this._control = control;
 
     afterRenderEffect(() => {
       const el = this._inputElement().nativeElement;
@@ -93,7 +95,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit {
             height: bounds.height - 10,
           });
         }
-      }, 10);
+      }, 50);
     });
   }
 
@@ -106,6 +108,34 @@ export class TextboxComponent implements ControlValueAccessor, OnInit {
     if (!this.id()) {
       throw new Error('Either name or formControlName must be provided');
     }
+  }
+
+  private refreshErrors() {
+    const validatorFn = this._control.control?.validator;
+    if (!validatorFn || !this._control.touched) {
+      this._validationStatus.set(null);
+      return;
+    }
+    const errors = validatorFn(this._control.control);
+    this._validationStatus.set(errors);
+  }
+
+  public ngAfterViewInit(): void {
+    const control = this._control.control;
+    if (!control) {
+      return;
+    }
+    this.refreshErrors();
+    control.statusChanges
+      ?.pipe(takeUntilDestroyed(this._injector.get(DestroyRef)))
+      .subscribe(() => {
+        this.refreshErrors();
+      });
+    extractTouched(control)
+      .pipe(takeUntilDestroyed(this._injector.get(DestroyRef)))
+      .subscribe(() => {
+        this.refreshErrors();
+      });
   }
 
   public writeValue(obj: string): void {

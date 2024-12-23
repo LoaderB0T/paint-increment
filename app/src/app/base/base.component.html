@@ -3,6 +3,8 @@
   <div class="paper paper-bg paper-bg-2"></div>
   <div class="paper paper-bg main-placeholder"></div>
   <div class="paper" [class.paper-main]="enableRouterTransitions()">
-    <router-outlet></router-outlet>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>

@@ -1,19 +1,24 @@
 <div class="container" [style.--font-size.px]="fontSize()">
   <label [for]="id()"> {{ placeholder() }}: </label>
-  <input
-    #inputField
-    [type]="inputTypeInternal()"
-    [pattern]="numberPattern()"
-    [name]="id()"
-    [id]="id()"
-    (blur)="onBlur()"
-    (focus)="onFocus()"
-    (input)="onInput()"
-    [ngModel]="value()"
-    (ngModelChange)="value.set($event)"
-    [disabled]="isDisabled()"
-    [attr.data-testid]="name + '-input'"
-  />
+  <div class="input-container">
+    <input
+      #inputField
+      [type]="inputTypeInternal()"
+      [pattern]="numberPattern()"
+      [name]="id()"
+      [id]="id()"
+      (blur)="onBlur()"
+      (focus)="onFocus()"
+      (input)="onInput()"
+      [ngModel]="value()"
+      (ngModelChange)="value.set($event)"
+      [disabled]="isDisabled()"
+      [attr.data-testid]="name + '-input'"
+    />
+    @if (firstValidationError(); as error) {
+      <div class="error" [title]="error">|-{{ errorCount() }}</div>
+    }
+  </div>
 </div>
 
 @if (caret(); as caret) {
