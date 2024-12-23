@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
-@use "vars";
-@use "sass:math";
+@use 'vars';
+@use 'sass:math';
 
 body,
 html {
@@ -24,6 +24,11 @@ html {
 @include vars.squiggly-init;
 .squiggly {
   @include vars.squiggly;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
 }
 
 ::view-transition-old(paper),

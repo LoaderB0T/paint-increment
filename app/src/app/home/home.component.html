@@ -1,3 +1,14 @@
 <span class="squiggly">home test text !</span>
 
-<button (click)="goToLobby()">Go Lobby</button>
+<div class="bot-actions">
+  <awd-button
+    data-testid="create-lobby-button"
+    (onClick)="navigateToNewLobby()"
+    [text]="i18n.home_createLobby()"
+  />
+  <awd-button
+    data-testid="my-lobbies-button"
+    (onClick)="navigateToMyLobbies()"
+    [text]="i18n.home_myLobbies()"
+  />
+</div>
