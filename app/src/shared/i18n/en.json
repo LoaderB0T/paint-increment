@@ -5,6 +5,10 @@
       "google": "Login with Google"
     }
   },
+  "shared": {
+    "back": "Back",
+    "goHome": "Go home"
+  },
   "home": {
     "title": "Welcome to awd paint!",
     "createLobby": "Create lobby",
@@ -16,7 +20,10 @@
     "maxPixels": "Max pixels",
     "size": "Size",
     "timeLimit": "Time limit (minutes)",
-    "create": "Create",
-    "goHome": "Go home"
+    "create": "Create"
+  },
+  "myLobbies": {
+    "title": "My lobbies",
+    "noLobbies": "You have no lobbies"
   }
 }

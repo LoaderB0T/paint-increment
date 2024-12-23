@@ -52,6 +52,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
   public readonly hidePlaceholderOnInput = input<boolean>(false);
   private readonly _validationStatus = signal<ValidationErrors | null>(null);
   private readonly _inputElement = viewChild.required<ElementRef<HTMLInputElement>>('inputField');
+  private readonly _caretElement = viewChild<ElementRef<HTMLDivElement>>('caret');
 
   protected readonly errorCount = computed(
     () => Object.keys(this._validationStatus() ?? {}).length
@@ -94,6 +95,13 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
             left: bounds.left - 2,
             height: bounds.height - 10,
           });
+          const el = this._caretElement()?.nativeElement;
+          if (!el) {
+            return;
+          }
+          el.style.animation = 'none';
+          const _ = el.offsetHeight; // trigger reflow to restart animation
+          el.style.animation = '';
         }
       }, 50);
     });

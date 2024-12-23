@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
+import { urlArrayFromSegment } from '@shared/utils';
 import Session from 'supertokens-web-js/recipe/session';
 
 import { AuthService } from './auth.service';
@@ -15,7 +16,7 @@ export const isLoggedInGuard: CanActivateFn = async (next: ActivatedRouteSnapsho
   if (isLoggedIn) {
     return true;
   } else {
-    authService.navigateToLogin(next.url.map(x => x.path).join('/'));
+    authService.navigateToLogin(urlArrayFromSegment(next).join('/'));
 
     return false;
   }

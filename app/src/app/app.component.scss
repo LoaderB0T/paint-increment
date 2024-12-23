@@ -23,4 +23,8 @@ $padding: 8px;
     filter: blur(3px) brightness(0.5) contrast(30) brightness(5) invert(1);
     mix-blend-mode: lighten;
   }
+  &.blur {
+    view-transition-name: cursor-blur;
+    filter: blur(2px) brightness(0.5) contrast(5) brightness(50) blur(5px);
+  }
 }

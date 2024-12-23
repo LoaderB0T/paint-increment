@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthComponent } from '@shared/auth/auth.component';
 import { isLoggedInGuard } from '@shared/auth/auth.guard';
+import { AuthCallbackComponent } from '@shared/auth/callback/callback.component';
 
 import { HomeComponent } from './home/home.component';
 import { LobbyComponent } from './lobby/lobby/lobby.component';
@@ -23,6 +24,7 @@ export const routes: Routes = [
       {
         path: 'my',
         component: MyLobbiesComponent,
+        canActivate: [isLoggedInGuard],
       },
       {
         path: ':name/:id',
@@ -31,7 +33,16 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'login',
-    component: AuthComponent,
+    path: 'auth',
+    children: [
+      {
+        path: 'login',
+        component: AuthComponent,
+      },
+      {
+        path: 'callback/:provider',
+        component: AuthCallbackComponent,
+      },
+    ],
   },
 ];

@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Session from 'supertokens-web-js/recipe/session';
 
 import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-auth',
-  standalone: true,
   imports: [CommonModule],
   template: `<ng-container *ngIf="isAlreadyLoggedIn">Already signed in</ng-container>
     <ng-container *ngIf="!isAlreadyLoggedIn">Please wait while we sign you in...</ng-container>`,
   styleUrls: [],
 })
 export class AuthCallbackComponent implements OnInit {
+  private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
   private readonly _authService = inject(AuthService);
   public isAlreadyLoggedIn = false;
@@ -21,10 +21,11 @@ export class AuthCallbackComponent implements OnInit {
   public async ngOnInit() {
     const isLoggedIn = await Session.doesSessionExist();
     if (isLoggedIn) {
-      this.isAlreadyLoggedIn = true;
+      const redirectTo = localStorage.getItem('returnUrl') || '/';
+      this._router.navigate([redirectTo]);
       return;
     }
-    switch (this._route.snapshot.params.provider) {
+    switch (this._route.snapshot.params['provider']) {
       case 'google':
         return this._authService.handleGoogleCallback();
       default:

@@ -33,7 +33,7 @@ export class AuthService {
 
   public navigateToLogin(url?: string) {
     localStorage.setItem('returnUrl', url ?? '');
-    this._router.navigate(['/auth']);
+    this._router.navigate(['/auth/login']);
   }
 
   public async hasSession() {

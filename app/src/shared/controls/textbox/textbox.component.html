@@ -23,9 +23,12 @@
 
 @if (caret(); as caret) {
   <div
+    #caret
     class="caret"
     [style.left.px]="caret.left"
     [style.top.px]="caret.top"
     [style.height.px]="caret.height"
-  ></div>
+  >
+    <div></div>
+  </div>
 }
