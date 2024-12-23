@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthComponent } from '@shared/auth/auth.component';
+import { isLoggedInGuard } from '@shared/auth/auth.guard';
 
 import { HomeComponent } from './home/home.component';
 import { LobbyComponent } from './lobby/lobby/lobby.component';
@@ -16,6 +18,7 @@ export const routes: Routes = [
       {
         path: 'new',
         component: NewLobbyComponent,
+        canActivate: [isLoggedInGuard],
       },
       {
         path: 'my',
@@ -26,5 +29,9 @@ export const routes: Routes = [
         component: LobbyComponent,
       },
     ],
+  },
+  {
+    path: 'login',
+    component: AuthComponent,
   },
 ];

@@ -1,4 +1,10 @@
 {
+  "auth": {
+    "title": "Login",
+    "login": {
+      "google": "Login with Google"
+    }
+  },
   "home": {
     "title": "Welcome to awd paint!",
     "createLobby": "Create lobby",
