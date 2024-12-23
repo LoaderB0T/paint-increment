@@ -22,10 +22,9 @@
       right: 0;
       bottom: 0;
       filter: url(#paperFilter);
+      clip-path: border-box;
       @include vars.firefox {
-        backdrop-filter: unset; // Backdrop filter doesn't work in Firefox
         filter: url(#paperFilter) contrast(0.5) brightness(1.35); // paper filter is way too strong in Firefox, so we need to tone it down
-        clip-path: border-box;
       }
     }
     &.paper-main {
