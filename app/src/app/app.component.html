@@ -13,11 +13,11 @@
       <feDistantLight azimuth="45" [attr.elevation]="65" />
     </feDiffuseLighting>
   </filter>
-  @for (i of squigglies; track i) {
+  @for (i of squigglyCount; track i) {
     <filter [id]="'squiggly-' + i">
       <feTurbulence
         id="turbulence"
-        baseFrequency="0.01"
+        baseFrequency="0.02"
         numOctaves="3"
         result="noise"
         [attr.seed]="i"
@@ -26,7 +26,7 @@
         id="displacement"
         in="SourceGraphic"
         in2="noise"
-        scale="2"
+        scale="5"
       />
     </filter>
   }

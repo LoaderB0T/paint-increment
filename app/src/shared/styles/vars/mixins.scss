@@ -1,0 +1,25 @@
+@use "sass:math";
+
+@mixin firefox {
+  @supports (-moz-appearance: none) {
+    @content;
+  }
+}
+
+$squigglyCount: 20;
+$timePerSquiggle: 80ms;
+$animationTime: $squigglyCount * $timePerSquiggle;
+@mixin squiggly-init {
+  @keyframes squiggly {
+    @for $i from 0 through ($squigglyCount - 1) {
+      #{math.div(100, ($squigglyCount - 1)) * $i + "%"} {
+        filter: url("#squiggly-#{$i}") blur(2px) contrast(30);
+      }
+    }
+  }
+}
+@mixin squiggly {
+  animation: squiggly $animationTime linear infinite;
+  background: white;
+  mix-blend-mode: multiply;
+}

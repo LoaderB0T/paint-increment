@@ -9,5 +9,5 @@ import { BaseComponent } from './base/base.component';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  public readonly squigglies = Array.from({ length: 10 }, (_, i) => i);
+  public readonly squigglyCount = Array.from({ length: 20 }, (_, i) => i);
 }

@@ -1,5 +1,7 @@
 <div class="container">
-  <div class="paper">
+  <div class="paper paper-bg paper-bg-1"></div>
+  <div class="paper paper-bg paper-bg-2"></div>
+  <div class="paper" [class.paper-main]="enableRouterTransitions()">
     <router-outlet></router-outlet>
   </div>
 </div>

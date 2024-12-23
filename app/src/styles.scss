@@ -21,18 +21,9 @@ html {
   box-sizing: border-box;
 }
 
-$squigglyCount: 10;
-$timePerSquiggle: 80ms;
-$animationTime: $squigglyCount * $timePerSquiggle;
+@include vars.squiggly-init;
 .squiggly {
-  animation: squiggly $animationTime linear infinite;
-}
-@keyframes squiggly {
-  @for $i from 0 through ($squigglyCount - 1) {
-    #{math.div(100, ($squigglyCount - 1)) * $i + "%"} {
-      filter: url("#squiggly-#{$i}");
-    }
-  }
+  @include vars.squiggly;
 }
 
 ::view-transition-old(paper),
