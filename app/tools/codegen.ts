@@ -9,7 +9,7 @@ async function main() {
     .useType(TypeScriptAngularServicesGenerator);
 
   const filePathLocal = '../api/swagger.json';
-  const filePathDocker = 'api/swagger.json';
+  const filePathDocker = './swagger.json';
 
   const filePath = existsSync(filePathLocal) ? filePathLocal : filePathDocker;
 
