@@ -1,16 +1,20 @@
 @use 'vars';
 
+$padding: 8px;
+
 .cursor-img {
   position: fixed;
   z-index: 100000;
   pointer-events: none;
   width: 100px;
   height: 100px;
-  transform: translate(-50%, -50%) scale(0.76);
+  transform: translate(-50%, -50%);
   mix-blend-mode: multiply;
   img {
+    transform: scale(0.76) translate(-$padding, -$padding);
     --squiggle-amount: 1.5px;
     @include vars.squiggly;
+    padding: $padding;
   }
   &.bg {
     filter: blur(3px) brightness(0.5) contrast(30) brightness(5) invert(1);
