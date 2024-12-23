@@ -7,7 +7,7 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withViewTransitions } from '@angular/router';
 import { loadEnv } from '@shared/env';
 
 import { routes } from './app.routes';
@@ -15,7 +15,7 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection(),
-    provideRouter(routes),
+    provideRouter(routes, withViewTransitions()),
     provideClientHydration(withEventReplay()),
     provideAppInitializer(async () => {
       await loadEnv();

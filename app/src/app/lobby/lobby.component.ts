@@ -2,16 +2,16 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'awd-home',
-  templateUrl: 'home.component.html',
-  styleUrls: ['home.component.scss'],
+  selector: 'awd-lobby',
+  templateUrl: 'lobby.component.html',
+  styleUrls: ['lobby.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {
+export class LobbyComponent {
   private readonly _router = inject(Router);
   constructor() {}
 
-  public goToLobby(): void {
-    this._router.navigate(['lobby']);
+  public goToHome(): void {
+    this._router.navigate(['/']);
   }
 }

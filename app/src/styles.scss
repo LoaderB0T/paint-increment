@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @use "vars";
+@use "sass:math";
 
 body,
 html {
@@ -16,7 +17,48 @@ html {
   position: relative;
   color: vars.$colorContent1;
 }
+* {
+  box-sizing: border-box;
+}
 
-body {
-  backdrop-filter: url(#paperFilter);
+$squigglyCount: 10;
+$timePerSquiggle: 80ms;
+$animationTime: $squigglyCount * $timePerSquiggle;
+.squiggly {
+  animation: squiggly $animationTime linear infinite;
+}
+@keyframes squiggly {
+  @for $i from 0 through ($squigglyCount - 1) {
+    #{math.div(100, ($squigglyCount - 1)) * $i + "%"} {
+      filter: url("#squiggly-#{$i}");
+    }
+  }
+}
+
+::view-transition-old(paper),
+::view-transition-new(paper) {
+  animation-duration: 750ms;
+}
+::view-transition-new(paper) {
+  animation-name: in-paper;
+  overflow: hidden;
+  margin: -0.5px;
+}
+::view-transition-old(paper) {
+  animation-name: out-paper;
+}
+
+@keyframes in-paper {
+  0% {
+    transform: translateX(150%) rotateZ(10deg) translateY(100px) scale(1.4);
+    box-shadow: 0 0 100px 0 rgba(0, 0, 0, 0.8);
+  }
+  70% {
+    transform: translateX(-10px) rotateZ(-1.5deg);
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.2);
+  }
+}
+@keyframes out-paper {
+  to {
+  }
 }
