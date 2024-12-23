@@ -1,14 +1,14 @@
 <awd-base />
 
 <svg style="width: 0; height: 0; position: absolute">
-  <filter id="paperFilter">
+  <!-- <filter id="paperFilter">
     <feTurbulence type="fractalNoise" baseFrequency="0.04" result="noise" numOctaves="5" />
 
     <feDiffuseLighting in="noise" lighting-color="#fff" surfaceScale="2">
       <feDistantLight azimuth="45" [attr.elevation]="65" />
     </feDiffuseLighting>
-  </filter>
-  <!-- @for (i of squigglyCount; track i) {
+  </filter> -->
+  @for (i of squigglyCount; track i) {
     <filter [id]="'squiggly-' + i">
       <feTurbulence
         id="turbulence"
@@ -19,5 +19,5 @@
       />
       <feDisplacementMap id="displacement" in="SourceGraphic" in2="noise" scale="5" />
     </filter>
-  } -->
+  }
 </svg>
