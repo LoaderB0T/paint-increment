@@ -28,7 +28,7 @@ COPY ./app/config/angular.conf /etc/nginx/angular.conf
 COPY ./app/config/nginx.conf /etc/nginx/nginx.conf
 COPY ./app/config/security-headers.conf /etc/nginx/security-headers.conf
 
-COPY --from=builder /app/dist/apps/host ./
+COPY --from=builder /app/dist/awd-paint ./
 ENV PORT 80
 CMD node server/server.mjs
 
