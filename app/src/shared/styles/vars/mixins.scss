@@ -15,19 +15,22 @@ $squigglyCount: 20;
 $timePerSquiggle: 80ms;
 $animationTime: $squigglyCount * $timePerSquiggle;
 @mixin squiggleFilter($i) {
-  @include not-firefox {
-    --blurMultiplier: 0.03;
-    --contrast: 3;
-  }
-  @include firefox {
-    --contrast: 2;
-    --blurMultiplier: 0.01;
-  }
   filter: url('#squiggly-#{$i}')
     blur(var(--squiggle-amount, calc(var(--font-size, 32px) * var(--blurMultiplier))))
     contrast(var(--contrast));
 }
 @mixin squiggly-init {
+  body {
+    @include not-firefox {
+      --blurMultiplier: 0.03;
+      --contrast: 3;
+    }
+    @include firefox {
+      --contrast: 2;
+      --blurMultiplier: 0.01;
+    }
+  }
+
   @keyframes squiggly {
     @for $i from 0 through ($squigglyCount - 1) {
       #{math.div(100, ($squigglyCount - 1)) * $i + '%'} {

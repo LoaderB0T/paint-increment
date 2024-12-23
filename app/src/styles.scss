@@ -16,9 +16,22 @@ html {
   box-sizing: border-box;
   position: relative;
   color: vars.$colorContent1;
+  background: vars.$colorBg1;
 }
+
 * {
   box-sizing: border-box;
+  cursor: none;
+}
+span,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  --cursor: text;
 }
 
 @include vars.squiggly-init;

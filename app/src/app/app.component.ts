@@ -1,6 +1,12 @@
-import { Component } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 
 import { BaseComponent } from './base/base.component';
+
+const cursors = ['default', 'pointer', 'text'] as const;
+type Cursor = (typeof cursors)[number];
 
 @Component({
   selector: 'app-root',
@@ -9,5 +15,26 @@ import { BaseComponent } from './base/base.component';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  public readonly squigglyCount = Array.from({ length: 20 }, (_, i) => i);
+  protected readonly squigglyCount = Array.from({ length: 20 }, (_, i) => i);
+  private readonly _mouseMove = toSignal(fromEvent(inject(DOCUMENT), 'mousemove'));
+  private readonly _cursorKind = signal<Cursor>('default');
+  protected readonly cursorUrl = computed(() => `cursor_${this._cursorKind()}.png`);
+  protected readonly cursorPos = signal({ top: -100, left: -100 });
+
+  constructor() {
+    effect(() => {
+      const evt = this._mouseMove() as MouseEvent | undefined;
+      if (!evt) {
+        return;
+      }
+
+      this.cursorPos.set({ top: evt.clientY, left: evt.clientX });
+      const target = evt.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+      const cursorVar = getComputedStyle(target).getPropertyValue('--cursor')?.toString();
+      this._cursorKind.set(cursors.some(x => x === cursorVar) ? (cursorVar as Cursor) : 'default');
+    });
+  }
 }

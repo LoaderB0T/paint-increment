@@ -1,0 +1,19 @@
+@use 'vars';
+
+.cursor-img {
+  position: fixed;
+  z-index: 100000;
+  pointer-events: none;
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%) scale(0.76);
+  mix-blend-mode: multiply;
+  img {
+    --squiggle-amount: 1.5px;
+    @include vars.squiggly;
+  }
+  &.bg {
+    filter: blur(3px) brightness(0.5) contrast(30) brightness(5) invert(1);
+    mix-blend-mode: lighten;
+  }
+}
