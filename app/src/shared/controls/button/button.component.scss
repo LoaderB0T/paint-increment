@@ -8,6 +8,7 @@ button {
   position: relative;
   background: transparent;
   padding: 16px;
+  user-select: none;
   --cursor: pointer;
   &:hover {
     @include vars.squiggly;

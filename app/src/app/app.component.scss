@@ -3,6 +3,7 @@
 $padding: 8px;
 
 .cursor-img {
+  user-select: none;
   view-transition-name: cursor;
   position: fixed;
   z-index: 100000;

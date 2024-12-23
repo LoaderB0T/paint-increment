@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CreateLobbyRequest, LobbyService } from '@shared/api';
 import { ButtonComponent } from '@shared/controls/button/button.component';
 import { TextboxComponent } from '@shared/controls/textbox/textbox.component';
 import { TranslateService } from '@shared/i18n/translate.service';
-import { objectKeys } from '@shared/utils';
+import { assertBody, objectKeys, safeLobbyName } from '@shared/utils';
 
 @Component({
   selector: 'awd-new-lobby',
@@ -14,6 +15,7 @@ import { objectKeys } from '@shared/utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewLobbyComponent {
+  private readonly _lobbyService = inject(LobbyService);
   private readonly _router = inject(Router);
   protected readonly i18n = inject(TranslateService).translations;
   constructor() {}
@@ -33,7 +35,7 @@ export class NewLobbyComponent {
     timeLimit: new FormControl(15, [Validators.required, Validators.min(1), Validators.max(60)]),
   });
 
-  protected createLobby() {
+  protected async createLobby() {
     const objKeys = objectKeys(this.form.controls);
     objKeys.forEach(key => {
       this.form.controls[key].markAsTouched();
@@ -42,7 +44,31 @@ export class NewLobbyComponent {
       return;
     }
     this.form.disable();
-    this._router.navigate(['/lobby', '1234']);
+    const request: CreateLobbyRequest = {
+      name: this.form.controls.name.value ?? '',
+      ownerName: '',
+      settings: {
+        maxPixels: +(this.form.controls.maxPixels.value ?? '250'),
+        height: +(this.form.controls.size.value ?? '100'),
+        width: +(this.form.controls.size.value ?? '100'),
+        timeLimit: +(this.form.controls.timeLimit.value ?? '15'),
+      },
+    };
+
+    const response = await this._lobbyService.lobbyControllerPostLobby({
+      body: request,
+    });
+    if (!response.ok) {
+      this.form.enable();
+      // TODO: handle error
+      return;
+    }
+    const lobby = assertBody(response);
+    if (!lobby.isCreator) {
+      // TODO: handle error
+      throw new Error('Something went wrong, you should be the owner');
+    }
+    this._router.navigate(['lobby', safeLobbyName(lobby.name), lobby.id]);
   }
 
   protected goToHome(): void {

@@ -22,7 +22,7 @@ export const routes: Routes = [
         component: MyLobbiesComponent,
       },
       {
-        path: ':id',
+        path: ':name/:id',
         component: LobbyComponent,
       },
     ],
