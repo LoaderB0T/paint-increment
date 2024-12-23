@@ -1,0 +1,26 @@
+<div class="container" [style.--font-size.px]="fontSize()">
+  <label [for]="id()"> {{ placeholder() }}: </label>
+  <input
+    #inputField
+    [type]="inputTypeInternal()"
+    [pattern]="numberPattern()"
+    [name]="id()"
+    [id]="id()"
+    (blur)="onBlur()"
+    (focus)="onFocus()"
+    (input)="onInput()"
+    [ngModel]="value()"
+    (ngModelChange)="value.set($event)"
+    [disabled]="isDisabled()"
+    [attr.data-testid]="name + '-input'"
+  />
+</div>
+
+@if (caret(); as caret) {
+  <div
+    class="caret"
+    [style.left.px]="caret.left"
+    [style.top.px]="caret.top"
+    [style.height.px]="caret.height"
+  ></div>
+}

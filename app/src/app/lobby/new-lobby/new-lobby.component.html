@@ -1,3 +1,50 @@
-<span>lobby test text !</span>
+<form class="side-by-side" [formGroup]="form" (ngSubmit)="createLobby()">
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.newLobby_name()"
+    required
+    [fontSize]="35"
+    icon="pencil"
+    icon2="input-text"
+    formControlName="name"
+  />
 
+  <awd-textbox
+    inputType="number"
+    [placeholder]="i18n.newLobby_maxPixels()"
+    required
+    [fontSize]="35"
+    icon="pencil"
+    icon2="tally"
+    formControlName="maxPixels"
+  />
+
+  <awd-textbox
+    inputType="number"
+    [placeholder]="i18n.newLobby_size()"
+    required
+    [fontSize]="35"
+    icon="pencil"
+    icon2="ruler-combined"
+    formControlName="size"
+  />
+
+  <awd-textbox
+    inputType="number"
+    [placeholder]="i18n.newLobby_timeLimit()"
+    required
+    [fontSize]="35"
+    icon="hourglass-start"
+    icon2="hourglass-end"
+    formControlName="timeLimit"
+  />
+
+  <input
+    type="submit"
+    class="button"
+    id="submit-lobby"
+    value="Create Lobby"
+    data-testid="lobby-submit"
+  />
+</form>
 <button (click)="goToHome()">Go home</button>

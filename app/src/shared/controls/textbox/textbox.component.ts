@@ -1,0 +1,131 @@
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  OnInit,
+  computed,
+  signal,
+  Self,
+  Optional,
+  ElementRef,
+  viewChild,
+  afterRenderEffect,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlValueAccessor, FormsModule, NgControl, ValidationErrors } from '@angular/forms';
+import { TextareaSelectionBounds } from 'textarea-selection-bounds';
+
+export type InputType = 'text' | 'password' | 'number' | 'email';
+
+@Component({
+  selector: 'awd-textbox',
+  templateUrl: './textbox.component.html',
+  styleUrls: ['./textbox.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class TextboxComponent implements ControlValueAccessor, OnInit {
+  public readonly fontSize = input<number>(16);
+  public readonly formControlName = input<string>('');
+  public readonly name = input<string>('');
+  protected readonly id = computed(() => this.name() || this.formControlName());
+  public readonly placeholder = input<string>('');
+  public readonly inputType = input<InputType>('text');
+  protected readonly inputTypeInternal = computed(() =>
+    this.inputType() === 'number' ? 'text' : this.inputType()
+  );
+  protected readonly numberPattern = computed(() =>
+    this.inputType() === 'number' ? '[0-9]*' : ''
+  );
+  protected readonly caret = signal<{ top: number; left: number; height: number } | null>(null);
+  public readonly icon = input<string>('');
+  public readonly icon2 = input<string>('');
+  public readonly hidePlaceholderOnInput = input<boolean>(false);
+  private readonly _validationStatus = signal<ValidationErrors | null>(null);
+  private readonly _inputElement = viewChild.required<ElementRef<HTMLInputElement>>('inputField');
+
+  protected readonly firstValidationError = computed(() => {
+    const errors = this._validationStatus();
+    if (!errors) {
+      return null;
+    }
+    const keys = Object.keys(errors);
+    return keys[0] ?? null;
+  });
+
+  constructor(@Self() @Optional() control: NgControl) {
+    if (control) {
+      control.valueAccessor = this;
+    } else {
+      throw new Error('NgControl is required');
+    }
+    control.statusChanges?.pipe(takeUntilDestroyed()).subscribe(() => {
+      const validatorFn = control.control?.validator;
+      if (!validatorFn) {
+        this._validationStatus.set(null);
+        return;
+      }
+      const errors = validatorFn(control.control);
+      this._validationStatus.set(errors);
+    });
+
+    afterRenderEffect(() => {
+      const el = this._inputElement().nativeElement;
+
+      const selectionBounds = new TextareaSelectionBounds(el);
+
+      setInterval(() => {
+        const doc = this._inputElement().nativeElement.ownerDocument;
+        if (doc.activeElement !== el) {
+          this.caret.set(null);
+          return;
+        }
+        const selection = selectionBounds.getCurrentSelection();
+        const bounds = selectionBounds.getBounds();
+        if (selection.from !== selection.to) {
+          this.caret.set(null);
+        } else if (!this.caret() || bounds.changed) {
+          this.caret.set({
+            top: bounds.top + 2,
+            left: bounds.left - 2,
+            height: bounds.height - 10,
+          });
+        }
+      }, 10);
+    });
+  }
+
+  protected readonly isDisabled = signal<boolean>(false);
+  protected readonly value = signal<string>('');
+  private _onChange?: (value: string) => void;
+  private _onTouched?: () => void;
+
+  public ngOnInit(): void {
+    if (!this.id()) {
+      throw new Error('Either name or formControlName must be provided');
+    }
+  }
+
+  public writeValue(obj: string): void {
+    this.value.set(obj);
+  }
+  public registerOnChange(fn: (value: string) => void): void {
+    this._onChange = fn;
+  }
+  public registerOnTouched(fn: () => void): void {
+    this._onTouched = fn;
+  }
+  public setDisabledState(isDisabled: boolean): void {
+    this.isDisabled.set(isDisabled);
+  }
+
+  protected onBlur() {
+    this._onTouched?.();
+  }
+  protected onFocus() {}
+  protected onInput() {
+    this._onChange?.(this.value());
+  }
+}

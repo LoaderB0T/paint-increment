@@ -1,0 +1,69 @@
+@use 'vars';
+
+.container {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 5px solid black;
+    outline: 5px solid white;
+    @include vars.static-squiggle;
+  }
+  &:has(input:focus) {
+    &::after {
+      @include vars.squiggly;
+    }
+    label {
+      @include vars.squiggly;
+    }
+  }
+
+  label {
+    white-space: nowrap;
+    @include vars.fontSize(var(--font-size));
+  }
+
+  input {
+    background: transparent;
+    border: none;
+    font-family: vars.$fontFamily;
+    @include vars.fontSize(var(--font-size));
+    min-width: 100px;
+    width: 100%;
+    outline: none;
+    caret-color: white;
+    &:focus {
+      @include vars.squiggly;
+    }
+  }
+}
+
+.caret {
+  position: fixed;
+  border-left: 2px black solid;
+  border-right: 2px black solid;
+  outline: 4px solid white;
+  width: 1px;
+  @include vars.squiggly;
+}
+
+//
+//
+//
+//
+// Remove browser numberbox styles
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  margin: 0;
+}

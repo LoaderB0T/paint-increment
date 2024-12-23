@@ -16,7 +16,7 @@ $timePerSquiggle: 80ms;
 $animationTime: $squigglyCount * $timePerSquiggle;
 @mixin squiggleFilter($i) {
   filter: url('#squiggly-#{$i}')
-    blur(var(--squiggle-amount, calc(var(--font-size, 32px) * var(--blurMultiplier))))
+    blur(var(--squiggle-amount, calc(var(--font-size-int, 32px) * var(--blurMultiplier))))
     contrast(var(--contrast));
 }
 @mixin squiggly-init {
@@ -53,5 +53,5 @@ $animationTime: $squigglyCount * $timePerSquiggle;
 
 @mixin fontSize($size) {
   font-size: $size;
-  --font-size: #{$size};
+  --font-size-int: #{$size};
 }

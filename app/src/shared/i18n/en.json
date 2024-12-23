@@ -2,5 +2,12 @@
   "home": {
     "createLobby": "Create Lobby",
     "myLobbies": "My Lobbies"
+  },
+  "newLobby": {
+    "name": "Lobby name",
+    "maxPixels": "Max pixels",
+    "size": "Size",
+    "timeLimit": "Time limit (minutes)",
+    "create": "Create"
   }
 }
