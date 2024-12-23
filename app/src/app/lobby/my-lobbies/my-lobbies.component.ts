@@ -1,19 +1,43 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { LobbyPreviewResponse, LobbyService } from '@shared/api';
 import { ButtonComponent } from '@shared/controls/button/button.component';
 import { TranslateService } from '@shared/i18n/translate.service';
+import { assertBody, safeLobbyName } from '@shared/utils';
+
+type LobbyVM = LobbyPreviewResponse & {
+  link: string[];
+};
 
 @Component({
   selector: 'awd-my-lobbies',
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, RouterLink],
   templateUrl: 'my-lobbies.component.html',
   styleUrls: ['my-lobbies.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyLobbiesComponent {
   private readonly _router = inject(Router);
+  private readonly _lobbyService: LobbyService;
   protected readonly i18n = inject(TranslateService).translations;
-  constructor() {}
+  public readonly lobbies = signal<LobbyVM[]>([]);
+
+  constructor(lobbyService: LobbyService, router: Router) {
+    this._lobbyService = lobbyService;
+    this._router = router;
+    this._lobbyService.lobbyControllerMyLobbies().then(response => {
+      if (!response.ok) {
+        // TODO: Handle error
+        return;
+      }
+      const lobbies = assertBody(response);
+      const mapped = lobbies.map(lobby => ({
+        ...lobby,
+        link: ['..', safeLobbyName(lobby.name), lobby.id],
+      }));
+      this.lobbies.set([...mapped, ...mapped, ...mapped]);
+    });
+  }
 
   protected navigateHome(): void {
     this._router.navigate(['/']);

@@ -1,6 +1,13 @@
 <div class="paper-container">
+  <h1>{{ i18n.myLobbies_title() }}</h1>
   <div class="content">
-    <h1>{{ i18n.myLobbies_title() }}</h1>
+    <ul>
+      @for (lobby of lobbies(); track lobby.id) {
+        <li>
+          <a [routerLink]="lobby.link">{{ lobby.name }}</a>
+        </li>
+      }
+    </ul>
   </div>
   <div class="actions">
     <awd-button

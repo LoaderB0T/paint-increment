@@ -1,1 +1,8 @@
 @use 'vars';
+
+ul li {
+  width: max-content;
+  &:hover {
+    @include vars.squiggly;
+  }
+}

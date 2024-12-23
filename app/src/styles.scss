@@ -42,6 +42,11 @@ h1 {
   margin: 0 0 20px 0;
 }
 
+a {
+  color: black;
+  --cursor: pointer;
+}
+
 @include vars.squiggly-init;
 .squiggly {
   @include vars.squiggly;
@@ -95,6 +100,10 @@ h1 {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  .content {
+    overflow-y: auto;
+    flex-grow: 1;
+  }
   .actions {
     display: flex;
     justify-content: center;
