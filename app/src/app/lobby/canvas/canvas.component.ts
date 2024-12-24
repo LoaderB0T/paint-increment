@@ -10,7 +10,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { throwExp } from '@shared/utils';
+import { Hammer, throwExp } from '@shared/utils';
 
 export type Layer = {
   color: string;
@@ -81,6 +81,26 @@ export class CanvasComponent {
         this._canvas().nativeElement.style.height = `${min}px`;
       });
       resize.observe(container);
+    });
+
+    afterRenderEffect(() => {
+      const canvas = this._canvas().nativeElement;
+      if (Hammer) {
+        const hammertime = new Hammer(canvas, {});
+        hammertime.get('pinch').set({ enable: true });
+        hammertime.on('pinch', ev => {
+          this.zoom.update(z => {
+            const newZoom = z * ev.scale;
+            if (newZoom > 20) {
+              return 20;
+            }
+            if (newZoom < 1) {
+              return 1;
+            }
+            return newZoom;
+          });
+        });
+      }
     });
   }
 

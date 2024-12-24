@@ -48,6 +48,7 @@
     "@goast/core": "^0.4.0",
     "@goast/typescript": "^0.4.3",
     "@types/express": "^4.17.17",
+    "@types/hammerjs": "^2.0.46",
     "@types/node": "^22.10.2",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
