@@ -90,7 +90,7 @@ export class CanvasComponent {
         const hammertime = new Hammer(canvas, {});
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
-          this.zoom.set(pinchStartValue + ev.scale);
+          this.zoom.set(pinchStartValue * ev.scale);
         });
         hammertime.on('pinchend', () => {
           pinchStartValue = this.zoom();
