@@ -90,16 +90,7 @@ export class CanvasComponent {
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
           console.log('pinch', ev);
-          // this.zoom.update(z => {
-          //   const newZoom = (z * ev.scale) / 2;
-          //   if (newZoom > 20) {
-          //     return 20;
-          //   }
-          //   if (newZoom < 1) {
-          //     return 1;
-          //   }
-          //   return newZoom;
-          // });
+          this.zoom.set(ev.scale);
         });
       }
     });
