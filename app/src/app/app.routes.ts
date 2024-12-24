@@ -5,6 +5,7 @@ import { AuthCallbackComponent } from '@shared/auth/callback/callback.component'
 
 import { HomeComponent } from './home/home.component';
 import { LobbyComponent } from './lobby/lobby/lobby.component';
+import { lobbyResolver } from './lobby/lobby/lobby.resolver';
 import { MyLobbiesComponent } from './lobby/my-lobbies/my-lobbies.component';
 import { NewLobbyComponent } from './lobby/new-lobby/new-lobby.component';
 
@@ -29,6 +30,9 @@ export const routes: Routes = [
       {
         path: ':name/:id',
         component: LobbyComponent,
+        resolve: {
+          lobby: lobbyResolver,
+        },
       },
     ],
   },

@@ -1,0 +1,16 @@
+<div #canvasContainer class="canvas-container">
+  <canvas
+    #canvas
+    [width]="settings().width"
+    [height]="settings().height"
+    (wheel)="gotWheel($event)"
+    (mousedown)="mouseDown($event)"
+    (mouseup)="mouseUp($event)"
+    (mouseleave)="mouseLeave()"
+    (mousemove)="mouseMove($event)"
+    (contextmenu)="(false)"
+    [style.--zoom]="zoom()"
+    [style.--offsetX.px]="offsetX()"
+    [style.--offsetY.px]="offsetY()"
+  ></canvas>
+</div>

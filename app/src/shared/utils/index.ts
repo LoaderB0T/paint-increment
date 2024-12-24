@@ -1,3 +1,4 @@
+export * from './error';
 export * from './extract-touched';
 export * from './http';
 export * from './object';
