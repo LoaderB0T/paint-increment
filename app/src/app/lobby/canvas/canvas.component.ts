@@ -51,7 +51,7 @@ export class CanvasComponent {
   private _lastDrawY: number = 0;
   private _drawnCount: number = 0;
 
-  public readonly allowPaint = input<boolean>(false);
+  public readonly allowPaint = input<boolean>(true);
   public readonly layers = input.required<Layer[]>();
   public readonly hoveredCoords = output<{ x: number; y: number } | undefined>();
   public readonly drawCount = output<number>();
@@ -90,7 +90,9 @@ export class CanvasComponent {
         const hammertime = new Hammer(canvas, {});
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
-          this.zoom.set(pinchStartValue * ev.scale);
+          const newScale = pinchStartValue * ev.scale;
+          const clampedScale = Math.min(20, Math.max(1, newScale));
+          this.zoom.set(clampedScale);
         });
         hammertime.on('pinchend', () => {
           pinchStartValue = this.zoom();
