@@ -86,11 +86,14 @@ export class CanvasComponent {
     afterRenderEffect(() => {
       const canvas = this._canvas().nativeElement;
       if (Hammer) {
+        let pinchStartValue = 1;
         const hammertime = new Hammer(canvas, {});
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
-          console.log('pinch', ev);
-          this.zoom.set(ev.scale);
+          this.zoom.set(pinchStartValue + ev.scale);
+        });
+        hammertime.on('pinchend', () => {
+          pinchStartValue = this.zoom();
         });
       }
     });
