@@ -26,7 +26,7 @@ export class LobbyComponent {
     canvasPattern: false,
     height: this.lobby.settings.height,
     width: this.lobby.settings.width,
-    maxPixels: this.lobby.settings.maxPixels + 999,
+    maxPixels: this.lobby.settings.maxPixels,
   };
   protected readonly committedLayer: Layer = {
     color: '#000000',

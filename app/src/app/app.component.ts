@@ -17,6 +17,7 @@ type Cursor = (typeof cursors)[number];
 export class AppComponent {
   protected readonly squigglyCount = Array.from({ length: 20 }, (_, i) => i);
   private readonly _mouseMove = toSignal(fromEvent(inject(DOCUMENT), 'pointermove'));
+  private readonly _mouseLeave = toSignal(fromEvent(inject(DOCUMENT), 'pointerleave'));
   private readonly _cursorKind = signal<Cursor>('default');
   protected readonly cursorUrl = computed(() => `cursor_${this._cursorKind()}.png`);
   protected readonly cursorPos = signal({ top: -100, left: -100 });
@@ -27,18 +28,25 @@ export class AppComponent {
       if (!evt) {
         return;
       }
+      if (evt.pointerType !== 'mouse') {
+        this.cursorPos.set({ top: -100, left: -100 });
+        return;
+      }
 
       this.cursorPos.set({ top: evt.clientY, left: evt.clientX });
       const target = evt.target as HTMLElement | null;
       if (!target) {
         return;
       }
-      if (evt.pointerType !== 'mouse') {
-        this.cursorPos.set({ top: -100, left: -100 });
-        return;
-      }
       const cursorVar = getComputedStyle(target).getPropertyValue('--cursor')?.toString();
       this._cursorKind.set(cursors.some(x => x === cursorVar) ? (cursorVar as Cursor) : 'default');
+    });
+    effect(() => {
+      const evt = this._mouseLeave() as PointerEvent | undefined;
+      if (!evt) {
+        return;
+      }
+      this.cursorPos.set({ top: -100, left: -100 });
     });
   }
 }
