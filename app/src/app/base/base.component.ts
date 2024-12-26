@@ -1,13 +1,6 @@
-import { isPlatformBrowser } from '@angular/common';
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  PLATFORM_ID,
-  signal,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { isBrowser } from '@shared/utils';
 
 @Component({
   selector: 'awd-base',
@@ -17,7 +10,7 @@ import { RouterOutlet } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BaseComponent implements AfterViewInit {
-  private readonly _isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly _isBrowser = isBrowser();
   protected readonly enableRouterTransitions = signal(false);
 
   public ngAfterViewInit(): void {

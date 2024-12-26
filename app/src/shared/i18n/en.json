@@ -25,5 +25,15 @@
   "myLobbies": {
     "title": "My lobbies",
     "noLobbies": "You have no lobbies"
+  },
+  "lobby": {
+    "lobby": "Lobby",
+    "actions": {
+      "startDrawing": "Start drawing",
+      "createInvite": "Create invite",
+      "showHistory": "Show history",
+      "submitContribution": "Submit contribution",
+      "reset": "Reset"
+    }
   }
 }

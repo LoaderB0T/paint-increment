@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'awd-button',
@@ -8,10 +7,11 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonComponent {
-  private readonly _router = inject(Router);
   constructor() {}
 
   public readonly text = input<string>();
+  public readonly icon = input<string>();
+  public readonly tooltip = input<string>();
   // eslint-disable-next-line @angular-eslint/no-output-on-prefix
   public readonly onClick = output<void>();
 }

@@ -1,13 +1,12 @@
-import { isPlatformBrowser } from '@angular/common';
-import { inject, PLATFORM_ID } from '@angular/core';
+import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
-import { urlArrayFromSegment } from '@shared/utils';
+import { isBrowser, urlArrayFromSegment } from '@shared/utils';
 import Session from 'supertokens-web-js/recipe/session';
 
 import { AuthService } from './auth.service';
 
 export const isLoggedInGuard: CanActivateFn = async (next: ActivatedRouteSnapshot) => {
-  if (!isPlatformBrowser(inject(PLATFORM_ID))) {
+  if (!isBrowser()) {
     return false;
   }
   const authService = inject(AuthService);

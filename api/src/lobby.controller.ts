@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import Session, { SessionContainer } from 'supertokens-node/recipe/session';
 
 import { AuthGuard } from './auth/auth.guard.js';
@@ -35,13 +46,24 @@ export class LobbyController {
     return 'test';
   }
 
+  @Get('my-lobbies')
+  @UseGuards(new AuthGuard())
+  async myLobbies(@SessionDecorator() session: SessionContainer): Promise<LobbyPreviewResponse[]> {
+    const userInfo = await getUserInfo(session.getUserId());
+    if (!userInfo) {
+      throw new Error('User not found');
+    }
+    return this._lobbyService.getLobbiesOfUser(userInfo);
+  }
+
   @Get(':lobbyId')
   async getLobby(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-    @Param('lobbyId') lobbyId: string
+    @Param('lobbyId') lobbyId: string,
+    @Query('isBrowser') isBrowser: boolean
   ): Promise<LobbyResponse> {
-    const session = await Session.getSession(req, res, { sessionRequired: false });
+    const session = isBrowser && (await Session.getSession(req, res, { sessionRequired: false }));
     const userInfo = session ? await getUserInfo(session.getUserId()) : undefined;
 
     return this._lobbyService.getLobby(lobbyId, userInfo);
@@ -138,15 +160,5 @@ export class LobbyController {
       lobby.id
     }?rejected=true`;
     return `<script>window.location.href = "${url}";</script>`;
-  }
-
-  @Post('my-lobbies')
-  @UseGuards(new AuthGuard())
-  async myLobbies(@SessionDecorator() session: SessionContainer): Promise<LobbyPreviewResponse[]> {
-    const userInfo = await getUserInfo(session.getUserId());
-    if (!userInfo) {
-      throw new Error('User not found');
-    }
-    return this._lobbyService.getLobbiesOfUser(userInfo);
   }
 }

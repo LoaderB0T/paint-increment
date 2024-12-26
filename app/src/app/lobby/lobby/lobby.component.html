@@ -1,14 +1,46 @@
 <div class="paper-container">
-  <h1>Lobby</h1>
+  <h1>{{ i18n.lobby_lobby() }}</h1>
   <h3 class="lobby-name">{{ lobby.name }}</h3>
   <div class="content">
-    <awd-canvas [layers]="layers()" [settings]="settings" />
+    <awd-canvas [layers]="layers()" [settings]="settings" [allowPaint]="isDrawing()" />
   </div>
   <div class="actions">
-    <awd-button
-      data-testid="back-button"
-      (onClick)="navigateHome()"
-      [text]="i18n.shared_goHome()"
-    />
+    @if (!isDrawing()) {
+      <awd-button
+        data-testid="back-button"
+        (onClick)="navigateHome()"
+        [tooltip]="i18n.shared_goHome()"
+        icon="fa-regular fa-house"
+      />
+      @if (inviteCode()) {
+        <awd-button
+          data-testid="back-button"
+          (onClick)="startDrawing()"
+          [tooltip]="i18n.lobby_actions_startDrawing()"
+          icon="fa-regular fa-paintbrush"
+        />
+      }
+      @if (isCreator) {
+        <awd-button
+          data-testid="back-button"
+          (onClick)="createInvite()"
+          [tooltip]="i18n.lobby_actions_createInvite()"
+          icon="fa-regular fa-ticket"
+        />
+      }
+    } @else {
+      <awd-button
+        data-testid="back-button"
+        (onClick)="submitContribution()"
+        [tooltip]="i18n.lobby_actions_submitContribution()"
+        icon="fa-regular fa-square-check"
+      />
+      <awd-button
+        data-testid="back-button"
+        (onClick)="resetImage()"
+        [tooltip]="i18n.lobby_actions_reset()"
+        icon="fa-regular fa-trash-xmark"
+      />
+    }
   </div>
 </div>

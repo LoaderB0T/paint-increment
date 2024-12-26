@@ -1,6 +1,6 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { isBrowser } from '@shared/utils';
 import SuperTokens from 'supertokens-web-js';
 import Session from 'supertokens-web-js/recipe/session';
 import ThirdParty, {
@@ -13,12 +13,12 @@ import { environment } from '../env';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly _platformId = inject(PLATFORM_ID);
+  private readonly _isBrowser = isBrowser();
   private readonly _router = inject(Router);
   private readonly _apiService = inject(ApiAuthService);
 
   public init() {
-    if (!isPlatformBrowser(this._platformId)) {
+    if (!this._isBrowser) {
       return;
     }
     SuperTokens.init({

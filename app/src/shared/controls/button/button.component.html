@@ -1,3 +1,6 @@
-<button (click)="onClick.emit()">
+<button (click)="onClick.emit()" [title]="tooltip()">
   {{ text() }}
+  @if (icon()) {
+    <i class="{{ icon() }}"></i>
+  }
 </button>

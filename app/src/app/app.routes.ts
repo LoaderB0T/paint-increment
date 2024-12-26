@@ -30,6 +30,7 @@ export const routes: Routes = [
       {
         path: ':name/:id',
         component: LobbyComponent,
+        runGuardsAndResolvers: 'always',
         resolve: {
           lobby: lobbyResolver,
         },
