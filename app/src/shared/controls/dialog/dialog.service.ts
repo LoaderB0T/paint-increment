@@ -43,8 +43,6 @@ export class DialogService {
     this._subMgrs.push({ id: newId, mgr: new SubscriptionManager() });
     const hostComponent = this._rootViewContainer.createComponent(DialogComponent);
     const component = hostComponent.instance.container().createComponent(componentType);
-    // const elem = hostComponent.instance.container().element.nativeElement;
-    // elem.appendChild(component.location.nativeElement);
 
     initializer?.(component.instance);
     if (component.instance.closeDialog) {
