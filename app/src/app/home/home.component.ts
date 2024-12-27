@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ButtonComponent } from '@shared/controls/button/button.component';
-import { TranslateService } from '@shared/i18n/translate.service';
+import { ButtonComponent } from '@shared/controls';
+import { TranslateService } from '@shared/i18n';
 
 @Component({
   selector: 'awd-home',

@@ -7,7 +7,8 @@
   },
   "shared": {
     "back": "Back",
-    "goHome": "Go home"
+    "goHome": "Go home",
+    "close": "Close"
   },
   "home": {
     "title": "Welcome to awd paint!",
@@ -35,5 +36,13 @@
       "submitContribution": "Submit contribution",
       "reset": "Reset"
     }
+  },
+  "inviteCode": {
+    "title": "Invite code",
+    "description": "Share this code with only one of your friends:",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "code": "Code",
+    "generateNew": "New"
   }
 }

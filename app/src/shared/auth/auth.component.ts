@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { ButtonComponent } from '@shared/controls/button/button.component';
-import { TranslateService } from '@shared/i18n/translate.service';
+import { ButtonComponent } from '@shared/controls';
+import { TranslateService } from '@shared/i18n';
 
 import { AuthService } from './auth.service';
 

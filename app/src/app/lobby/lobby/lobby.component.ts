@@ -4,20 +4,22 @@ import {
   computed,
   effect,
   inject,
+  OnInit,
   signal,
   WritableSignal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse, LobbyService } from '@shared/api';
-import { ButtonComponent } from '@shared/controls/button/button.component';
-import { TranslateService } from '@shared/i18n/translate.service';
+import { ButtonComponent, DialogService } from '@shared/controls';
+import { TranslateService } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { UserInfoService } from '@shared/shared/user-info';
-import { pixelArrayToIncrementPixel } from '@shared/utils';
+import { assertBody, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
 import { map } from 'rxjs';
 
 import { LobbyLockService } from './lobby-lock.service';
+import { InviteCodeComponent } from '../../dialog/invite-code/invite-code.component';
 import { CanvasComponent, CanvasSettings, Layer } from '../canvas/canvas.component';
 
 function getPixelArray(width: number, height: number): boolean[][] {
@@ -40,12 +42,13 @@ type Store = {
   styleUrls: ['lobby.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LobbyComponent {
+export class LobbyComponent implements OnInit {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _lobbyService = inject(LobbyService);
   private readonly _lobbyLockService = inject(LobbyLockService);
   private readonly _userInfoService = inject(UserInfoService);
+  private readonly _dialogService = inject(DialogService);
   private readonly _store = inject(StorageService).init<Store>('lobby', {});
   protected readonly i18n = inject(TranslateService).translations;
   protected readonly lobby = this._activatedRoute.snapshot.data['lobby'] as LobbyResponse;
@@ -105,8 +108,6 @@ export class LobbyComponent {
   });
 
   constructor() {
-    this._lobbyLockService.lookingAtLobby(this.lobby.id);
-
     this._committedLayer.update(committedLayer => {
       this.lobby.pixelIterations
         .filter(x => x.confirmed)
@@ -123,6 +124,10 @@ export class LobbyComponent {
         this.resetLobby();
       }
     });
+  }
+
+  public ngOnInit(): void {
+    this._lobbyLockService.lookingAtLobby(this.lobby.id);
   }
 
   private resetLayer(layer: WritableSignal<Layer>) {
@@ -161,7 +166,27 @@ export class LobbyComponent {
   }
 
   protected createInvite() {
-    // todo
+    const generateCode = async () => {
+      const response = await this._lobbyService.lobbyControllerGenerateInvite({
+        body: {
+          lobbyId: this.lobby.id,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to generate invite code');
+      }
+      const inviteCode = assertBody(response).inviteCode;
+      const origin = window.location.origin;
+      const codeToCopy = `${origin}/lobby/${safeLobbyName(this.lobby.name)}/${
+        this.lobby.id
+      }?invite=${inviteCode}`;
+      return codeToCopy;
+    };
+
+    const comp = this._dialogService.showComponentDialog(InviteCodeComponent, dialog => {});
+    generateCode().then(code => {
+      comp.setCode(code, true);
+    });
   }
 
   protected navigateHome(): void {

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { LobbyPreviewResponse, LobbyService } from '@shared/api';
-import { ButtonComponent } from '@shared/controls/button/button.component';
-import { TranslateService } from '@shared/i18n/translate.service';
+import { ButtonComponent } from '@shared/controls';
+import { TranslateService } from '@shared/i18n';
 import { assertBody, safeLobbyName } from '@shared/utils';
 
 type LobbyVM = LobbyPreviewResponse & {

@@ -7,4 +7,5 @@ export * from './object';
 export * from './pixel-array-to-increment-pixel';
 export * from './route';
 export * from './safe-lobby-name';
+export * from './subscription-manager';
 export * from './unreachable';

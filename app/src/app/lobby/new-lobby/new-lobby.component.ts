@@ -2,9 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CreateLobbyRequest, LobbyService } from '@shared/api';
-import { ButtonComponent } from '@shared/controls/button/button.component';
-import { TextboxComponent } from '@shared/controls/textbox/textbox.component';
-import { TranslateService } from '@shared/i18n/translate.service';
+import { ButtonComponent, TextboxComponent } from '@shared/controls';
+import { TranslateService } from '@shared/i18n';
 import { assertBody, objectKeys, safeLobbyName } from '@shared/utils';
 
 @Component({

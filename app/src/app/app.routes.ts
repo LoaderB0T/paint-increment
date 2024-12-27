@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { AuthComponent } from '@shared/auth/auth.component';
+import { AuthComponent, AuthCallbackComponent } from '@shared/auth';
 import { isLoggedInGuard } from '@shared/auth/auth.guard';
-import { AuthCallbackComponent } from '@shared/auth/callback/callback.component';
 
 import { HomeComponent } from './home/home.component';
 import { LobbyComponent } from './lobby/lobby/lobby.component';

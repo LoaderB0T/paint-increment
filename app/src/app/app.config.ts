@@ -32,7 +32,10 @@ export const appConfig: ApplicationConfig = {
           ? `localhost:${process.env['APP_PORT']}`
           : environment.apiUrl;
       authService.init();
-      await Promise.all([loadHammer(), userInfoService.init(), wsService.init()]);
+
+      await loadHammer();
+      await userInfoService.init();
+      await wsService.init();
     }),
     provideApi(),
   ],

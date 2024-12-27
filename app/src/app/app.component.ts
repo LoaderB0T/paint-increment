@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, ViewContainerRef } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DialogService } from '@shared/controls';
 import { fromEvent } from 'rxjs';
 
 import { BaseComponent } from './base/base.component';
@@ -23,6 +24,7 @@ export class AppComponent {
   protected readonly cursorPos = signal({ top: -100, left: -100 });
 
   constructor() {
+    inject(DialogService).setRootViewContainerRef(inject(ViewContainerRef));
     effect(() => {
       const evt = this._mouseMove() as PointerEvent | undefined;
       if (!evt) {
