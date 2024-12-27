@@ -3,10 +3,7 @@ import { Router } from '@angular/router';
 import { isBrowser } from '@shared/utils';
 import SuperTokens from 'supertokens-web-js';
 import Session from 'supertokens-web-js/recipe/session';
-import ThirdParty, {
-  getAuthorisationURLWithQueryParamsAndSetState,
-  signInAndUp,
-} from 'supertokens-web-js/recipe/thirdparty';
+import ThirdParty from 'supertokens-web-js/recipe/thirdparty';
 
 import { AuthService as ApiAuthService } from '../api';
 import { environment } from '../env';
@@ -67,7 +64,7 @@ export class AuthService {
     // Future improvement: show a toast message if error.isSuperTokensGeneralError === true
   }
 
-  private handleThirdpartyCallback(response: Awaited<ReturnType<typeof signInAndUp>>) {
+  private handleThirdpartyCallback(response: Awaited<ReturnType<typeof ThirdParty.signInAndUp>>) {
     if (response.status === 'OK') {
       const redirectTo = localStorage.getItem('returnUrl') || '/';
       this._router.navigate([redirectTo]);
@@ -78,7 +75,7 @@ export class AuthService {
 
   public async initiateGoogleSignIn() {
     try {
-      const authUrl = await getAuthorisationURLWithQueryParamsAndSetState({
+      const authUrl = await ThirdParty.getAuthorisationURLWithQueryParamsAndSetState({
         thirdPartyId: 'google',
         frontendRedirectURI: `${location.origin}/auth/callback/google`,
       });
@@ -91,7 +88,7 @@ export class AuthService {
 
   public async handleGoogleCallback() {
     try {
-      const response = await signInAndUp();
+      const response = await ThirdParty.signInAndUp();
       this.handleThirdpartyCallback(response);
     } catch (err: any) {
       this.handleThirdpartyCallbackError(err);

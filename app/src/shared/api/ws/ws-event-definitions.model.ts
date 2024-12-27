@@ -4,6 +4,7 @@ export type WsCommunicationDefinitionsClientToServer =
   | { name: 'unlockLobby'; payload: { lobbyId: string } }
   | { name: 'lookAtLobby'; payload: { lobbyId: string } }
   | { name: 'deleteIteration'; payload: { lobbyId: string; iterationId: string } }
+  | { name: 'reloadLobby'; payload: { lobbyId: string } }
   | {
       name: 'changeIterationName';
       payload: { lobbyId: string; iterationId: string; newName: string };
@@ -17,4 +18,5 @@ export type WsCommunicationDefinitionsServerToClient =
   | { name: 'lobbyLocked'; payload: { isLocked: boolean; lockedBy?: string } }
   | { name: 'reservationTime'; payload: { timeLeft: number } }
   | { name: 'lobbyReserved'; payload: { isReserved: boolean } }
-  | { name: '401'; payload: { message: string } };
+  | { name: '401'; payload: { message: string } }
+  | { name: 'reloadLobby'; payload: { lobbyId: string } };

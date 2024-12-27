@@ -3,15 +3,15 @@ import {
   WsCommunicationDefinitionsServerToClient,
 } from './ws-event-definitions.model.js';
 
-type FlattenUnion<T> = {} extends T
+type FlattenUnion<T> = object extends T
   ? never
   : {
       [K in keyof T]: K extends keyof T
         ? T[K] extends any[]
           ? T[K]
           : T[K] extends object
-          ? FlattenUnion<T[K]>
-          : T[K]
+            ? FlattenUnion<T[K]>
+            : T[K]
         : T[K];
     };
 

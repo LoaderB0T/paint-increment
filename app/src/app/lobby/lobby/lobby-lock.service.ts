@@ -28,6 +28,14 @@ export class LobbyLockService {
     this._wsService.send('lookAtLobby', { lobbyId });
   }
 
+  public doReloadLobby(lobbyId: string) {
+    this._wsService.send('reloadLobby', { lobbyId });
+  }
+
+  public reloadLobby() {
+    return this._wsService.listen('reloadLobby');
+  }
+
   public lobbyLocked() {
     return this._wsService.listen('lobbyLocked');
   }

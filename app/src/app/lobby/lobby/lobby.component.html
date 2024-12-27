@@ -1,8 +1,15 @@
 <div class="paper-container">
-  <h1>{{ i18n.lobby_lobby() }}</h1>
-  <h3 class="lobby-name">{{ lobby.name }}</h3>
+  <h1>
+    {{ i18n.lobby_lobby() }}
+    @if (lockedInfo().kind !== 'none') {
+      <i class="fa-regular fa-lock-keyhole"></i>
+    } @else if (hasUnconfirmedContribution()) {
+      <i class="fa-regular fa-clock"></i>
+    }
+  </h1>
+  <h3 class="lobby-name">{{ lobby().name }}</h3>
   <div class="content">
-    <awd-canvas [layers]="layers()" [settings]="settings" [allowPaint]="isDrawing()" />
+    <awd-canvas [layers]="layers()" [settings]="settings()" [allowPaint]="isDrawing()" />
   </div>
   <div class="actions">
     @if (!isDrawing()) {
@@ -27,6 +34,20 @@
           [tooltip]="i18n.lobby_actions_createInvite()"
           icon="fa-regular fa-ticket"
         />
+        @if (hasUnconfirmedContribution()) {
+          <awd-button
+            data-testid="accept-button"
+            (onClick)="acceptIteration()"
+            [tooltip]="i18n.lobby_actions_accept()"
+            icon="fa-regular fa-check"
+          />
+          <awd-button
+            data-testid="reject-button"
+            (onClick)="rejectIteration()"
+            [tooltip]="i18n.lobby_actions_reject()"
+            icon="fa-regular fa-xmark"
+          />
+        }
       }
     } @else {
       <awd-button

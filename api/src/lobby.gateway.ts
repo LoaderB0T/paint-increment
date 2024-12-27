@@ -125,8 +125,17 @@ export class LobbyGateway extends WsGateway {
         WsState.deleteTimeout(lockData);
         lockData.interval = undefined;
         lockData.lockedBy = null;
+        this._wsService.sendToRoom(clientId, data.lobbyId, 'reloadLobby', {
+          lobbyId: data.lobbyId,
+        });
         this._wsService.sendToRoom(clientId, data.lobbyId, 'lobbyLocked', { isLocked: false });
+        this._wsService.sendToClient(clientId, 'lobbyLocked', { isLocked: false });
+        this._wsService.sendToClient(clientId, 'lobbyReserved', { isReserved: false });
       }
+    });
+
+    this._wsService.listen(client, 'reloadLobby').subscribe(async data => {
+      this._wsService.sendToRoom(clientId, data.lobbyId, 'reloadLobby', { lobbyId: data.lobbyId });
     });
   }
 }

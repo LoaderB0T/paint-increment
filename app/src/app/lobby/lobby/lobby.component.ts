@@ -8,14 +8,14 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse, LobbyService } from '@shared/api';
 import { ButtonComponent, DialogService } from '@shared/controls';
 import { TranslateService } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { UserInfoService } from '@shared/shared/user-info';
-import { assertBody, isBrowser, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
+import { assertBody, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
 import { map } from 'rxjs';
 
 import { LobbyLockService } from './lobby-lock.service';
@@ -32,7 +32,9 @@ type LockeyBy = {
 };
 
 type Store = {
-  inviteCode?: string;
+  inviteCodes?: {
+    [lobbyId: string]: string;
+  };
 };
 
 @Component({
@@ -50,31 +52,35 @@ export class LobbyComponent implements OnInit {
   private readonly _userInfoService = inject(UserInfoService);
   private readonly _dialogService = inject(DialogService);
   private readonly _store = inject(StorageService).init<Store>('lobby', {});
-  private readonly _isBrowser = isBrowser();
   protected readonly i18n = inject(TranslateService).translations;
-  protected readonly lobby = this._activatedRoute.snapshot.data['lobby'] as LobbyResponse;
-  protected readonly inviteCode = computed(() => this._store.valueSig()?.inviteCode);
+  protected readonly lobby = signal(this._activatedRoute.snapshot.data['lobby'] as LobbyResponse);
+  protected readonly inviteCode = computed(
+    () => this._store.valueSig()?.inviteCodes?.[this.lobby().id]
+  );
+  protected readonly hasUnconfirmedContribution = computed(() =>
+    this.lobby().pixelIterations.some(x => !x.confirmed)
+  );
 
   protected readonly drawCount = signal(0);
-  protected readonly isDrawing = signal(false);
+  protected readonly isDrawing = computed(() => this.lockedInfo().kind === 'me');
 
-  protected readonly settings: CanvasSettings = {
+  protected readonly settings = computed<CanvasSettings>(() => ({
     canvasPattern: false,
-    height: this.lobby.settings.height,
-    width: this.lobby.settings.width,
-    maxPixels: this.lobby.settings.maxPixels,
-  };
+    height: this.lobby().settings.height,
+    width: this.lobby().settings.width,
+    maxPixels: this.lobby().settings.maxPixels,
+  }));
   private readonly _drawLayer = signal<Layer>({
     color: '#000000',
-    pixels: getPixelArray(this.settings.width, this.settings.height),
+    pixels: [],
   });
   private readonly _draftLayer = signal<Layer>({
-    color: '#000000',
-    pixels: getPixelArray(this.settings.width, this.settings.height),
+    color: '#FF0042',
+    pixels: [],
   });
   private readonly _committedLayer = signal<Layer>({
     color: '#000000',
-    pixels: getPixelArray(this.settings.width, this.settings.height),
+    pixels: [],
   });
   protected readonly layers = computed(() => [
     this._drawLayer(),
@@ -83,7 +89,7 @@ export class LobbyComponent implements OnInit {
   ]);
 
   protected get isCreator(): boolean {
-    return !!this.lobby.isCreator;
+    return !!this.lobby().isCreator;
   }
 
   private readonly _isLocked = toSignal(this._lobbyLockService.lobbyLocked(), {
@@ -103,15 +109,42 @@ export class LobbyComponent implements OnInit {
     const isLocked = this._isLocked();
 
     return {
-      kind: isLocked.isLocked ? 'other' : lockedByMe ? 'me' : 'none',
+      kind: lockedByMe ? 'me' : isLocked.isLocked ? 'other' : 'none',
       name: isLocked.lockedBy,
     };
   });
 
   constructor() {
+    this.prepareLayers();
+
+    effect(() => {
+      if (!this._isLockedByMe()) {
+        this.resetLobby();
+      }
+    });
+
+    this.initInviteToken();
+
+    this._lobbyLockService
+      .reloadLobby()
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.reloadLobby();
+      });
+  }
+
+  private prepareLayers() {
+    this._drawLayer.update(drawLayer => {
+      drawLayer.pixels = getPixelArray(this.lobby().settings.width, this.lobby().settings.height);
+      return drawLayer;
+    });
     this._committedLayer.update(committedLayer => {
-      this.lobby.pixelIterations
-        .filter(x => x.confirmed)
+      committedLayer.pixels = getPixelArray(
+        this.lobby().settings.width,
+        this.lobby().settings.height
+      );
+      this.lobby()
+        .pixelIterations.filter(x => x.confirmed)
         .forEach(i => {
           i.pixels.forEach(ip => {
             committedLayer.pixels[ip.x][ip.y] = true;
@@ -119,24 +152,59 @@ export class LobbyComponent implements OnInit {
         });
       return committedLayer;
     });
-
-    effect(() => {
-      if (!this._isLockedByMe()) {
-        this.resetLobby();
-      }
+    this._draftLayer.update(draftLayer => {
+      draftLayer.pixels = getPixelArray(this.lobby().settings.width, this.lobby().settings.height);
+      this.lobby()
+        .pixelIterations.filter(x => !x.confirmed)
+        .forEach(i => {
+          i.pixels.forEach(ip => {
+            draftLayer.pixels[ip.x][ip.y] = true;
+          });
+        });
+      return draftLayer;
     });
   }
 
+  private async initInviteToken() {
+    const inviteCode =
+      this._activatedRoute.snapshot.queryParams['invite'] ??
+      this._store.value?.inviteCodes?.[this.lobby().id];
+    if (inviteCode) {
+      const response = await this._lobbyService.lobbyControllerValidateInvite({
+        body: {
+          inviteCode,
+          lobbyId: this.lobby().id,
+        },
+      });
+      if (!response.ok) {
+        // TODO: handle error
+        return;
+      }
+      const isValid = assertBody(response).isValid;
+      if (isValid) {
+        this._store.update(store => {
+          store.inviteCodes = {
+            ...store.inviteCodes,
+            [this.lobby().id]: inviteCode,
+          };
+          return store;
+        });
+      } else {
+        this.invalidateInviteCode();
+      }
+    }
+  }
+
   public ngOnInit(): void {
-    this._lobbyLockService.lookingAtLobby(this.lobby.id);
+    this._lobbyLockService.lookingAtLobby(this.lobby().id);
   }
 
   private resetLayer(layer: WritableSignal<Layer>) {
     layer.update(l => ({
       ...l,
-      pixels: new Array(this.lobby.settings.height)
+      pixels: new Array(this.lobby().settings.height)
         .fill(false)
-        .map(() => new Array(this.lobby.settings.width).fill(false)),
+        .map(() => new Array(this.lobby().settings.width).fill(false)),
     }));
   }
 
@@ -156,7 +224,7 @@ export class LobbyComponent implements OnInit {
 
   private invalidateInviteCode() {
     this._store.update(store => {
-      store.inviteCode = undefined;
+      delete store.inviteCodes?.[this.lobby().id];
       return store;
     });
     this._router.navigate([], {
@@ -170,7 +238,7 @@ export class LobbyComponent implements OnInit {
     const generateCode = async () => {
       const response = await this._lobbyService.lobbyControllerGenerateInvite({
         body: {
-          lobbyId: this.lobby.id,
+          lobbyId: this.lobby().id,
         },
       });
       if (!response.ok) {
@@ -178,13 +246,13 @@ export class LobbyComponent implements OnInit {
       }
       const inviteCode = assertBody(response).inviteCode;
       const origin = window.location.origin;
-      const codeToCopy = `${origin}/lobby/${safeLobbyName(this.lobby.name)}/${
-        this.lobby.id
+      const codeToCopy = `${origin}/lobby/${safeLobbyName(this.lobby().name)}/${
+        this.lobby().id
       }?invite=${inviteCode}`;
       return codeToCopy;
     };
 
-    const comp = this._dialogService.showComponentDialog(InviteCodeComponent, dialog => {});
+    const comp = this._dialogService.showComponentDialog(InviteCodeComponent);
     generateCode().then(code => {
       comp.setCode(code);
     });
@@ -199,8 +267,7 @@ export class LobbyComponent implements OnInit {
     if (!inviteCode) {
       throw new Error('Invite code is not set');
     }
-    this._lobbyLockService.lock(this.lobby.id, inviteCode);
-    this.isDrawing.set(true);
+    this._lobbyLockService.lock(this.lobby().id, inviteCode);
   }
 
   protected async submitContribution() {
@@ -211,14 +278,52 @@ export class LobbyComponent implements OnInit {
       body: {
         email: contributorEmail,
         inviteCode: this.inviteCode(),
-        lobbyId: this.lobby.id,
+        lobbyId: this.lobby().id,
         name: contributorName,
         pixels: newPixels,
       },
     });
 
-    this._lobbyLockService.unlock(this.lobby.id);
+    this._lobbyLockService.unlock(this.lobby().id);
 
     this.invalidateInviteCode();
+    await this.triggerReloadLobby();
+  }
+
+  protected acceptIteration() {
+    this.acceptOrRejectIteration(true);
+  }
+
+  protected rejectIteration() {
+    this.acceptOrRejectIteration(false);
+  }
+
+  private async acceptOrRejectIteration(accept: boolean) {
+    await this._lobbyService.lobbyControllerConfirmIncrement({
+      body: {
+        accept,
+        lobbyId: this.lobby().id,
+      },
+    });
+    await this.triggerReloadLobby();
+  }
+
+  private async triggerReloadLobby() {
+    this._lobbyLockService.doReloadLobby(this.lobby().id);
+    await this.reloadLobby();
+  }
+
+  private async reloadLobby() {
+    const response = await this._lobbyService.lobbyControllerGetLobby({
+      lobbyId: this.lobby().id,
+      isBrowser: true,
+    });
+    if (!response.ok) {
+      // TODO: handle error
+      return;
+    }
+    const lobby = assertBody(response);
+    this.lobby.set(lobby);
+    this.prepareLayers();
   }
 }

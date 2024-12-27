@@ -12,5 +12,8 @@
       (onClick)="navigateToMyLobbies()"
       [text]="i18n.home_myLobbies()"
     />
+    @if (loggedIn()) {
+      <awd-button data-testid="logout-button" (onClick)="logout()" [text]="i18n.shared_logout()" />
+    }
   </div>
 </div>

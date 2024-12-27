@@ -8,7 +8,8 @@
   "shared": {
     "back": "Back",
     "goHome": "Go home",
-    "close": "Close"
+    "close": "Close",
+    "logout": "Logout"
   },
   "home": {
     "title": "Welcome to awd paint!",
@@ -34,7 +35,9 @@
       "createInvite": "Create invite",
       "showHistory": "Show history",
       "submitContribution": "Submit contribution",
-      "reset": "Reset"
+      "reset": "Reset",
+      "accept": "Accept",
+      "reject": "Reject"
     }
   },
   "inviteCode": {
