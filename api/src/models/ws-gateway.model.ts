@@ -19,9 +19,17 @@ export abstract class WsGateway {
       throw new Error('No authToken or uid provided');
     }
 
-    const res = data.authToken
-      ? (await Session.getSessionWithoutRequestResponse(data.authToken)).getUserId()
-      : data.uid;
+    async function getUidFromSession(authToken: string) {
+      try {
+        (await Session.getSessionWithoutRequestResponse(authToken)).getUserId();
+        console.warn('getUidFromSession: Not implemented');
+      } catch {
+        console.error('Failed to get uid from session');
+        return null;
+      }
+    }
+
+    const res = data.authToken ? ((await getUidFromSession(data.authToken)) ?? data.uid) : data.uid;
 
     if (!res) {
       throw new Error('No uid found');

@@ -15,7 +15,7 @@ import { ButtonComponent, DialogService } from '@shared/controls';
 import { TranslateService } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { UserInfoService } from '@shared/shared/user-info';
-import { assertBody, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
+import { assertBody, isBrowser, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
 import { map } from 'rxjs';
 
 import { LobbyLockService } from './lobby-lock.service';
@@ -50,6 +50,7 @@ export class LobbyComponent implements OnInit {
   private readonly _userInfoService = inject(UserInfoService);
   private readonly _dialogService = inject(DialogService);
   private readonly _store = inject(StorageService).init<Store>('lobby', {});
+  private readonly _isBrowser = isBrowser();
   protected readonly i18n = inject(TranslateService).translations;
   protected readonly lobby = this._activatedRoute.snapshot.data['lobby'] as LobbyResponse;
   protected readonly inviteCode = computed(() => this._store.valueSig()?.inviteCode);
@@ -127,7 +128,9 @@ export class LobbyComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this._lobbyLockService.lookingAtLobby(this.lobby.id);
+    if (this._isBrowser) {
+      this._lobbyLockService.lookingAtLobby(this.lobby.id);
+    }
   }
 
   private resetLayer(layer: WritableSignal<Layer>) {
