@@ -1,3 +1,4 @@
+export * from './animation';
 export * from './error';
 export * from './extract-touched';
 export * from './hammer';
@@ -8,4 +9,5 @@ export * from './pixel-array-to-increment-pixel';
 export * from './route';
 export * from './safe-lobby-name';
 export * from './subscription-manager';
+export * from './timing';
 export * from './unreachable';

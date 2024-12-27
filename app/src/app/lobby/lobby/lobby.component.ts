@@ -186,7 +186,7 @@ export class LobbyComponent implements OnInit {
 
     const comp = this._dialogService.showComponentDialog(InviteCodeComponent, dialog => {});
     generateCode().then(code => {
-      comp.setCode(code, true);
+      comp.setCode(code);
     });
   }
 

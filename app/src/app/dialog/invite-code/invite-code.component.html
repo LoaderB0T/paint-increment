@@ -1,14 +1,25 @@
-<awd-textbox
-  inputType="text"
-  [placeholder]="i18n.inviteCode_code()"
-  [fontSize]="35"
-  icon="pencil"
-  icon2="input-text"
-  [ngModel]="inviteCode()"
-  (ngModelChange)="inviteCode.set($event)"
-  name="invite_code"
-  #codeTextBox
-/>
+<div class="content">
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.inviteCode_code()"
+    [fontSize]="35"
+    icon="pencil"
+    icon2="input-text"
+    [ngModel]="inviteCode()"
+    (ngModelChange)="inviteCode.set($event)"
+    name="invite_code"
+    #codeTextBox
+  />
 
-<awd-button data-testid="invite-code-button" (onClick)="copy()" [text]="i18n.inviteCode_copy()" />
-<awd-button data-testid="close-button" (onClick)="close()" [text]="i18n.shared_close()" />
+  <div class="copied-container">
+    @if (copied()) {
+      <span id="copied-marker">
+        {{ i18n.inviteCode_copied() }}
+      </span>
+    }
+  </div>
+</div>
+<div class="actions">
+  <awd-button data-testid="invite-code-button" (onClick)="copy()" [text]="i18n.inviteCode_copy()" />
+  <awd-button data-testid="close-button" (onClick)="close()" [text]="i18n.shared_close()" />
+</div>

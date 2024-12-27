@@ -39,7 +39,8 @@ export class WsService {
     });
 
     this.listen('401').subscribe(async () => {
-      await Session.attemptRefreshingSession();
+      const success = await Session.attemptRefreshingSession();
+      console.log('attemptRefreshingSession', success);
       if (this._lastRetryTime && Date.now() - this._lastRetryTime > 1000 * 60) {
         this._lastRetryTime = 0;
       }

@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent, DialogBase, TextboxComponent } from '@shared/controls';
 import { TranslateService } from '@shared/i18n';
+import { createTimeout, reTriggerAnimation } from '@shared/utils';
 
 @Component({
   imports: [FormsModule, ButtonComponent, TextboxComponent],
@@ -23,6 +24,14 @@ export class InviteCodeComponent extends DialogBase {
   public newInviteCode = output<void>();
   protected readonly inviteCode = signal('');
   private readonly _codeTextBox = viewChild.required('codeTextBox', { read: ElementRef });
+  protected readonly copied = signal(false);
+  private readonly _timeoutHandle = createTimeout(
+    () => {
+      this.copied.set(false);
+    },
+    5000,
+    false
+  );
 
   private get inputElement() {
     return this._codeTextBox().nativeElement.querySelector('input') as HTMLInputElement;
@@ -42,8 +51,14 @@ export class InviteCodeComponent extends DialogBase {
   }
 
   private doCopy() {
+    const activeElement = document.activeElement as HTMLElement;
     this.inputElement.focus();
     this.inputElement.setSelectionRange(0, this.inputElement.value.length);
     document.execCommand('copy');
+    activeElement.focus();
+    this.copied.set(true);
+    this._timeoutHandle.reset();
+
+    reTriggerAnimation('#copied-marker');
   }
 }

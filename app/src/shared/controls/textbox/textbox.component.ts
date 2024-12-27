@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NgControl, ValidationErrors } from '@angular/forms';
-import { extractTouched } from '@shared/utils';
+import { extractTouched, reTriggerAnimation } from '@shared/utils';
 import { TextareaSelectionBounds } from 'textarea-selection-bounds';
 
 export type InputType = 'text' | 'password' | 'number' | 'email';
@@ -99,9 +99,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
           if (!el) {
             return;
           }
-          el.style.animation = 'none';
-          const _ = el.offsetHeight; // trigger reflow to restart animation
-          el.style.animation = '';
+          reTriggerAnimation(el);
         }
       }, 50);
     });
