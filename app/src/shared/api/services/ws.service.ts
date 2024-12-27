@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
+import { AuthService } from '@shared/api';
 import { environment } from '@shared/env';
-import { isBrowser } from '@shared/utils';
+import { assertBody, isBrowser } from '@shared/utils';
 import { Observable, of, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import Session from 'supertokens-web-js/recipe/session';
@@ -13,7 +14,9 @@ import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from
 })
 export class WsService {
   private readonly _idService = inject(IdService);
+  private readonly _authService = inject(AuthService);
   private readonly _isBrowser = isBrowser();
+  private _token?: string;
   private __socket?: Socket;
   private readonly _listens: { [key: string]: any } = {};
   private _lastRetryTime: number = 0;
@@ -31,7 +34,7 @@ export class WsService {
     }
     const authObj = {
       uid: await this._idService.id(),
-      accessToken: await Session.getAccessToken(),
+      accessToken: 'await this.getTokenFromAPI()',
     };
     this.__socket = io(environment.apiUrl, {
       transports: ['websocket'],
@@ -39,20 +42,11 @@ export class WsService {
     });
 
     this.listen('401').subscribe(async () => {
-      const success = await Session.attemptRefreshingSession();
-      console.log('attemptRefreshingSession', success);
-      if (this._lastRetryTime && Date.now() - this._lastRetryTime > 1000 * 60) {
-        this._lastRetryTime = 0;
-      }
-      if (this._lastRetryTime) {
-        await Session.signOut();
-        console.warn('Could not refresh access token, signing out.');
-      }
+      const token = await this.getTokenFromAPI();
 
-      this._lastRetryTime = Date.now();
       this._socket.auth = {
         uid: await this._idService.id(),
-        accessToken: await Session.getAccessToken(),
+        accessToken: token,
       };
       this._socket.connect();
     });
@@ -75,7 +69,7 @@ export class WsService {
     if (!this._isBrowser) {
       return;
     }
-    payload.authToken = await Session.getAccessToken();
+    payload.authToken = this._token;
     payload.uid = await this._idService.id();
     this._socket.emit(method, payload);
     if (!environment.production) {
@@ -103,5 +97,30 @@ export class WsService {
     const obs = subject.asObservable();
     this._listens[method] = obs;
     return obs;
+  }
+
+  private async getTokenFromAPI() {
+    const success = await Session.attemptRefreshingSession();
+    console.log('attemptRefreshingSession', success);
+    if (this._lastRetryTime && Date.now() - this._lastRetryTime > 1000 * 60) {
+      this._lastRetryTime = 0;
+    }
+    if (this._lastRetryTime) {
+      await Session.signOut();
+      console.warn('Could not refresh access token, signing out.');
+      return;
+    }
+
+    this._lastRetryTime = Date.now();
+
+    const tokenResponse = await this._authService.authControllerGetToken();
+    if (!tokenResponse.ok) {
+      console.warn('Could not get access token, signing out.');
+      await Session.signOut();
+      return;
+    }
+    const token = assertBody(tokenResponse).token;
+    this._token = token;
+    return token;
   }
 }

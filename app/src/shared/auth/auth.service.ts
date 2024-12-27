@@ -29,7 +29,7 @@ export class AuthService {
       },
       recipeList: [
         Session.init({
-          tokenTransferMethod: 'header',
+          tokenTransferMethod: 'cookie',
         }),
         ThirdParty.init(),
       ],

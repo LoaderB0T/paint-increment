@@ -42,10 +42,7 @@ export class SupertokensService {
             ],
           },
         }),
-        Session.init({
-          exposeAccessTokenToFrontendInCookieBasedAuth: true,
-          getTokenTransferMethod: () => 'header',
-        }),
+        Session.init(),
         Dashboard.init(),
         UserMetadata.init(),
       ],
