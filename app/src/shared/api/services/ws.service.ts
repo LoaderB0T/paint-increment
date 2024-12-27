@@ -34,7 +34,7 @@ export class WsService {
     }
     const authObj = {
       uid: await this._idService.id(),
-      accessToken: 'await this.getTokenFromAPI()',
+      accessToken: await this.getTokenFromAPI(),
     };
     this.__socket = io(environment.apiUrl, {
       transports: ['websocket'],
