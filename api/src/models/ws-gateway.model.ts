@@ -22,7 +22,7 @@ export abstract class WsGateway {
     async function getUidFromSession(authToken: string) {
       try {
         (await Session.getSessionWithoutRequestResponse(authToken)).getUserId();
-        console.warn('getUidFromSession: Not implemented');
+        console.info('Got uid from session');
       } catch {
         console.error('Failed to get uid from session');
         return null;
@@ -39,9 +39,10 @@ export abstract class WsGateway {
   }
 
   protected async tryGetUserInfo<T extends { authToken?: string; uid?: string }>(
-    data: T
+    data: T,
+    resolvedUid?: string
   ): Promise<UserInfo | undefined> {
-    const uid = await this.getUid(data);
+    const uid = resolvedUid ?? (await this.getUid(data));
 
     const res = await getUserInfo(uid);
 

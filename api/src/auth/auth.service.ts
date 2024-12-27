@@ -44,6 +44,7 @@ export class SupertokensService {
         }),
         Session.init({
           exposeAccessTokenToFrontendInCookieBasedAuth: true,
+          getTokenTransferMethod: () => 'header',
         }),
         Dashboard.init(),
         UserMetadata.init(),

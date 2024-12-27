@@ -128,9 +128,7 @@ export class LobbyComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    if (this._isBrowser) {
-      this._lobbyLockService.lookingAtLobby(this.lobby.id);
-    }
+    this._lobbyLockService.lookingAtLobby(this.lobby.id);
   }
 
   private resetLayer(layer: WritableSignal<Layer>) {

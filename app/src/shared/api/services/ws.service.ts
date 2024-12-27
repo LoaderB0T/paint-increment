@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@shared/env';
 import { isBrowser } from '@shared/utils';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import Session from 'supertokens-web-js/recipe/session';
 
@@ -86,7 +86,7 @@ export class WsService {
     method: T
   ): Observable<ExtractPayload<WsCommunication, T>> {
     if (!this._isBrowser) {
-      return new Observable();
+      return of();
     }
     const existingListener = this._listens[method];
     if (existingListener) {

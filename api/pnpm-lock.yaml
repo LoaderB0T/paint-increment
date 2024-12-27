@@ -42,8 +42,8 @@ importers:
         specifier: ^4.8.1
         version: 4.8.1
       supertokens-node:
-        specifier: ^20.1.6
-        version: 20.1.6(encoding@0.1.13)
+        specifier: ^21.1.0
+        version: 21.1.0(encoding@0.1.13)
     devDependencies:
       '@awdware/eslint-config-base':
         specifier: ^2.1.1
@@ -1449,10 +1449,6 @@ packages:
 
   cookie-signature@1.0.6:
     resolution: {integrity: sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==}
-
-  cookie@0.4.0:
-    resolution: {integrity: sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==}
-    engines: {node: '>= 0.6'}
 
   cookie@0.7.1:
     resolution: {integrity: sha512-6DnInpx7SJ2AK3+CTUE/ZM0vWTUboZCegxhC2xiIydHR9jNuTAASBrfEpHhiGOZw/nX51bHt6YQl8jsGo4y/0w==}
@@ -3423,6 +3419,9 @@ packages:
     resolution: {integrity: sha512-VqpjJZKadQB/PEbEwvFdO43Ax5dFBZ2UECszz8bQ7pi7wt//PWe1P6MN7eCnjsatYtBT6EuiClbjSWP2WrIoTw==}
     engines: {node: '>= 0.8.0'}
 
+  set-cookie-parser@2.7.1:
+    resolution: {integrity: sha512-IOc8uWeOZgnb3ptbCURJWNjWUPcO3ZnTTdzsurqERrP6nPyv+paC55vJM0LpOlT2ne+Ix+9+CRG1MNLlyZ4GjQ==}
+
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
     engines: {node: '>= 0.4'}
@@ -3613,8 +3612,8 @@ packages:
   supertokens-js-override@0.0.4:
     resolution: {integrity: sha512-r0JFBjkMIdep3Lbk3JA+MpnpuOtw4RSyrlRAbrzMcxwiYco3GFWl/daimQZ5b1forOiUODpOlXbSOljP/oyurg==}
 
-  supertokens-node@20.1.6:
-    resolution: {integrity: sha512-zzZdyOBdfNvAxdMPZPG8VCqlmtuK98Zq9cT3eUYsT9Te6YKF5j927gytzsGDzMMeNELlKszCjoOQ6voS0dK4ew==}
+  supertokens-node@21.1.0:
+    resolution: {integrity: sha512-QcIeNg1OcXK5k7x0dqIwq6kL2kiNQeV1OT242aOvjOJR5nsP4H5XiCt7Fk3ZHl6gy6x62EPQVIo6RGUY0T0ldg==}
 
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -5687,8 +5686,6 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   cookie-signature@1.0.6: {}
-
-  cookie@0.4.0: {}
 
   cookie@0.7.1: {}
 
@@ -7964,6 +7961,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  set-cookie-parser@2.7.1: {}
+
   set-function-length@1.2.2:
     dependencies:
       define-data-property: 1.1.4
@@ -8191,11 +8190,11 @@ snapshots:
 
   supertokens-js-override@0.0.4: {}
 
-  supertokens-node@20.1.6(encoding@0.1.13):
+  supertokens-node@21.1.0(encoding@0.1.13):
     dependencies:
       buffer: 6.0.3
       content-type: 1.0.5
-      cookie: 0.4.0
+      cookie: 0.7.2
       cross-fetch: 3.1.8(encoding@0.1.13)
       debug: 4.3.4
       jose: 4.15.5
@@ -8204,6 +8203,7 @@ snapshots:
       pako: 2.1.0
       pkce-challenge: 3.1.0
       process: 0.11.10
+      set-cookie-parser: 2.7.1
       supertokens-js-override: 0.0.4
       tldts: 6.1.69
       twilio: 4.23.0(debug@4.3.4)

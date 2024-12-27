@@ -27,7 +27,12 @@ export class AuthService {
         apiBasePath: '/auth',
         appName: 'paint-increment',
       },
-      recipeList: [Session.init(), ThirdParty.init()],
+      recipeList: [
+        Session.init({
+          tokenTransferMethod: 'header',
+        }),
+        ThirdParty.init(),
+      ],
     });
   }
 
