@@ -211,9 +211,9 @@ export class CanvasComponent {
     this._dragging = event.button === 1;
     if (this.allowPaint()) {
       // If the first pointer is pressed, reset the recent draws
-      if (!event.buttons) {
+      if (event.isPrimary) {
         this._recentDraws.length = 0;
-      } else if (event.buttons === 2) {
+      } else {
         // If the second pointer is pressed, undo the recent draws
         this._recentDraws.forEach(recentDraw => {
           this.drawPixel(recentDraw.x, recentDraw.y, !recentDraw.erase);
