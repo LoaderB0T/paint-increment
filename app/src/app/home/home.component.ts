@@ -32,7 +32,8 @@ export class HomeComponent {
   protected navigateToMyLobbies(): void {
     this._router.navigate(['lobby', 'my']);
   }
-  protected logout() {
-    this._authService.logout();
+  protected async logout() {
+    await this._authService.logout();
+    this.loggedIn.set(false);
   }
 }

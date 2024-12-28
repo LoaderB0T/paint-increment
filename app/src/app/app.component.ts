@@ -6,7 +6,7 @@ import { fromEvent } from 'rxjs';
 
 import { BaseComponent } from './base/base.component';
 
-const cursors = ['default', 'pointer', 'text'] as const;
+const cursors = ['default', 'pointer', 'text', 'none'] as const;
 type Cursor = (typeof cursors)[number];
 
 @Component({

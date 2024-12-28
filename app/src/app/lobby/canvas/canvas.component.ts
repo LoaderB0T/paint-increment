@@ -147,14 +147,43 @@ export class CanvasComponent {
         return newZoom;
       });
     }
+    this.offsetX.update(old => this.ensureOffsetWithinRangeX(old));
+    this.offsetY.update(old => this.ensureOffsetWithinRangeY(old));
     event.preventDefault();
+  }
+
+  private ensureOffsetWithinRangeX(newVal: number) {
+    const canvasWidth = this._canvas().nativeElement.clientWidth;
+    const actualCanvasWidth = canvasWidth * this.zoom();
+    const maxOffsetX = (actualCanvasWidth - canvasWidth) / 2 / this.zoom();
+    if (newVal > maxOffsetX) {
+      return maxOffsetX;
+    } else if (newVal < -maxOffsetX) {
+      return -maxOffsetX;
+    }
+    return newVal;
+  }
+
+  private ensureOffsetWithinRangeY(newVal: number) {
+    const canvasHeight = this._canvas().nativeElement.clientHeight;
+    const actualCanvasHeight = canvasHeight * this.zoom();
+    const maxOffsetY = (actualCanvasHeight - canvasHeight) / 2 / this.zoom();
+    if (newVal > maxOffsetY) {
+      return maxOffsetY;
+    } else if (newVal < -maxOffsetY) {
+      return -maxOffsetY;
+    }
+    return newVal;
   }
 
   protected mouseMove(event: MouseEvent) {
     if (this._dragging) {
-      this.offsetX.update(old => old + event.movementX / this.zoom());
-      this.offsetY.update(old => old + event.movementY / this.zoom());
-      // this.fixOffsets();
+      this.offsetX.update(old =>
+        this.ensureOffsetWithinRangeX(old + event.movementX / this.zoom())
+      );
+      this.offsetY.update(old =>
+        this.ensureOffsetWithinRangeY(old + event.movementY / this.zoom())
+      );
       return;
     }
 

@@ -12,5 +12,7 @@
     [style.--zoom]="zoom()"
     [style.--offsetX.px]="offsetX()"
     [style.--offsetY.px]="offsetY()"
+    [style.--cursor]="allowPaint() ? 'none' : 'default'"
+    [class.is-drawing]="allowPaint()"
   ></canvas>
 </div>

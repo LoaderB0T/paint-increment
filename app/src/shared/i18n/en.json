@@ -31,7 +31,8 @@
     "noLobbies": "You have no lobbies"
   },
   "lobby": {
-    "lobby": "Lobby",
+    "title": "Lobby",
+    "editTitle": "Edit contribution",
     "actions": {
       "startDrawing": "Start drawing",
       "createInvite": "Create invite",

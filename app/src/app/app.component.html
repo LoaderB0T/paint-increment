@@ -34,12 +34,14 @@
   }
 </svg>
 
-<div [style.left.px]="cursorPos().left" [style.top.px]="cursorPos().top" class="cursor-img blur">
-  <img [src]="cursorUrl()" alt="" aria-hidden="true" />
-</div>
-<div [style.left.px]="cursorPos().left" [style.top.px]="cursorPos().top" class="cursor-img bg">
-  <img [src]="cursorUrl()" alt="" aria-hidden="true" />
-</div>
-<div [style.left.px]="cursorPos().left" [style.top.px]="cursorPos().top" class="cursor-img">
-  <img [src]="cursorUrl()" alt="" aria-hidden="true" />
-</div>
+@if (!cursorUrl().includes('none')) {
+  <div [style.left.px]="cursorPos().left" [style.top.px]="cursorPos().top" class="cursor-img blur">
+    <img [src]="cursorUrl()" alt="" aria-hidden="true" />
+  </div>
+  <div [style.left.px]="cursorPos().left" [style.top.px]="cursorPos().top" class="cursor-img bg">
+    <img [src]="cursorUrl()" alt="" aria-hidden="true" />
+  </div>
+  <div [style.left.px]="cursorPos().left" [style.top.px]="cursorPos().top" class="cursor-img">
+    <img [src]="cursorUrl()" alt="" aria-hidden="true" />
+  </div>
+}
