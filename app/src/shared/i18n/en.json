@@ -41,7 +41,8 @@
     }
   },
   "history": {
-    "title": "History"
+    "title": "History",
+    "backToLobby": "Back to lobby"
   },
   "inviteCode": {
     "title": "Invite code",

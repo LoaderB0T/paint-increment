@@ -323,6 +323,7 @@ export class LobbyComponent implements OnInit {
     const lobby = assertBody(response);
     this.lobby.set(lobby);
     this.prepareLayers();
+    Object.assign(this._activatedRoute.snapshot.data['lobby'], lobby);
   }
 
   protected showHistory() {

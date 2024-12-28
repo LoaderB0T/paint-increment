@@ -1,7 +1,7 @@
 <div class="paper-container">
   <h1>{{ i18n.history_title() }}</h1>
-  <div class="content" [style.--zoom]="zoom()">
-    <div class="list" (wheel)="gotWheel($event)">
+  <div class="content" [style.--zoom]="zoom()" (wheel)="gotWheel($event)">
+    <div class="list">
       @for (canvas of canvasses(); track $index) {
         <div class="canvas">
           <awd-canvas
@@ -25,5 +25,13 @@
         </div>
       }
     </div>
+  </div>
+  <div class="actions">
+    <awd-button
+      data-testid="submit-button"
+      (onClick)="goBackToLobby()"
+      [tooltip]="i18n.history_backToLobby()"
+      icon="fa-regular fa-left"
+    />
   </div>
 </div>

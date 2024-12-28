@@ -78,4 +78,8 @@ export class HistoryComponent {
   }
 
   protected editIteration(index: number): void {}
+
+  protected goBackToLobby(): void {
+    this._router.navigate(['../'], { relativeTo: this._activatedRoute });
+  }
 }
