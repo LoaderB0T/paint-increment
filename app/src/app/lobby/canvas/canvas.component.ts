@@ -63,6 +63,7 @@ export class CanvasComponent {
   public readonly hoveredCoords = output<{ x: number; y: number } | undefined>();
   public readonly drawCount = output<number>();
   public readonly changed = output<void>();
+  private _isPinching: boolean = false;
 
   private get _pixelsLeft() {
     const maxPixels = this.settings().maxPixels;
@@ -107,10 +108,7 @@ export class CanvasComponent {
         const hammertime = new Hammer(canvas, {});
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
-          ev.preventDefault();
-          ev.srcEvent.stopPropagation();
-          ev.srcEvent.stopImmediatePropagation();
-          ev.srcEvent.preventDefault();
+          this._isPinching = true;
           const newScale = pinchZoomStart * ev.scale;
           const clampedScale = Math.min(20, Math.max(1, newScale));
           this.zoom.set(clampedScale);
@@ -118,6 +116,7 @@ export class CanvasComponent {
           this.offsetY.set(this.ensureOffsetWithinRangeY(pinchOffsetY + ev.deltaY / this.zoom()));
         });
         hammertime.on('pinchend', () => {
+          this._isPinching = false;
           pinchZoomStart = this.zoom();
           pinchOffsetX = this.offsetX();
           pinchOffsetY = this.offsetY();
@@ -230,6 +229,9 @@ export class CanvasComponent {
   }
 
   private draw(rawX: number, rawY: number, erase: boolean, startPoint: boolean) {
+    if (this._isPinching) {
+      return;
+    }
     const { x, y } = this.getRealCoordinates(rawX, rawY);
     this._ctx().restore();
     if (x < 0 || y < 0 || x >= this.settings().width || y >= this.settings().height) {
