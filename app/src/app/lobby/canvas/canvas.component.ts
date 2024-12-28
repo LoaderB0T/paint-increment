@@ -314,7 +314,7 @@ export class CanvasComponent {
   }
 
   private drawPixel(x: number, y: number, erase: boolean) {
-    if (this._isPinching) {
+    if (this._isPinching || this._disableDraw) {
       return;
     }
     const layers = this.layers();
