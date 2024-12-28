@@ -110,8 +110,8 @@ export class CanvasComponent {
           const newScale = pinchZoomStart * ev.scale;
           const clampedScale = Math.min(20, Math.max(1, newScale));
           this.zoom.set(clampedScale);
-          this.offsetX.set(this.ensureOffsetWithinRangeX(pinchOffsetX + ev.deltaX));
-          this.offsetY.set(this.ensureOffsetWithinRangeY(pinchOffsetY + ev.deltaY));
+          this.offsetX.set(this.ensureOffsetWithinRangeX(pinchOffsetX + ev.deltaX / this.zoom()));
+          this.offsetY.set(this.ensureOffsetWithinRangeY(pinchOffsetY + ev.deltaY / this.zoom()));
         });
         hammertime.on('pinchend', () => {
           pinchZoomStart = this.zoom();
