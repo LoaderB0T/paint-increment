@@ -207,6 +207,7 @@ export class CanvasComponent {
   }
 
   protected mouseDown(event: PointerEvent) {
+    console.log(event);
     this._dragging = event.button === 1;
     if (this.allowPaint()) {
       // If the first pointer is pressed, reset the recent draws
