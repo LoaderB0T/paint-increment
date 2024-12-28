@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   afterRenderEffect,
   AfterViewInit,
@@ -31,6 +32,7 @@ const flexGap = 16;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryComponent implements AfterViewInit {
+  private readonly _document = inject(DOCUMENT);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _content = viewChild.required<ElementRef<HTMLDivElement>>('content');
@@ -91,7 +93,7 @@ export class HistoryComponent implements AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    if (document.body.clientWidth < 400) {
+    if (this._document.body.clientWidth < 400) {
       this.zoom.set(1);
     }
   }
