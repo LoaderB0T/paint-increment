@@ -64,6 +64,7 @@ export class CanvasComponent {
   public readonly drawCount = output<number>();
   public readonly changed = output<void>();
   private _isPinching: boolean = false;
+  private _disableDraw: boolean = false;
 
   private get _pixelsLeft() {
     const maxPixels = this.settings().maxPixels;
@@ -109,6 +110,7 @@ export class CanvasComponent {
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
           this._isPinching = true;
+          this._disableDraw = true;
           const newScale = pinchZoomStart * ev.scale;
           const clampedScale = Math.min(20, Math.max(1, newScale));
           this.zoom.set(clampedScale);
@@ -219,6 +221,11 @@ export class CanvasComponent {
     this._dragging = false;
     this._drawing = false;
     this._erasing = false;
+
+    if (!event.buttons) {
+      this._disableDraw = false;
+    }
+
     event.preventDefault();
   }
   protected mouseLeave() {
