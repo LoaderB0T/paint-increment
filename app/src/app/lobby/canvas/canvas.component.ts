@@ -101,16 +101,18 @@ export class CanvasComponent {
       }
       const canvas = this._canvas().nativeElement;
       if (Hammer) {
-        let pinchStartValue = 1;
+        let pinchZoomStart = 1;
         const hammertime = new Hammer(canvas, {});
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
-          const newScale = pinchStartValue * ev.scale;
+          const newScale = pinchZoomStart * ev.scale;
           const clampedScale = Math.min(20, Math.max(1, newScale));
           this.zoom.set(clampedScale);
+          this.offsetX.update(old => this.ensureOffsetWithinRangeX(old + ev.deltaX / this.zoom()));
+          this.offsetY.update(old => this.ensureOffsetWithinRangeY(old + ev.deltaY / this.zoom()));
         });
         hammertime.on('pinchend', () => {
-          pinchStartValue = this.zoom();
+          pinchZoomStart = this.zoom();
         });
       }
     });

@@ -14,8 +14,8 @@
   justify-content: center;
   .dialog {
     padding: 16px;
-    width: 400px;
-    height: 400px;
+    width: min(400px, 90vw);
+    height: min(400px, 90vw);
     background: conic-gradient(from 90deg at 1.1px 1.1px, #fffde3 25%, #c9c9c9 0);
     background-size: 25px 25px;
     box-shadow: 5px 5px 7px rgba(33, 33, 33, 0.7);
