@@ -101,7 +101,9 @@ export class HistoryComponent {
     }
   }
 
-  protected editIteration(index: number): void {}
+  protected editIteration(index: number): void {
+    this._router.navigate(['edit', index], { relativeTo: this._activatedRoute });
+  }
 
   protected goBackToLobby(): void {
     this._router.navigate(['../'], { relativeTo: this._activatedRoute });

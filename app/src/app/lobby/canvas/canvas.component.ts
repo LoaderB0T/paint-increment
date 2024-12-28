@@ -56,6 +56,7 @@ export class CanvasComponent {
   private _lastDrawY: number = 0;
   private _drawnCount: number = 0;
 
+  public readonly isEditMode = input<boolean>(false);
   public readonly fixedSize = input<number>(0);
   public readonly allowPaint = input<boolean>(true);
   public readonly layers = input.required<Layer[]>();
@@ -285,13 +286,13 @@ export class CanvasComponent {
     this.changed.emit();
 
     if (erase) {
-      if ((x + y) % 2 === 0) {
+      if ((x + y) % 2 === 0 && this.settings().canvasPattern) {
         this._ctx().fillStyle = canvasPatternColor;
       } else {
         this._ctx().fillStyle = '#ffffff';
       }
     } else {
-      this._ctx().fillStyle = 'black';
+      this._ctx().fillStyle = this.isEditMode() ? '#FF0042' : 'black';
     }
     this._ctx().fillRect(x, y, 1, 1);
   }

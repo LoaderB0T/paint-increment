@@ -9,7 +9,9 @@
     "back": "Back",
     "goHome": "Go home",
     "close": "Close",
-    "logout": "Logout"
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "home": {
     "title": "Welcome to awd paint!",

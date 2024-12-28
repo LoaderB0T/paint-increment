@@ -38,6 +38,10 @@ export const routes: Routes = [
             component: HistoryComponent,
           },
           {
+            path: 'history/edit/:editIndex',
+            component: LobbyComponent,
+          },
+          {
             path: '',
             component: LobbyComponent,
           },

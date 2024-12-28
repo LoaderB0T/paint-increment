@@ -9,58 +9,26 @@
   </h1>
   <h3 class="lobby-name">{{ lobby().name }}</h3>
   <div class="content">
-    <awd-canvas [layers]="layers()" [settings]="settings()" [allowPaint]="isDrawing()" />
+    <awd-canvas
+      [layers]="layers()"
+      [settings]="settings()"
+      [allowPaint]="isDrawing() || isEditMode"
+      [isEditMode]="isEditMode"
+    />
   </div>
   <div class="actions">
-    @if (!isDrawing()) {
+    @if (isEditMode) {
       <awd-button
-        data-testid="back-button"
-        (onClick)="navigateHome()"
-        [tooltip]="i18n.shared_goHome()"
-        icon="fa-regular fa-house"
+        data-testid="edit-save-button"
+        (onClick)="saveEdit()"
+        [tooltip]="i18n.shared_save()"
+        icon="fa-regular fa-floppy-disk"
       />
-      @if (inviteCode()) {
-        <awd-button
-          data-testid="start-drawing-button"
-          (onClick)="startDrawing()"
-          [tooltip]="i18n.lobby_actions_startDrawing()"
-          icon="fa-regular fa-paintbrush"
-        />
-      }
-      @if (isCreator) {
-        <awd-button
-          data-testid="create-invite-button"
-          (onClick)="createInvite()"
-          [tooltip]="i18n.lobby_actions_createInvite()"
-          icon="fa-regular fa-ticket"
-        />
-        @if (hasUnconfirmedContribution()) {
-          <awd-button
-            data-testid="accept-button"
-            (onClick)="acceptIteration()"
-            [tooltip]="i18n.lobby_actions_accept()"
-            icon="fa-regular fa-check"
-          />
-          <awd-button
-            data-testid="reject-button"
-            (onClick)="rejectIteration()"
-            [tooltip]="i18n.lobby_actions_reject()"
-            icon="fa-regular fa-xmark"
-          />
-        }
-      }
       <awd-button
-        data-testid="show-history-button"
-        (onClick)="showHistory()"
-        [tooltip]="i18n.lobby_actions_showHistory()"
-        icon="fa-regular fa-layer-group"
-      />
-    } @else {
-      <awd-button
-        data-testid="submit-button"
-        (onClick)="submitContribution()"
-        [tooltip]="i18n.lobby_actions_submitContribution()"
-        icon="fa-regular fa-square-check"
+        data-testid="edit-cancel-button"
+        (onClick)="navigateBackToHistory()"
+        [tooltip]="i18n.shared_cancel()"
+        icon="fa-regular fa-xmark"
       />
       <awd-button
         data-testid="reset-button"
@@ -68,6 +36,64 @@
         [tooltip]="i18n.lobby_actions_reset()"
         icon="fa-regular fa-trash-xmark"
       />
+    } @else {
+      @if (!isDrawing()) {
+        <awd-button
+          data-testid="back-button"
+          (onClick)="navigateHome()"
+          [tooltip]="i18n.shared_goHome()"
+          icon="fa-regular fa-house"
+        />
+        @if (inviteCode()) {
+          <awd-button
+            data-testid="start-drawing-button"
+            (onClick)="startDrawing()"
+            [tooltip]="i18n.lobby_actions_startDrawing()"
+            icon="fa-regular fa-paintbrush"
+          />
+        }
+        @if (isCreator) {
+          <awd-button
+            data-testid="create-invite-button"
+            (onClick)="createInvite()"
+            [tooltip]="i18n.lobby_actions_createInvite()"
+            icon="fa-regular fa-ticket"
+          />
+          @if (hasUnconfirmedContribution()) {
+            <awd-button
+              data-testid="accept-button"
+              (onClick)="acceptIteration()"
+              [tooltip]="i18n.lobby_actions_accept()"
+              icon="fa-regular fa-check"
+            />
+            <awd-button
+              data-testid="reject-button"
+              (onClick)="rejectIteration()"
+              [tooltip]="i18n.lobby_actions_reject()"
+              icon="fa-regular fa-xmark"
+            />
+          }
+        }
+        <awd-button
+          data-testid="show-history-button"
+          (onClick)="showHistory()"
+          [tooltip]="i18n.lobby_actions_showHistory()"
+          icon="fa-regular fa-layer-group"
+        />
+      } @else {
+        <awd-button
+          data-testid="submit-button"
+          (onClick)="submitContribution()"
+          [tooltip]="i18n.lobby_actions_submitContribution()"
+          icon="fa-regular fa-square-check"
+        />
+        <awd-button
+          data-testid="reset-button"
+          (onClick)="resetImage()"
+          [tooltip]="i18n.lobby_actions_reset()"
+          icon="fa-regular fa-trash-xmark"
+        />
+      }
     }
   </div>
 </div>

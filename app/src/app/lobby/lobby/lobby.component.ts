@@ -52,6 +52,8 @@ export class LobbyComponent implements OnInit {
   protected readonly lobby = signal(
     this._activatedRoute.snapshot.parent?.data['lobby'] as LobbyResponse
   );
+  private readonly _editIndex = Number.parseInt(this._activatedRoute.snapshot.params['editIndex']);
+  public readonly isEditMode = !isNaN(this._editIndex);
   protected readonly inviteCode = computed(
     () => this._store.valueSig()?.inviteCodes?.[this.lobby().id]
   );
@@ -69,7 +71,7 @@ export class LobbyComponent implements OnInit {
     maxPixels: this.lobby().settings.maxPixels,
   }));
   private readonly _drawLayer = signal<Layer>({
-    color: '#000000',
+    color: this.isEditMode ? '#FF0042' : '#000000',
     pixels: [],
   });
   private readonly _draftLayer = signal<Layer>({
@@ -116,7 +118,7 @@ export class LobbyComponent implements OnInit {
     this.prepareLayers();
 
     effect(() => {
-      if (!this._isLockedByMe()) {
+      if (!this._isLockedByMe() && !this.isEditMode) {
         this.resetLobby();
       }
     });
@@ -134,6 +136,12 @@ export class LobbyComponent implements OnInit {
   private prepareLayers() {
     this._drawLayer.update(drawLayer => {
       drawLayer.pixels = getPixelArray(this.lobby().settings.width, this.lobby().settings.height);
+      if (this.isEditMode) {
+        const editIteration = this.lobby().pixelIterations[this._editIndex];
+        editIteration.pixels.forEach(ip => {
+          drawLayer.pixels[ip.x][ip.y] = true;
+        });
+      }
       return drawLayer;
     });
     this._committedLayer.update(committedLayer => {
@@ -141,8 +149,10 @@ export class LobbyComponent implements OnInit {
         this.lobby().settings.width,
         this.lobby().settings.height
       );
-      this.lobby()
-        .pixelIterations.filter(x => x.confirmed)
+      const commitedLayers = this.lobby().pixelIterations;
+      const slice = this.isEditMode ? commitedLayers.slice(0, this._editIndex) : commitedLayers;
+      slice
+        .filter(x => x.confirmed)
         .forEach(i => {
           i.pixels.forEach(ip => {
             committedLayer.pixels[ip.x][ip.y] = true;
@@ -208,6 +218,15 @@ export class LobbyComponent implements OnInit {
 
   private resetDrawLayer() {
     this.resetLayer(this._drawLayer);
+    if (this.isEditMode) {
+      this._drawLayer.update(drawLayer => {
+        const editIteration = this.lobby().pixelIterations[this._editIndex];
+        editIteration.pixels.forEach(ip => {
+          drawLayer.pixels[ip.x][ip.y] = true;
+        });
+        return drawLayer;
+      });
+    }
   }
 
   protected resetImage() {
@@ -328,6 +347,29 @@ export class LobbyComponent implements OnInit {
 
   protected showHistory() {
     this._router.navigate(['history'], {
+      relativeTo: this._activatedRoute,
+    });
+  }
+
+  protected async saveEdit() {
+    const iteration = this.lobby().pixelIterations[this._editIndex];
+    const newPixels = pixelArrayToIncrementPixel(this._drawLayer().pixels);
+    const response = await this._lobbyService.lobbyControllerEditLobbyPoints({
+      body: {
+        incrementId: iteration.id,
+        lobbyId: this.lobby().id,
+        pixels: newPixels,
+      },
+    });
+    if (!response.ok) {
+      // TODO: handle error
+    }
+    iteration.pixels = newPixels;
+    this.navigateBackToHistory();
+  }
+
+  protected navigateBackToHistory() {
+    this._router.navigate(['../../'], {
       relativeTo: this._activatedRoute,
     });
   }
