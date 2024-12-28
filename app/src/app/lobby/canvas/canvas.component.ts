@@ -223,7 +223,9 @@ export class CanvasComponent {
     this._erasing = false;
 
     if (!event.buttons) {
-      this._disableDraw = false;
+      setTimeout(() => {
+        this._disableDraw = false;
+      }, 10);
     }
 
     event.preventDefault();
