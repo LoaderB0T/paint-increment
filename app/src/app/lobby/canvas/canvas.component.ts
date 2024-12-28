@@ -208,9 +208,9 @@ export class CanvasComponent {
     if (this.allowPaint()) {
       this._drawing = event.button === 0;
       this._erasing = event.button === 2;
-      if (this._drawing || this._erasing) {
-        this.draw(event.offsetX, event.offsetY, this._erasing, true);
-      }
+      // if (this._drawing || this._erasing) {
+      //   this.draw(event.offsetX, event.offsetY, this._erasing, true);
+      // }
     }
     event.preventDefault();
   }
