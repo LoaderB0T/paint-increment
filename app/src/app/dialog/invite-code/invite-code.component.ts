@@ -2,14 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  inject,
   output,
   signal,
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent, DialogBase, TextboxComponent } from '@shared/controls';
-import { TranslateService } from '@shared/i18n';
+import { injectI18n } from '@shared/i18n';
 import { createTimeout, reTriggerAnimation } from '@shared/utils';
 
 @Component({
@@ -20,7 +19,7 @@ import { createTimeout, reTriggerAnimation } from '@shared/utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InviteCodeComponent extends DialogBase {
-  protected readonly i18n = inject(TranslateService).translations;
+  protected readonly i18n = injectI18n();
   public newInviteCode = output<void>();
   protected readonly inviteCode = signal('');
   private readonly _codeTextBox = viewChild.required('codeTextBox', { read: ElementRef });

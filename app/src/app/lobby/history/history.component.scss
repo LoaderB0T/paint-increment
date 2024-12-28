@@ -1,0 +1,20 @@
+:host {
+  display: contents;
+}
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 16px;
+  .canvas {
+    display: flex;
+    flex-direction: column;
+    .footer {
+      --font-size-override: calc(var(--zoom) * 42px + 12px);
+      .iteration-name {
+        font-size: calc(var(--zoom) * 40px + 5px);
+      }
+    }
+  }
+}

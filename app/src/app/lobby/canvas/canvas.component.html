@@ -1,4 +1,4 @@
-<div #canvasContainer class="canvas-container">
+<div #canvasContainer class="canvas-container" [class.is-history]="isHistory()">
   <canvas
     #canvas
     [width]="settings().width"

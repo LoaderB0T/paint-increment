@@ -40,6 +40,9 @@
       "reject": "Reject"
     }
   },
+  "history": {
+    "title": "History"
+  },
   "inviteCode": {
     "title": "Invite code",
     "description": "Share this code with only one of your friends:",

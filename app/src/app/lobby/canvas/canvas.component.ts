@@ -26,6 +26,10 @@ export type CanvasSettings = {
 
 const canvasPatternColor = '#e3e3e3';
 
+export function getPixelArray(width: number, height: number): boolean[][] {
+  return Array.from({ length: width }, () => Array.from({ length: height }, () => false));
+}
+
 @Component({
   selector: 'awd-canvas',
   templateUrl: 'canvas.component.html',
@@ -43,6 +47,7 @@ export class CanvasComponent {
   protected readonly zoom = signal(1);
   protected readonly offsetX = signal(0);
   protected readonly offsetY = signal(0);
+  public readonly isHistory = input(false);
   public readonly settings = input.required<Required<CanvasSettings>>();
   private _dragging: boolean = false;
   private _drawing: boolean = false;
@@ -51,6 +56,7 @@ export class CanvasComponent {
   private _lastDrawY: number = 0;
   private _drawnCount: number = 0;
 
+  public readonly fixedSize = input<number>(0);
   public readonly allowPaint = input<boolean>(true);
   public readonly layers = input.required<Layer[]>();
   public readonly hoveredCoords = output<{ x: number; y: number } | undefined>();
@@ -72,6 +78,11 @@ export class CanvasComponent {
     });
 
     afterRenderEffect(() => {
+      if (this.fixedSize()) {
+        this._canvas().nativeElement.style.width = `${this.fixedSize()}px`;
+        this._canvas().nativeElement.style.height = `${this.fixedSize()}px`;
+        return;
+      }
       const container = this._canvasContainer().nativeElement;
       const resize = new ResizeObserver(() => {
         const bounds = container.getBoundingClientRect();
@@ -84,6 +95,9 @@ export class CanvasComponent {
     });
 
     afterRenderEffect(() => {
+      if (this.isHistory()) {
+        return;
+      }
       const canvas = this._canvas().nativeElement;
       if (Hammer) {
         let pinchStartValue = 1;
@@ -112,6 +126,9 @@ export class CanvasComponent {
   }
 
   protected gotWheel(event: WheelEvent) {
+    if (this.isHistory()) {
+      return;
+    }
     if (event.deltaY < 0) {
       this.zoom.update(z => {
         const newZoom = z * 1.1;

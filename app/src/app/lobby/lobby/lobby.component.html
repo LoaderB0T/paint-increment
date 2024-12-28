@@ -21,7 +21,7 @@
       />
       @if (inviteCode()) {
         <awd-button
-          data-testid="back-button"
+          data-testid="start-drawing-button"
           (onClick)="startDrawing()"
           [tooltip]="i18n.lobby_actions_startDrawing()"
           icon="fa-regular fa-paintbrush"
@@ -29,7 +29,7 @@
       }
       @if (isCreator) {
         <awd-button
-          data-testid="back-button"
+          data-testid="create-invite-button"
           (onClick)="createInvite()"
           [tooltip]="i18n.lobby_actions_createInvite()"
           icon="fa-regular fa-ticket"
@@ -49,6 +49,12 @@
           />
         }
       }
+      <awd-button
+        data-testid="show-history-button"
+        (onClick)="showHistory()"
+        [tooltip]="i18n.lobby_actions_showHistory()"
+        icon="fa-regular fa-layer-group"
+      />
     } @else {
       <awd-button
         data-testid="back-button"

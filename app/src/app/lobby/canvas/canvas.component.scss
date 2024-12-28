@@ -5,6 +5,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  &.is-history {
+    height: unset;
+    width: unset;
+  }
   canvas {
     background: white;
     height: 100%;

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router, RouterLink } from '@angular/router';
 import { LobbyPreviewResponse, LobbyService } from '@shared/api';
 import { ButtonComponent } from '@shared/controls';
-import { TranslateService } from '@shared/i18n';
+import { injectI18n } from '@shared/i18n';
 import { assertBody, safeLobbyName } from '@shared/utils';
 
 type LobbyVM = LobbyPreviewResponse & {
@@ -19,7 +19,7 @@ type LobbyVM = LobbyPreviewResponse & {
 export class MyLobbiesComponent {
   private readonly _router = inject(Router);
   private readonly _lobbyService: LobbyService;
-  protected readonly i18n = inject(TranslateService).translations;
+  protected readonly i18n = injectI18n();
   public readonly lobbies = signal<LobbyVM[]>([]);
 
   constructor(lobbyService: LobbyService, router: Router) {

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router } from '@angular/router';
 import { AuthService } from '@shared/auth';
 import { ButtonComponent } from '@shared/controls';
-import { TranslateService } from '@shared/i18n';
+import { injectI18n } from '@shared/i18n';
 
 import { isBrowser } from '../../shared/utils';
 
@@ -17,7 +17,7 @@ export class HomeComponent {
   private readonly _authService = inject(AuthService);
   private readonly _router = inject(Router);
   private readonly _browser = isBrowser();
-  protected readonly i18n = inject(TranslateService).translations;
+  protected readonly i18n = injectI18n();
   protected readonly loggedIn = signal(false);
 
   constructor() {

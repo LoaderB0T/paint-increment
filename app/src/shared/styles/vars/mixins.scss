@@ -52,6 +52,7 @@ $animationTime: $squigglyCount * $timePerSquiggle;
 }
 
 @mixin fontSize($size) {
-  font-size: $size;
-  --font-size-int: #{$size};
+  --fontsize: var(--font-size-override, #{$size});
+  font-size: var(--fontsize);
+  --font-size-int: var(--fontsize);
 }

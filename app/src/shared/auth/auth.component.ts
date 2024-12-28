@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ButtonComponent } from '@shared/controls';
-import { TranslateService } from '@shared/i18n';
+import { injectI18n } from '@shared/i18n';
 
 import { AuthService } from './auth.service';
 
@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent {
   private readonly _authService = inject(AuthService);
-  protected readonly i18n = inject(TranslateService).translations;
+  protected readonly i18n = injectI18n();
 
   public google() {
     this._authService.initiateGoogleSignIn();

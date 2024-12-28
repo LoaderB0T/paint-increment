@@ -1,0 +1,29 @@
+<div class="paper-container">
+  <h1>{{ i18n.history_title() }}</h1>
+  <div class="content" [style.--zoom]="zoom()">
+    <div class="list" (wheel)="gotWheel($event)">
+      @for (canvas of canvasses(); track $index) {
+        <div class="canvas">
+          <awd-canvas
+            [layers]="canvas.layers"
+            [settings]="settings()"
+            [isHistory]="true"
+            [allowPaint]="false"
+            [fixedSize]="size()"
+          />
+          <div class="footer">
+            <span class="iteration-name" data-testid="iteration-name">{{ canvas.name }}</span>
+            @if (lobby().isCreator) {
+              <awd-button
+                data-testid="edit-iteration"
+                (onClick)="editIteration($index)"
+                icon="fa-regular fa-pencil"
+                [border]="false"
+              />
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

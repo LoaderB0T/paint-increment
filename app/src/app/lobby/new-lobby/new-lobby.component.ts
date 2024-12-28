@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { CreateLobbyRequest, LobbyService } from '@shared/api';
 import { ButtonComponent, TextboxComponent } from '@shared/controls';
-import { TranslateService } from '@shared/i18n';
+import { injectI18n } from '@shared/i18n';
 import { assertBody, objectKeys, safeLobbyName } from '@shared/utils';
 
 @Component({
@@ -16,7 +16,7 @@ import { assertBody, objectKeys, safeLobbyName } from '@shared/utils';
 export class NewLobbyComponent {
   private readonly _lobbyService = inject(LobbyService);
   private readonly _router = inject(Router);
-  protected readonly i18n = inject(TranslateService).translations;
+  protected readonly i18n = injectI18n();
   constructor() {}
 
   protected readonly form = new FormGroup({

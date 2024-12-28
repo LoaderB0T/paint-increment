@@ -3,6 +3,7 @@ import { AuthComponent, AuthCallbackComponent } from '@shared/auth';
 import { isLoggedInGuard } from '@shared/auth/auth.guard';
 
 import { HomeComponent } from './home/home.component';
+import { HistoryComponent } from './lobby/history/history.component';
 import { LobbyComponent } from './lobby/lobby/lobby.component';
 import { lobbyResolver } from './lobby/lobby/lobby.resolver';
 import { MyLobbiesComponent } from './lobby/my-lobbies/my-lobbies.component';
@@ -28,11 +29,19 @@ export const routes: Routes = [
       },
       {
         path: ':name/:id',
-        component: LobbyComponent,
-        runGuardsAndResolvers: 'always',
         resolve: {
           lobby: lobbyResolver,
         },
+        children: [
+          {
+            path: 'history',
+            component: HistoryComponent,
+          },
+          {
+            path: '',
+            component: LobbyComponent,
+          },
+        ],
       },
     ],
   },

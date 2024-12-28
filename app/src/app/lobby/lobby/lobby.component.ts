@@ -12,7 +12,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse, LobbyService } from '@shared/api';
 import { ButtonComponent, DialogService } from '@shared/controls';
-import { TranslateService } from '@shared/i18n';
+import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { UserInfoService } from '@shared/shared/user-info';
 import { assertBody, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
@@ -20,11 +20,7 @@ import { map } from 'rxjs';
 
 import { LobbyLockService } from './lobby-lock.service';
 import { InviteCodeComponent } from '../../dialog/invite-code/invite-code.component';
-import { CanvasComponent, CanvasSettings, Layer } from '../canvas/canvas.component';
-
-function getPixelArray(width: number, height: number): boolean[][] {
-  return Array.from({ length: width }, () => Array.from({ length: height }, () => false));
-}
+import { CanvasComponent, CanvasSettings, getPixelArray, Layer } from '../canvas/canvas.component';
 
 type LockeyBy = {
   kind: 'me' | 'other' | 'none';
@@ -52,8 +48,10 @@ export class LobbyComponent implements OnInit {
   private readonly _userInfoService = inject(UserInfoService);
   private readonly _dialogService = inject(DialogService);
   private readonly _store = inject(StorageService).init<Store>('lobby', {});
-  protected readonly i18n = inject(TranslateService).translations;
-  protected readonly lobby = signal(this._activatedRoute.snapshot.data['lobby'] as LobbyResponse);
+  protected readonly i18n = injectI18n();
+  protected readonly lobby = signal(
+    this._activatedRoute.snapshot.parent?.data['lobby'] as LobbyResponse
+  );
   protected readonly inviteCode = computed(
     () => this._store.valueSig()?.inviteCodes?.[this.lobby().id]
   );
@@ -325,5 +323,11 @@ export class LobbyComponent implements OnInit {
     const lobby = assertBody(response);
     this.lobby.set(lobby);
     this.prepareLayers();
+  }
+
+  protected showHistory() {
+    this._router.navigate(['history'], {
+      relativeTo: this._activatedRoute,
+    });
   }
 }
