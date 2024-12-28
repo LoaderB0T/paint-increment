@@ -11,7 +11,14 @@
     display: flex;
     flex-direction: column;
     .footer {
-      --font-size-override: calc(var(--zoom) * 42px + 12px);
+      --font-size-override: calc(var(--zoom) * 42px + 6px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      awd-button {
+        line-height: 0;
+      }
       .iteration-name {
         font-size: calc(var(--zoom) * 40px + 5px);
       }

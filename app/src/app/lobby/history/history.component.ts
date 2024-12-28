@@ -1,5 +1,6 @@
 import {
   afterRenderEffect,
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -29,7 +30,7 @@ const flexGap = 16;
   styleUrls: ['history.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistoryComponent {
+export class HistoryComponent implements AfterViewInit {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _content = viewChild.required<ElementRef<HTMLDivElement>>('content');
@@ -87,6 +88,12 @@ export class HistoryComponent {
       });
       resizeObserver.observe(el);
     });
+  }
+
+  public ngAfterViewInit(): void {
+    if (document.body.clientWidth < 400) {
+      this.zoom.set(1);
+    }
   }
 
   protected gotWheel(event: WheelEvent): void {
