@@ -108,6 +108,9 @@ export class CanvasComponent {
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
           ev.preventDefault();
+          ev.srcEvent.stopPropagation();
+          ev.srcEvent.stopImmediatePropagation();
+          ev.srcEvent.preventDefault();
           const newScale = pinchZoomStart * ev.scale;
           const clampedScale = Math.min(20, Math.max(1, newScale));
           this.zoom.set(clampedScale);
