@@ -208,9 +208,9 @@ export class CanvasComponent {
     if (this.allowPaint()) {
       this._drawing = event.button === 0;
       this._erasing = event.button === 2;
-      // if (this._drawing || this._erasing) {
-      //   this.draw(event.offsetX, event.offsetY, this._erasing, true);
-      // }
+      if (this._drawing || this._erasing) {
+        this.draw(event.offsetX, event.offsetY, this._erasing, true);
+      }
     }
     event.preventDefault();
   }
@@ -229,9 +229,6 @@ export class CanvasComponent {
   }
 
   private draw(rawX: number, rawY: number, erase: boolean, startPoint: boolean) {
-    if (this._isPinching) {
-      return;
-    }
     const { x, y } = this.getRealCoordinates(rawX, rawY);
     this._ctx().restore();
     if (x < 0 || y < 0 || x >= this.settings().width || y >= this.settings().height) {
@@ -253,7 +250,9 @@ export class CanvasComponent {
     for (let i = 0; i < largerDelta; i++) {
       const x_ = this._lastDrawX + Math.floor((deltaX / largerDelta) * i);
       const y_ = this._lastDrawY + Math.floor((deltaY / largerDelta) * i);
-      this.drawPixel(x_, y_, erase);
+      setTimeout(() => {
+        this.drawPixel(x_, y_, erase);
+      });
     }
     this._lastDrawX = x;
     this._lastDrawY = y;
@@ -306,6 +305,9 @@ export class CanvasComponent {
   }
 
   private drawPixel(x: number, y: number, erase: boolean) {
+    if (this._isPinching) {
+      return;
+    }
     const layers = this.layers();
     const drawLayer = layers[0];
     if (!erase && this._pixelsLeft <= 0) {
