@@ -1,0 +1,18 @@
+<h2>{{ i18n.editName_title() }}</h2>
+<div class="content">
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.editName_name()"
+    [fontSize]="35"
+    icon="pencil"
+    icon2="input-text"
+    [ngModel]="lobbyName()"
+    (ngModelChange)="lobbyName.set($event)"
+    name="iteration_name"
+    #codeTextBox
+  />
+</div>
+<div class="actions">
+  <awd-button data-testid="save-button" (onClick)="save()" [text]="i18n.shared_save()" />
+  <awd-button data-testid="cancel-button" (onClick)="close()" [text]="i18n.shared_cancel()" />
+</div>

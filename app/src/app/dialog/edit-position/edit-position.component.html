@@ -1,0 +1,18 @@
+<h2>{{ i18n.editPosition_title() }}</h2>
+<div class="content">
+  <awd-textbox
+    inputType="number"
+    [placeholder]="i18n.editPosition_position()"
+    [fontSize]="35"
+    icon="pencil"
+    icon2="input-text"
+    [ngModel]="lobbyIndex()"
+    (ngModelChange)="lobbyIndex.set($event)"
+    name="iteration_position"
+    #codeTextBox
+  />
+</div>
+<div class="actions">
+  <awd-button data-testid="save-button" (onClick)="save()" [text]="i18n.shared_save()" />
+  <awd-button data-testid="cancel-button" (onClick)="close()" [text]="i18n.shared_cancel()" />
+</div>

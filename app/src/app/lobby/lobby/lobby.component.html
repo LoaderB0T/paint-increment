@@ -36,6 +36,18 @@
         [tooltip]="i18n.lobby_actions_reset()"
         icon="fa-regular fa-trash-xmark"
       />
+      <awd-button
+        data-testid="reset-button"
+        (onClick)="changeName()"
+        [tooltip]="i18n.lobby_actions_changeName()"
+        icon="fa-regular fa-input-text"
+      />
+      <awd-button
+        data-testid="reset-button"
+        (onClick)="changePosition()"
+        [tooltip]="i18n.lobby_actions_changePosition()"
+        icon="fa-regular fa-location-dot"
+      />
     } @else {
       @if (!isDrawing()) {
         <awd-button

@@ -39,8 +39,18 @@
       "submitContribution": "Submit contribution",
       "reset": "Reset",
       "accept": "Accept",
-      "reject": "Reject"
+      "reject": "Reject",
+      "changePosition": "Change position",
+      "changeName": "Change name"
     }
+  },
+  "editName": {
+    "title": "Edit name",
+    "name": "Name"
+  },
+  "editPosition": {
+    "title": "Edit position",
+    "position": "Position"
   },
   "history": {
     "title": "History",

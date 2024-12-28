@@ -19,6 +19,8 @@ import { assertBody, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/u
 import { map } from 'rxjs';
 
 import { LobbyLockService } from './lobby-lock.service';
+import { EditNameComponent } from '../../dialog/edit-name/edit-name.component';
+import { EditPositionComponent } from '../../dialog/edit-position/edit-position.component';
 import { InviteCodeComponent } from '../../dialog/invite-code/invite-code.component';
 import { CanvasComponent, CanvasSettings, getPixelArray, Layer } from '../canvas/canvas.component';
 
@@ -371,6 +373,21 @@ export class LobbyComponent implements OnInit {
   protected navigateBackToHistory() {
     this._router.navigate(['../../'], {
       relativeTo: this._activatedRoute,
+    });
+  }
+
+  protected changeName() {
+    this._dialogService.showComponentDialog(EditNameComponent, c => {
+      c.setInput('lobby', this.lobby());
+      c.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
+    });
+  }
+
+  protected changePosition() {
+    this._dialogService.showComponentDialog(EditPositionComponent, c => {
+      c.setInput('lobby', this.lobby());
+      c.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
+      c.setInput('activatedRoute', this._activatedRoute);
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, ViewContainerRef } from '@angular/core';
+import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
 import { SubscriptionManager, throwExp } from '@shared/utils';
 
 import { DialogBase } from './dialog-base.component';
@@ -32,7 +32,7 @@ export class DialogService {
 
   public showComponentDialog<T extends DialogBase>(
     componentType: new (...args: unknown[]) => T,
-    initializer?: (component: T) => void
+    initializer?: (component: ComponentRef<T>) => void
   ): T {
     if (!this._rootViewContainer) {
       throw new Error('setRootViewContainerRef has not been called yet');
@@ -44,7 +44,7 @@ export class DialogService {
     const hostComponent = this._rootViewContainer.createComponent(DialogComponent);
     const component = hostComponent.instance.container().createComponent(componentType);
 
-    initializer?.(component.instance);
+    initializer?.(component);
     if (component.instance.closeDialog) {
       const hideSub = component.instance.closeDialog.subscribe((id: string) => {
         const indexToRemove = this._rootViewContainer.indexOf(hostComponent.hostView);
