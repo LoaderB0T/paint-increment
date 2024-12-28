@@ -1,6 +1,6 @@
-<div class="paper-container">
+<div class="paper-container" [style.--flex-gap]="flexGap">
   <h1>{{ i18n.history_title() }}</h1>
-  <div class="content" [style.--zoom]="zoom()" (wheel)="gotWheel($event)">
+  <div #content class="content" [style.--zoom]="zoom()" (wheel)="gotWheel($event)">
     <div class="list">
       @for (canvas of canvasses(); track $index) {
         <div class="canvas">

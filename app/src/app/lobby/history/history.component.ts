@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
 import { ButtonComponent } from '@shared/controls';
@@ -11,6 +20,8 @@ type CanvasData = {
   name: string;
 };
 
+const flexGap = 16;
+
 @Component({
   imports: [CanvasComponent, ButtonComponent],
   selector: 'awd-history',
@@ -21,13 +32,16 @@ type CanvasData = {
 export class HistoryComponent {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _content = viewChild.required<ElementRef<HTMLDivElement>>('content');
 
+  protected readonly flexGap = `${flexGap}px`;
   protected readonly i18n = injectI18n();
   protected readonly lobby = signal(
     this._activatedRoute.snapshot.parent?.data['lobby'] as LobbyResponse
   );
-  protected readonly zoom = signal(0.7);
-  protected readonly size = computed(() => 1000 * this.zoom());
+  private readonly _maxWidth = signal(0);
+  protected readonly zoom = signal(0.5);
+  protected readonly size = computed(() => this._maxWidth() * this.zoom() - flexGap);
 
   protected readonly settings = computed<CanvasSettings>(() => ({
     canvasPattern: false,
@@ -65,12 +79,22 @@ export class HistoryComponent {
     return canvasses;
   });
 
+  constructor() {
+    afterRenderEffect(() => {
+      const el = this._content().nativeElement;
+      const resizeObserver = new ResizeObserver(() => {
+        this._maxWidth.set(el.clientWidth);
+      });
+      resizeObserver.observe(el);
+    });
+  }
+
   protected gotWheel(event: WheelEvent): void {
     if (event.shiftKey) {
       event.preventDefault();
       const delta = event.deltaY;
       if (delta > 0) {
-        this.zoom.update(zoom => Math.max(0.1, zoom * 0.9));
+        this.zoom.update(zoom => Math.max(0.25, zoom * 0.9));
       } else if (delta < 0) {
         this.zoom.update(zoom => Math.min(1, zoom * 1.1));
       }

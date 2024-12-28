@@ -6,7 +6,7 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: center;
-  gap: 16px;
+  gap: var(--flex-gap);
   .canvas {
     display: flex;
     flex-direction: column;
