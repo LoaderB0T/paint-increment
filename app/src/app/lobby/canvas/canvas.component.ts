@@ -37,6 +37,7 @@ export function getPixelArray(width: number, height: number): boolean[][] {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CanvasComponent {
+  private readonly _recentDraws = new Array<{ x: number; y: number; erase: boolean }>();
   private readonly _canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly _canvasContainer =
     viewChild.required<ElementRef<HTMLDivElement>>('canvasContainer');
@@ -205,16 +206,26 @@ export class CanvasComponent {
     this.hoveredCoords.emit({ x, y });
   }
 
-  protected mouseDown(event: MouseEvent) {
+  protected mouseDown(event: PointerEvent) {
     this._dragging = event.button === 1;
     if (this.allowPaint()) {
+      // If the first pointer is pressed, reset the recent draws
+      if (!event.buttons) {
+        this._recentDraws.length = 0;
+      } else if (event.buttons === 2) {
+        // If the second pointer is pressed, undo the recent draws
+        this._recentDraws.forEach(recentDraw => {
+          this.drawPixel(recentDraw.x, recentDraw.y, !recentDraw.erase);
+        });
+      }
+
       this._drawing = event.button === 0;
       this._erasing = event.button === 2;
       if (this._drawing || this._erasing) {
         this.draw(event.offsetX, event.offsetY, this._erasing, true);
       }
+      event.preventDefault();
     }
-    event.preventDefault();
   }
 
   protected mouseUp(event: MouseEvent) {
@@ -331,7 +342,7 @@ export class CanvasComponent {
       // Pixel is unchanged
       return;
     }
-
+    this._recentDraws.push({ x, y, erase });
     drawLayer.pixels[x][y] = !erase;
     this._drawnCount += erase ? -1 : 1;
     this.drawCount.emit(this._drawnCount);
