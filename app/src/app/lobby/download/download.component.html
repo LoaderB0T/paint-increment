@@ -27,5 +27,17 @@
       [tooltip]="frontSide() ? i18n.download_flipToBack() : i18n.download_flipToFront()"
       icon="fa-regular fa-repeat"
     />
+    <awd-button
+      data-testid="download-button"
+      (onClick)="download(false)"
+      [tooltip]="i18n.download_downloadSide()"
+      icon="fa-regular fa-file-arrow-down"
+    />
+    <awd-button
+      data-testid="download-all-button"
+      (onClick)="download(true)"
+      [tooltip]="i18n.download_downloadAll()"
+      icon="fa-regular fa-folder-arrow-down"
+    />
   </div>
 </div>

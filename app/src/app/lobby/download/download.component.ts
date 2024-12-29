@@ -14,8 +14,10 @@ import { ButtonComponent, DialogService } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { throwExp } from '@shared/utils';
+import saveAs from 'file-saver';
 import { DownloadSettingsComponent } from 'src/app/dialog/download-settings/download-settings.component';
 
+import { downloadIterations } from './rendering/all-iterations';
 import { renderBack } from './rendering/back';
 import { renderFront } from './rendering/front';
 import { DownloadSettings } from '../../dialog/download-settings/download-settings.model';
@@ -93,6 +95,34 @@ export class DownloadComponent {
           ctx.drawImage(canvas, 0, 0);
         });
       });
+    }
+  }
+
+  protected download(all: boolean) {
+    const color = this._settings.forceValue.accentColor;
+    const transparent = this._settings.forceValue.transparentBackground;
+    if (all) {
+      downloadIterations(this._lobby, this._settings.forceValue, this._document);
+    } else {
+      if (this.frontSide()) {
+        renderFront(this._lobby, this._settings.forceValue, this._document).then(canvas => {
+          canvas.toBlob(blob => {
+            saveAs(
+              blob ?? throwExp('blob is empty'),
+              `${this._lobby.name}_${color}_front${transparent ? '_T' : ''}.png`
+            );
+          });
+        });
+      } else {
+        renderBack(this._lobby, this._settings.forceValue, this._document).then(canvas => {
+          canvas.toBlob(blob => {
+            saveAs(
+              blob ?? throwExp('blob is empty'),
+              `${this._lobby.name}_${color}_back${transparent ? '_T' : ''}.png`
+            );
+          });
+        });
+      }
     }
   }
 }

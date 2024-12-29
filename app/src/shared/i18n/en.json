@@ -69,6 +69,8 @@
   "download": {
     "title": "Download",
     "openSettings": "Settings",
+    "downloadSide": "Download side",
+    "downloadAll": "Download all",
     "settings": {
       "accentColor": "Accent color",
       "columnCount": "Columns",
