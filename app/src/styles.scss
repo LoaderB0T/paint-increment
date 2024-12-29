@@ -117,6 +117,9 @@ a {
 
 .paper-container,
 .dialog {
+  > h2 {
+    flex-shrink: 0;
+  }
   height: 100%;
   display: flex;
   justify-content: space-between;
