@@ -5,29 +5,29 @@ import { drawContributorsIterationInSquare } from './back-iterations';
 import { clearRowsForText } from './back-name-rows';
 import { drawContributorName } from './back-names';
 import { drawSquaresForIterations } from './back-squares';
+import { DownloadSettings } from '../../../dialog/download-settings/download-settings.model';
 
 export const renderBack = async (
   lobby: LobbyResponse,
-  color: string,
-  transparent: boolean,
-  columns: number
+  settings: DownloadSettings,
+  document: Document
 ) => {
-  const myFont = new FontFace('Pixeled', 'url(/assets/Pixeled.ttf)');
+  const myFont = new FontFace('Pixeled', 'url(/Pixeled.ttf)');
   const font = await myFont.load();
 
-  document.fonts.add(font);
+  (document.fonts as any).add(font);
 
   const targetSize = 4000;
-  const rows = Math.ceil(lobby.pixelIterations.length / columns);
+  const rows = Math.ceil(lobby.pixelIterations.length / settings.columnCount);
   const borderThickness = 12;
   const textSpace = 70;
   const pixelLength = lobby.settings.width;
 
   const availableHeight = targetSize - 2 * rows * borderThickness - rows * textSpace;
-  const availableWidth = targetSize - (columns + 1) * borderThickness;
+  const availableWidth = targetSize - (settings.columnCount + 1) * borderThickness;
 
   const availableHeightPerRow = availableHeight / rows;
-  const availableWidthPerColumn = availableWidth / columns;
+  const availableWidthPerColumn = availableWidth / settings.columnCount;
 
   const availableSizePerIteration =
     Math.floor(
@@ -36,7 +36,8 @@ export const renderBack = async (
 
   const pixelSize = availableSizePerIteration / pixelLength;
 
-  const actualCanvasWidth = availableSizePerIteration * columns + (columns + 1) * borderThickness;
+  const actualCanvasWidth =
+    availableSizePerIteration * settings.columnCount + (settings.columnCount + 1) * borderThickness;
   const actualCanvasHeight =
     availableSizePerIteration * rows + 2 * rows * borderThickness + rows * textSpace;
 
@@ -50,11 +51,11 @@ export const renderBack = async (
 
   drawSquaresForIterations(
     lobby,
-    columns,
+    settings.columnCount,
     borderThickness,
     availableSizePerIteration,
     textSpace,
-    transparent,
+    settings.transparentBackground,
     ctx
   );
   clearRowsForText(
@@ -62,15 +63,15 @@ export const renderBack = async (
     borderThickness,
     availableSizePerIteration,
     textSpace,
-    transparent,
+    settings.transparentBackground,
     ctx,
     actualCanvasWidth
   );
 
   for (let i = 0; i < lobby.pixelIterations.length; i++) {
     const contributor = lobby.pixelIterations[i].name;
-    const x = i % columns;
-    const y = Math.floor(i / columns);
+    const x = i % settings.columnCount;
+    const y = Math.floor(i / settings.columnCount);
     const startX = x * (borderThickness + availableSizePerIteration) + borderThickness;
     const startY =
       y * (2 * borderThickness + availableSizePerIteration + textSpace) + borderThickness;
@@ -85,7 +86,15 @@ export const renderBack = async (
       textSpace
     );
 
-    drawContributorsIterationInSquare(lobby, i, ctx, color, startX, pixelSize, startY);
+    drawContributorsIterationInSquare(
+      lobby,
+      i,
+      ctx,
+      settings.accentColor,
+      startX,
+      pixelSize,
+      startY
+    );
   }
 
   return canvas;

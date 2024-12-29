@@ -1,6 +1,13 @@
 <div class="paper-container">
   <h2>{{ i18n.download_title() }}</h2>
-  <div class="content"></div>
+  <div class="content">
+    <canvas
+      #canvas
+      [width]="canvasSize().width"
+      [height]="canvasSize().height"
+      id="download-preview"
+    ></canvas>
+  </div>
   <div class="actions">
     <awd-button
       data-testid="submit-button"
@@ -13,6 +20,12 @@
       (onClick)="openSettings()"
       [tooltip]="i18n.download_openSettings()"
       icon="fa-regular fa-gear"
+    />
+    <awd-button
+      data-testid="flip-button"
+      (onClick)="flip()"
+      [tooltip]="frontSide() ? i18n.download_flipToBack() : i18n.download_flipToFront()"
+      icon="fa-regular fa-repeat"
     />
   </div>
 </div>

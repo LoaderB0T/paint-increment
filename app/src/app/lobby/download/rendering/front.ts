@@ -5,19 +5,19 @@ import { drawEdgePixels } from './front-draw-edge-pixels';
 import { calculateEdgePixels } from './front-edge-pixels';
 import { drawAllIterations } from './front-iterations';
 import { drawYearInBottomRightCorner } from './front-year';
+import { DownloadSettings } from '../../../dialog/download-settings/download-settings.model';
 
 export const renderFront = async (
   lobby: LobbyResponse,
-  color: string,
-  transparent: boolean,
-  renderYear: boolean,
-  renderEdgePixels: boolean
+  settings: DownloadSettings,
+  document: Document
 ) => {
   const targetSize = 4000;
   const pixelLength = lobby.settings.width;
   const textSpace = 6;
-  const pixelCountWidth = pixelLength + (renderEdgePixels ? 2 : 0);
-  const pixelCountHeight = pixelLength + (renderEdgePixels ? 2 : 0) + (renderYear ? textSpace : 0);
+  const pixelCountWidth = pixelLength + (settings.renderEdges ? 2 : 0);
+  const pixelCountHeight =
+    pixelLength + (settings.renderEdges ? 2 : 0) + (settings.renderYear ? textSpace : 0);
 
   const pixelSize = Math.floor(
     Math.min(targetSize / pixelCountWidth, targetSize / pixelCountHeight)
@@ -31,24 +31,24 @@ export const renderFront = async (
   canvas.height = actualCanvasHeight;
   const ctx = canvas.getContext('2d') ?? throwExp('Canvas not supported');
 
-  if (!transparent) {
+  if (!settings.transparentBackground) {
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, actualCanvasWidth, actualCanvasHeight);
   }
 
-  drawAllIterations(lobby, ctx, pixelSize, renderEdgePixels);
+  drawAllIterations(lobby, ctx, pixelSize, settings.renderEdges);
 
-  if (renderEdgePixels) {
+  if (settings.renderEdges) {
     const edgePixels = calculateEdgePixels(
       pixelCountWidth,
       pixelCountHeight,
       textSpace,
-      renderYear
+      settings.renderYear
     );
-    drawEdgePixels(ctx, color, edgePixels, pixelSize);
+    drawEdgePixels(ctx, settings.accentColor, edgePixels, pixelSize);
   }
 
-  if (renderYear) {
+  if (settings.renderYear) {
     drawYearInBottomRightCorner(pixelCountWidth, pixelSize, pixelCountHeight, textSpace, ctx);
   }
 

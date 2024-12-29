@@ -75,6 +75,8 @@
       "transparentBackground": "Transparent bg",
       "renderYear": "Include year",
       "renderEdges": "Include edges"
-    }
+    },
+    "flipToBack": "Flip to back",
+    "flipToFront": "Flip to front"
   }
 }

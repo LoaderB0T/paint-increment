@@ -1,4 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
+import { throwExp } from '@shared/utils';
 
 import { CookieService } from './cookie.service';
 
@@ -24,6 +25,10 @@ class StorageHandle<T> {
       this.value = defaultValue;
     }
     this.valueSig.set(this.value);
+  }
+
+  public get forceValue(): T {
+    return this.value ?? throwExp('Value is null');
   }
 
   public get value(): T | null {
