@@ -14,6 +14,7 @@
       [settings]="settings()"
       [allowPaint]="isDrawing() || isEditMode"
       [isEditMode]="isEditMode"
+      [mobileEraseMode]="mobileEraseMode()"
     />
   </div>
   <div class="actions">
@@ -109,8 +110,9 @@
     }
     @if ((isEditMode || isDrawing()) && isMobile) {
       <awd-button
-        data-testid="toggle-eraser-button"
-        (onClick)="resetImage()"
+        [active]="mobileEraseMode()"
+        data-testid="toggle-eraser-pencil-toggle-button"
+        (onClick)="togglePencilEraser()"
         [tooltip]="i18n.lobby_actions_reset()"
         icon="fa-regular fa-eraser"
       />

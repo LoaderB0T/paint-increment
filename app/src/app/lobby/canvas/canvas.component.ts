@@ -48,6 +48,7 @@ export class CanvasComponent {
   protected readonly zoom = signal(1);
   protected readonly offsetX = signal(0);
   protected readonly offsetY = signal(0);
+  public readonly mobileEraseMode = input(false);
   public readonly isHistory = input(false);
   public readonly settings = input.required<Required<CanvasSettings>>();
   private _dragging: boolean = false;
@@ -203,7 +204,6 @@ export class CanvasComponent {
   }
 
   protected mouseDown(event: PointerEvent) {
-    console.log(event);
     this._dragging = event.button === 1;
     if (this.allowPaint()) {
       // If the first pointer is pressed, reset the recent draws
@@ -251,6 +251,10 @@ export class CanvasComponent {
     this._ctx().restore();
     if (x < 0 || y < 0 || x >= this.settings().width || y >= this.settings().height) {
       return;
+    }
+
+    if (this.mobileEraseMode()) {
+      erase = true;
     }
 
     this.drawPixel(x, y, erase);

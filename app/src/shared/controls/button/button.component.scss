@@ -29,4 +29,7 @@ button {
       @include vars.static-squiggle(l);
     }
   }
+  &.active {
+    color: #ff0099;
+  }
 }

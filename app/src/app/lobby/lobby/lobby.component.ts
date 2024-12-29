@@ -62,7 +62,8 @@ export class LobbyComponent implements OnInit {
   );
   protected readonly isMobile = this._deviceService.isTouchDevice();
   private readonly _editIndex = Number.parseInt(this._activatedRoute.snapshot.params['editIndex']);
-  public readonly isEditMode = !isNaN(this._editIndex);
+  protected readonly isEditMode = !isNaN(this._editIndex);
+  protected readonly mobileEraseMode = signal(false);
   protected readonly inviteCode = computed(
     () => this._store.valueSig()?.inviteCodes?.[this.lobby().id]
   );
@@ -396,5 +397,9 @@ export class LobbyComponent implements OnInit {
       c.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
       c.setInput('activatedRoute', this._activatedRoute);
     });
+  }
+
+  protected togglePencilEraser() {
+    this.mobileEraseMode.update(x => !x);
   }
 }
