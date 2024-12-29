@@ -10,8 +10,11 @@ button {
   padding: 2px;
   user-select: none;
   --cursor: pointer;
-  &:hover {
+  &:hover,
+  &:active,
+  &:focus {
     @include vars.squiggly;
+    outline: none;
   }
   @include vars.static-squiggle(s);
   &.border {
