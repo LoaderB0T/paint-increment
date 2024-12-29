@@ -4,7 +4,7 @@ import { SubscriptionManager, throwExp } from '@shared/utils';
 import { DialogBase } from './dialog-base.component';
 import { DialogComponent } from './dialog.component';
 
-type DialogHandle<C extends DialogBase<any>, T> = {
+type DialogHandle<C extends DialogBase<unknown>, T> = {
   componentRef: ComponentRef<C>;
   result: Promise<T | null>;
 };
@@ -35,6 +35,7 @@ export class DialogService {
     this.__rootViewContainer = viewContainerRef;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public showComponentDialog<T extends DialogBase<any>>(
     componentType: new (...args: unknown[]) => T
   ): DialogHandle<T, T extends DialogBase<infer D> ? D : never> {
