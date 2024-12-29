@@ -44,7 +44,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
     this.inputType() === 'number' ? 'text' : this.inputType()
   );
   protected readonly numberPattern = computed(() =>
-    this.inputType() === 'number' ? '[0-9]*' : ''
+    this.inputType() === 'number' ? '[0-9]*' : (null as never)
   );
   protected readonly caret = signal<{ top: number; left: number; height: number } | null>(null);
   public readonly icon = input<string>('');
