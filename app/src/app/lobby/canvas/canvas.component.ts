@@ -213,7 +213,7 @@ export class CanvasComponent {
         // If the second pointer is pressed, undo the recent draws
         this._isMultiTouch = true;
         this._recentDraws.forEach(recentDraw => {
-          this.drawPixel(recentDraw.x, recentDraw.y, !recentDraw.erase);
+          this.drawPixel(recentDraw.x, recentDraw.y, !recentDraw.erase, true);
         });
       }
 
@@ -322,8 +322,8 @@ export class CanvasComponent {
     this.drawCount.emit(this._drawnCount);
   }
 
-  private drawPixel(x: number, y: number, erase: boolean) {
-    if (this._isMultiTouch) {
+  private drawPixel(x: number, y: number, erase: boolean, isMultiTouchReset = false) {
+    if (this._isMultiTouch && !isMultiTouchReset) {
       return;
     }
     const layers = this.layers();
