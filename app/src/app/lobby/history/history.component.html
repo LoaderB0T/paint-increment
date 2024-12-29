@@ -28,10 +28,16 @@
   </div>
   <div class="actions">
     <awd-button
-      data-testid="submit-button"
+      data-testid="go-back-button"
       (onClick)="goBackToLobby()"
       [tooltip]="i18n.history_backToLobby()"
       icon="fa-regular fa-left"
+    />
+    <awd-button
+      data-testid="go-to-download-button"
+      (onClick)="goToDownload()"
+      [tooltip]="i18n.history_goToDownload()"
+      icon="fa-regular fa-file-arrow-down"
     />
   </div>
 </div>

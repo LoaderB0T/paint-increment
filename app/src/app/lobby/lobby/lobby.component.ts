@@ -279,9 +279,9 @@ export class LobbyComponent implements OnInit {
       return codeToCopy;
     };
 
-    const comp = this._dialogService.showComponentDialog(InviteCodeComponent);
+    const dialog = this._dialogService.showComponentDialog(InviteCodeComponent);
     generateCode().then(code => {
-      comp.setCode(code);
+      dialog.componentRef.instance.setCode(code);
     });
   }
 
@@ -385,18 +385,17 @@ export class LobbyComponent implements OnInit {
   }
 
   protected changeName() {
-    this._dialogService.showComponentDialog(EditNameComponent, c => {
-      c.setInput('lobby', this.lobby());
-      c.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
-    });
+    const dialog = this._dialogService.showComponentDialog(EditNameComponent);
+    dialog.componentRef.setInput('lobby', this.lobby());
+    dialog.componentRef.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
   }
 
   protected changePosition() {
-    this._dialogService.showComponentDialog(EditPositionComponent, c => {
-      c.setInput('lobby', this.lobby());
-      c.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
-      c.setInput('activatedRoute', this._activatedRoute);
-    });
+    const dialog = this._dialogService.showComponentDialog(EditPositionComponent);
+
+    dialog.componentRef.setInput('lobby', this.lobby());
+    dialog.componentRef.setInput('iterationId', this.lobby().pixelIterations[this._editIndex].id);
+    dialog.componentRef.setInput('activatedRoute', this._activatedRoute);
   }
 
   protected togglePencilEraser() {

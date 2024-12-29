@@ -1,12 +1,9 @@
-import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+export abstract class DialogBase<T = void> {
+  public readonly dialogId = Math.random().toString(36).slice(2);
+  private readonly _resolver = Promise.withResolvers<T | void>();
+  public readonly result = this._resolver.promise;
 
-export abstract class DialogBase {
-  public dialogId = Math.random().toString(36).slice(2);
-  protected readonly $closeDialog = new Subject();
-  public readonly closeDialog = this.$closeDialog.asObservable().pipe(map(() => this.dialogId));
-
-  public close() {
-    this.$closeDialog.next(undefined);
+  public close(result: T | void) {
+    this._resolver.resolve(result);
   }
 }

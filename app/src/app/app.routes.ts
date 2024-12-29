@@ -3,6 +3,7 @@ import { AuthComponent, AuthCallbackComponent } from '@shared/auth';
 import { isLoggedInGuard } from '@shared/auth/auth.guard';
 
 import { HomeComponent } from './home/home.component';
+import { DownloadComponent } from './lobby/download/download.component';
 import { HistoryComponent } from './lobby/history/history.component';
 import { LobbyComponent } from './lobby/lobby/lobby.component';
 import { lobbyResolver } from './lobby/lobby/lobby.resolver';
@@ -40,6 +41,10 @@ export const routes: Routes = [
           {
             path: 'history/edit/:editIndex',
             component: LobbyComponent,
+          },
+          {
+            path: 'download',
+            component: DownloadComponent,
           },
           {
             path: '',

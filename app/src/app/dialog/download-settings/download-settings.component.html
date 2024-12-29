@@ -1,0 +1,52 @@
+<h2>{{ i18n.editName_title() }}</h2>
+<div class="content">
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.download_settings_accentColor()"
+    [fontSize]="35"
+    [ngModel]="accentColor()"
+    (ngModelChange)="accentColor.set($event)"
+    name="accentColor"
+    #codeTextBox
+  />
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.download_settings_columnCount()"
+    [fontSize]="35"
+    [ngModel]="columnCount()"
+    (ngModelChange)="columnCount.set($event)"
+    name="columnCount"
+    #codeTextBox
+  />
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.download_settings_transparentBackground()"
+    [fontSize]="35"
+    [ngModel]="transparentBackground()"
+    (ngModelChange)="transparentBackground.set($event)"
+    name="transparentBackground"
+    #codeTextBox
+  />
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.download_settings_renderYear()"
+    [fontSize]="35"
+    [ngModel]="renderYear()"
+    (ngModelChange)="renderYear.set($event)"
+    name="renderYear"
+    #codeTextBox
+  />
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.download_settings_renderEdges()"
+    [fontSize]="35"
+    [ngModel]="renderEdges()"
+    (ngModelChange)="renderEdges.set($event)"
+    name="renderEdges"
+    #codeTextBox
+  />
+</div>
+<div class="actions">
+  <awd-button data-testid="save-button" (onClick)="save()" [text]="i18n.shared_save()" />
+  <awd-button data-testid="cancel-button" (onClick)="close()" [text]="i18n.shared_cancel()" />
+</div>

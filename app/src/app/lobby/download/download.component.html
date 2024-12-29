@@ -1,0 +1,18 @@
+<div class="paper-container">
+  <h2>{{ i18n.download_title() }}</h2>
+  <div class="content"></div>
+  <div class="actions">
+    <awd-button
+      data-testid="submit-button"
+      (onClick)="goBackToHistory()"
+      [tooltip]="i18n.shared_back()"
+      icon="fa-regular fa-left"
+    />
+    <awd-button
+      data-testid="settings-button"
+      (onClick)="openSettings()"
+      [tooltip]="i18n.download_openSettings()"
+      icon="fa-regular fa-gear"
+    />
+  </div>
+</div>

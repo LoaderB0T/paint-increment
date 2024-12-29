@@ -4,6 +4,11 @@ import { SubscriptionManager, throwExp } from '@shared/utils';
 import { DialogBase } from './dialog-base.component';
 import { DialogComponent } from './dialog.component';
 
+type DialogHandle<C extends DialogBase<any>, T> = {
+  componentRef: ComponentRef<C>;
+  result: Promise<T | null>;
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -30,40 +35,45 @@ export class DialogService {
     this.__rootViewContainer = viewContainerRef;
   }
 
-  public showComponentDialog<T extends DialogBase>(
-    componentType: new (...args: unknown[]) => T,
-    initializer?: (component: ComponentRef<T>) => void
-  ): T {
+  public showComponentDialog<T extends DialogBase<any>>(
+    componentType: new (...args: unknown[]) => T
+  ): DialogHandle<T, T extends DialogBase<infer D> ? D : never> {
     if (!this._rootViewContainer) {
       throw new Error('setRootViewContainerRef has not been called yet');
     }
+
+    const prom = Promise.withResolvers<T extends DialogBase<infer D> ? D : never | null>();
 
     const newId = this.getRandomId();
 
     this._subMgrs.push({ id: newId, mgr: new SubscriptionManager() });
     const hostComponent = this._rootViewContainer.createComponent(DialogComponent);
-    const component = hostComponent.instance.container().createComponent(componentType);
+    const componentRef = hostComponent.instance.container().createComponent(componentType);
 
-    initializer?.(component);
-    if (component.instance.closeDialog) {
-      const hideSub = component.instance.closeDialog.subscribe((id: string) => {
+    if ('result' in componentRef.instance) {
+      componentRef.instance.result.then(res => {
+        prom.resolve(res ?? null);
         const indexToRemove = this._rootViewContainer.indexOf(hostComponent.hostView);
         if (indexToRemove > -1) {
           this._rootViewContainer.remove(indexToRemove);
         }
-        this._subMgrs.find(subMgr => subMgr.id === id)?.mgr?.unsubscribeAll();
         if (this._rootViewContainer.length === 0) {
           this.dialogVisible = false;
         }
       });
-      this._subMgrs.find(subMgr => subMgr.id === newId)?.mgr?.add(hideSub);
     } else {
-      console.error('This Component does not implement the DialogBase Class:', component.instance);
+      console.error(
+        'This Component does not implement the DialogBase Class:',
+        componentRef.instance
+      );
       throw new Error('This Component does not implement the DialogBase Class');
     }
 
     this.dialogVisible = true;
-    return component.instance;
+    return {
+      componentRef,
+      result: prom.promise,
+    };
   }
 
   private getRandomId(): string {

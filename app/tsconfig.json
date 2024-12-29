@@ -10,13 +10,18 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
+    "lib": [
+      "ES2023",
+      "ESNext.Promise",
+      "dom"
+    ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "importHelpers": true,
-    "target": "ES2022",
+    "target": "ES2023",
     "baseUrl": "./",
     "module": "ES2022",
     "paths": {

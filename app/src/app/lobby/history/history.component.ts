@@ -117,4 +117,8 @@ export class HistoryComponent implements AfterViewInit {
   protected goBackToLobby(): void {
     this._router.navigate(['../'], { relativeTo: this._activatedRoute });
   }
+
+  protected goToDownload(): void {
+    this._router.navigate(['../', 'download'], { relativeTo: this._activatedRoute });
+  }
 }

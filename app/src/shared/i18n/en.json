@@ -55,7 +55,8 @@
   },
   "history": {
     "title": "History",
-    "backToLobby": "Back to lobby"
+    "backToLobby": "Back to lobby",
+    "goToDownload": "Go to download"
   },
   "inviteCode": {
     "title": "Invite code",
@@ -64,5 +65,16 @@
     "copied": "Copied!",
     "code": "Code",
     "generateNew": "New"
+  },
+  "download": {
+    "title": "Download",
+    "openSettings": "Settings",
+    "settings": {
+      "accentColor": "Accent color",
+      "columnCount": "Columns",
+      "transparentBackground": "Transparent bg",
+      "renderYear": "Include year",
+      "renderEdges": "Include edges"
+    }
   }
 }

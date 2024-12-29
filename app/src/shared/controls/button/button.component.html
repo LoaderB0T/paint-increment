@@ -1,6 +1,6 @@
 <button
   (click)="onClick.emit()"
-  [title]="tooltip()"
+  [title]="tooltip() ?? ''"
   [class.border]="border()"
   [class.active]="active()"
 >
