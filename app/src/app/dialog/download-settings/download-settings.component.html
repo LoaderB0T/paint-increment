@@ -18,27 +18,27 @@
     name="columnCount"
     #codeTextBox
   />
-  <awd-textbox
+  <awd-checkbox
     inputType="text"
-    [placeholder]="i18n.download_settings_transparentBackground()"
+    [text]="i18n.download_settings_transparentBackground()"
     [fontSize]="30"
     [ngModel]="transparentBackground()"
     (ngModelChange)="transparentBackground.set($event)"
     name="transparentBackground"
     #codeTextBox
   />
-  <awd-textbox
+  <awd-checkbox
     inputType="text"
-    [placeholder]="i18n.download_settings_renderYear()"
+    [text]="i18n.download_settings_renderYear()"
     [fontSize]="30"
     [ngModel]="renderYear()"
     (ngModelChange)="renderYear.set($event)"
     name="renderYear"
     #codeTextBox
   />
-  <awd-textbox
+  <awd-checkbox
     inputType="text"
-    [placeholder]="i18n.download_settings_renderEdges()"
+    [text]="i18n.download_settings_renderEdges()"
     [fontSize]="30"
     [ngModel]="renderEdges()"
     (ngModelChange)="renderEdges.set($event)"

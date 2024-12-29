@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, linkedSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonComponent, DialogBase, TextboxComponent } from '@shared/controls';
+import { ButtonComponent, CheckboxComponent, DialogBase, TextboxComponent } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
 
 import { DownloadSettings } from './download-settings.model';
 
 @Component({
-  imports: [FormsModule, ButtonComponent, TextboxComponent],
+  imports: [FormsModule, ButtonComponent, TextboxComponent, CheckboxComponent],
   selector: 'awd-download-settings',
   templateUrl: 'download-settings.component.html',
   styleUrls: ['download-settings.component.scss'],
