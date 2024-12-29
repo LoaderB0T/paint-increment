@@ -1,12 +1,12 @@
 <div class="paper-container">
-  <h1>
+  <h2>
     {{ isEditMode ? i18n.lobby_editTitle() : i18n.lobby_title() }}
     @if (lockedInfo().kind !== 'none') {
       <i class="fa-regular fa-lock-keyhole"></i>
     } @else if (hasUnconfirmedContribution()) {
       <i class="fa-regular fa-clock"></i>
     }
-  </h1>
+  </h2>
   <h3 class="lobby-name">{{ lobby().name }}</h3>
   <div class="content">
     <awd-canvas

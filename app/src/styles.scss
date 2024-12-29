@@ -40,6 +40,14 @@ h1 {
   font-size: vars.$fontSizeGiant;
   font-weight: vars.$fontWeightBold;
 }
+h2 {
+  font-size: vars.$fontSizeLarge;
+  font-weight: vars.$fontWeightBold;
+}
+h3 {
+  font-size: vars.$fontSizeNormal;
+  font-weight: vars.$fontWeightBold;
+}
 h1,
 h2,
 h3,
@@ -47,6 +55,9 @@ h4,
 h5,
 h6 {
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 a {
