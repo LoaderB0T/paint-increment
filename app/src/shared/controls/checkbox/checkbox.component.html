@@ -1,16 +1,14 @@
 <div class="container" [style.--font-size.px]="fontSize()">
-  <label [for]="id()"> {{ text() }}: </label>
-  <div class="input-container">
-    <input
-      #inputField
-      type="checkbox"
-      [name]="id()"
-      [id]="id()"
-      (change)="onInput()"
-      [ngModel]="value()"
-      (ngModelChange)="value.set($event)"
-      [disabled]="isDisabled()"
-      [attr.data-testid]="name + '-input'"
-    />
-  </div>
+  <input
+    #inputField
+    type="checkbox"
+    [name]="id()"
+    [id]="id()"
+    (change)="onInput()"
+    [ngModel]="value()"
+    (ngModelChange)="value.set($event)"
+    [disabled]="isDisabled()"
+    [attr.data-testid]="name + '-input'"
+  />
+  <label [for]="id()">{{ text() }}</label>
 </div>
