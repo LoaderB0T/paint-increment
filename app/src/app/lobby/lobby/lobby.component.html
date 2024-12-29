@@ -105,15 +105,15 @@
           [tooltip]="i18n.lobby_actions_reset()"
           icon="fa-regular fa-trash-xmark"
         />
-        @if (isMobile) {
-          <awd-button
-            data-testid="toggle-eraser-button"
-            (onClick)="resetImage()"
-            [tooltip]="i18n.lobby_actions_reset()"
-            icon="fa-regular fa-eraser"
-          />
-        }
       }
+    }
+    @if ((isEditMode || isDrawing()) && isMobile) {
+      <awd-button
+        data-testid="toggle-eraser-button"
+        (onClick)="resetImage()"
+        [tooltip]="i18n.lobby_actions_reset()"
+        icon="fa-regular fa-eraser"
+      />
     }
   </div>
 </div>
