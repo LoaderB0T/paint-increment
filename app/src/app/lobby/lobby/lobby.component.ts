@@ -15,7 +15,12 @@ import { ButtonComponent, DialogService } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { UserInfoService } from '@shared/shared/user-info';
-import { assertBody, pixelArrayToIncrementPixel, safeLobbyName } from '@shared/utils';
+import {
+  assertBody,
+  DeviceService,
+  pixelArrayToIncrementPixel,
+  safeLobbyName,
+} from '@shared/utils';
 import { map } from 'rxjs';
 
 import { LobbyLockService } from './lobby-lock.service';
@@ -49,11 +54,13 @@ export class LobbyComponent implements OnInit {
   private readonly _lobbyLockService = inject(LobbyLockService);
   private readonly _userInfoService = inject(UserInfoService);
   private readonly _dialogService = inject(DialogService);
+  private readonly _deviceService = inject(DeviceService);
   private readonly _store = inject(StorageService).init<Store>('lobby', {});
   protected readonly i18n = injectI18n();
   protected readonly lobby = signal(
     this._activatedRoute.snapshot.parent?.data['lobby'] as LobbyResponse
   );
+  protected readonly isMobile = this._deviceService.isMobile();
   private readonly _editIndex = Number.parseInt(this._activatedRoute.snapshot.params['editIndex']);
   public readonly isEditMode = !isNaN(this._editIndex);
   protected readonly inviteCode = computed(

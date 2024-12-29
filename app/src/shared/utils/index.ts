@@ -1,4 +1,5 @@
 export * from './animation';
+export * from './device';
 export * from './error';
 export * from './extract-touched';
 export * from './hammer';
