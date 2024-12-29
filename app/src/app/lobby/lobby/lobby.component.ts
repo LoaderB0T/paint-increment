@@ -60,7 +60,7 @@ export class LobbyComponent implements OnInit {
   protected readonly lobby = signal(
     this._activatedRoute.snapshot.parent?.data['lobby'] as LobbyResponse
   );
-  protected readonly isMobile = this._deviceService.isMobile();
+  protected readonly isMobile = this._deviceService.isTouchDevice();
   private readonly _editIndex = Number.parseInt(this._activatedRoute.snapshot.params['editIndex']);
   public readonly isEditMode = !isNaN(this._editIndex);
   protected readonly inviteCode = computed(
