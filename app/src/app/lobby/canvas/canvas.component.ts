@@ -64,8 +64,7 @@ export class CanvasComponent {
   public readonly hoveredCoords = output<{ x: number; y: number } | undefined>();
   public readonly drawCount = output<number>();
   public readonly changed = output<void>();
-  private _isPinching: boolean = false;
-  private _disableDraw: boolean = false;
+  private _isMultiTouch: boolean = false;
 
   private get _pixelsLeft() {
     const maxPixels = this.settings().maxPixels;
@@ -110,8 +109,6 @@ export class CanvasComponent {
         const hammertime = new Hammer(canvas, {});
         hammertime.get('pinch').set({ enable: true });
         hammertime.on('pinch', ev => {
-          this._isPinching = true;
-          this._disableDraw = true;
           const newScale = pinchZoomStart * ev.scale;
           const clampedScale = Math.min(20, Math.max(1, newScale));
           this.zoom.set(clampedScale);
@@ -119,7 +116,6 @@ export class CanvasComponent {
           this.offsetY.set(this.ensureOffsetWithinRangeY(pinchOffsetY + ev.deltaY / this.zoom()));
         });
         hammertime.on('pinchend', () => {
-          this._isPinching = false;
           pinchZoomStart = this.zoom();
           pinchOffsetX = this.offsetX();
           pinchOffsetY = this.offsetY();
@@ -215,6 +211,7 @@ export class CanvasComponent {
         this._recentDraws.length = 0;
       } else {
         // If the second pointer is pressed, undo the recent draws
+        this._isMultiTouch = true;
         this._recentDraws.forEach(recentDraw => {
           this.drawPixel(recentDraw.x, recentDraw.y, !recentDraw.erase);
         });
@@ -236,7 +233,7 @@ export class CanvasComponent {
 
     if (!event.buttons) {
       setTimeout(() => {
-        this._disableDraw = false;
+        this._isMultiTouch = false;
       }, 10);
     }
 
@@ -326,7 +323,7 @@ export class CanvasComponent {
   }
 
   private drawPixel(x: number, y: number, erase: boolean) {
-    if (this._isPinching || this._disableDraw) {
+    if (this._isMultiTouch) {
       return;
     }
     const layers = this.layers();
