@@ -68,10 +68,11 @@
   },
   "download": {
     "title": "Download",
-    "openSettings": "Settings",
+    "openSettings": "Image settings",
     "downloadSide": "Download side",
     "downloadAll": "Download all",
     "settings": {
+      "title": "Image settings",
       "accentColor": "Accent color",
       "columnCount": "Columns",
       "transparentBackground": "Transparent bg",

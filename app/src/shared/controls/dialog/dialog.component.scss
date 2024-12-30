@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: filter 0.2s ease;
+  backdrop-filter: brightness(0.85);
 }
 
 .dialog {
@@ -21,12 +21,14 @@
   height: max-content;
   left: calc(50% - 0.5 * min(400px, 90vw));
   top: calc(50% - 0.5 * min(400px, 90vw));
+  border-radius: 4px 4px 14px 14px;
   min-height: min(400px, 90vw);
   background: conic-gradient(from 90deg at 1.1px 1.1px, #fffde3 25%, #c9c9c9 0);
   background-size: 25px 25px;
   ::ng-deep > * {
     display: contents;
   }
+  transition: box-shadow 0.2s ease;
   box-shadow: 5px 10px 7px rgba(33, 33, 33, 0.7);
   &.dialog:hover {
     box-shadow: 0 10px 20px rgba(33, 33, 33, 0.7);
@@ -42,6 +44,7 @@
     left: calc(-400px + 50%);
     transform: scale(0.4);
     pointer-events: none;
+    transition: filter 0.2s ease;
     filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
   }
 }
