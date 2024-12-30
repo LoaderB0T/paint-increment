@@ -16,19 +16,21 @@ import {
 export class TooltipDirective implements OnDestroy {
   private readonly _renderer = inject(Renderer2);
   private readonly _document = inject(DOCUMENT);
-  private readonly _el = inject(ElementRef);
+  private readonly _el = inject(ElementRef<HTMLElement>);
   private _tooltip?: HTMLSpanElement;
   private _shown: boolean = false;
 
   @Input('tooltip') tooltipTitle: string = '';
 
-  @HostListener('mouseenter') onMouseEnter() {
+  @HostListener('mouseenter')
+  public onMouseEnter() {
     if (!this._shown) {
       this.show();
     }
   }
 
-  @HostListener('mouseleave') onMouseLeave() {
+  @HostListener('mouseleave')
+  public onMouseLeave() {
     this.hide();
   }
 
@@ -67,7 +69,8 @@ export class TooltipDirective implements OnDestroy {
       top = hostPos.bottom + 10;
     }
 
-    let left = hostPos.left + (hostPos.width - tooltipPos.width) / 2;
+    const cssPaddingLeftRight = 16;
+    let left = hostPos.left + (hostPos.width - tooltipPos.width) / 2 + cssPaddingLeftRight;
 
     const tooRight = tooltip.clientWidth + padding + left - this._document.body.clientWidth;
     if (tooRight > 0) {

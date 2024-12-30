@@ -25,6 +25,7 @@ export class DialogComponent implements AfterViewInit, OnDestroy {
   private _topInterval?: NodeJS.Timeout | number;
 
   public ngAfterViewInit(): void {
+    this._dialogElement().nativeElement.focus();
     this._topInterval = setInterval(() => {
       const dialogRect = this._dialogElement().nativeElement.getBoundingClientRect();
       const top = dialogRect.top;
