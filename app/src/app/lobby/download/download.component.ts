@@ -11,6 +11,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
 import { ButtonComponent, DialogService } from '@shared/controls';
+import { TooltipDirective } from '@shared/controls/tooltip';
 import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { throwExp } from '@shared/utils';
@@ -23,7 +24,7 @@ import { renderFront } from './rendering/front';
 import { DownloadSettings } from '../../dialog/download-settings/download-settings.model';
 
 @Component({
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, TooltipDirective],
   selector: 'awd-download',
   templateUrl: 'download.component.html',
   styleUrls: ['download.component.scss'],

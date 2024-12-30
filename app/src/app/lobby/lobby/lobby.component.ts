@@ -12,6 +12,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse, LobbyService } from '@shared/api';
 import { ButtonComponent, DialogService } from '@shared/controls';
+import { TooltipDirective } from '@shared/controls/tooltip';
 import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { UserInfoService } from '@shared/shared/user-info';
@@ -41,7 +42,7 @@ type Store = {
 };
 
 @Component({
-  imports: [ButtonComponent, CanvasComponent],
+  imports: [ButtonComponent, CanvasComponent, TooltipDirective],
   selector: 'awd-lobby',
   templateUrl: 'lobby.component.html',
   styleUrls: ['lobby.component.scss'],

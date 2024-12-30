@@ -48,12 +48,14 @@
     <awd-button
       data-testid="my-lobbies-button"
       (onClick)="goToHome()"
-      [text]="i18n.shared_goHome()"
+      icon="fa-regular fa-home"
+      [tooltip]="i18n.shared_goHome()"
     />
     <awd-button
       data-testid="create-lobby-button"
       (onClick)="createLobby()"
-      [text]="i18n.newLobby_create()"
+      icon="fa-regular fa-right"
+      [tooltip]="i18n.newLobby_create()"
     />
   </div>
 </div>

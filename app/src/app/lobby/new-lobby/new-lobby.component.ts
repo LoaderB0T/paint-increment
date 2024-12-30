@@ -3,12 +3,13 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { CreateLobbyRequest, LobbyService } from '@shared/api';
 import { ButtonComponent, TextboxComponent } from '@shared/controls';
+import { TooltipDirective } from '@shared/controls/tooltip';
 import { injectI18n } from '@shared/i18n';
 import { assertBody, objectKeys, safeLobbyName } from '@shared/utils';
 
 @Component({
   selector: 'awd-new-lobby',
-  imports: [ReactiveFormsModule, TextboxComponent, ButtonComponent],
+  imports: [ReactiveFormsModule, TextboxComponent, ButtonComponent, TooltipDirective],
   templateUrl: 'new-lobby.component.html',
   styleUrls: ['new-lobby.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

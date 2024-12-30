@@ -11,7 +11,6 @@ export class ButtonComponent {
 
   public readonly text = input<string>();
   public readonly icon = input<string>();
-  public readonly tooltip = input<string>();
   public readonly border = input<boolean>(true);
   public readonly active = input<boolean>(false);
   // eslint-disable-next-line @angular-eslint/no-output-on-prefix

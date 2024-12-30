@@ -1,9 +1,4 @@
-<button
-  (click)="onClick.emit()"
-  [title]="tooltip() ?? ''"
-  [class.border]="border()"
-  [class.active]="active()"
->
+<button (click)="onClick.emit()" [class.border]="border()" [class.active]="active()">
   {{ text() }}
   @if (icon()) {
     <i class="{{ icon() }}"></i>

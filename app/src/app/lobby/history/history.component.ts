@@ -13,6 +13,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
 import { ButtonComponent } from '@shared/controls';
+import { TooltipDirective } from '@shared/controls/tooltip';
 import { injectI18n } from '@shared/i18n';
 
 import { CanvasComponent, CanvasSettings, getPixelArray, Layer } from '../canvas/canvas.component';
@@ -25,7 +26,7 @@ type CanvasData = {
 const flexGap = 16;
 
 @Component({
-  imports: [CanvasComponent, ButtonComponent],
+  imports: [CanvasComponent, ButtonComponent, TooltipDirective],
   selector: 'awd-history',
   templateUrl: 'history.component.html',
   styleUrls: ['history.component.scss'],
