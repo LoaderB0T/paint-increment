@@ -71,6 +71,10 @@ export class LobbyComponent implements OnInit {
   protected readonly hasUnconfirmedContribution = computed(() =>
     this.lobby().pixelIterations.some(x => !x.confirmed)
   );
+  protected readonly remainingPixels = computed(() => ({
+    left: this.settings().maxPixels - this.drawCount(),
+    max: this.settings().maxPixels,
+  }));
 
   protected readonly drawCount = signal(0);
   protected readonly isDrawing = computed(() => this.lockedInfo().kind === 'me');

@@ -9,12 +9,19 @@
   </h2>
   <h3 class="lobby-name">{{ lobby().name }}</h3>
   <div class="content">
+    <div class="pixels-left">
+      <div
+        class="indicator"
+        [style.width.%]="(remainingPixels().left / remainingPixels().max) * 100"
+      ></div>
+    </div>
     <awd-canvas
       [layers]="layers()"
       [settings]="settings()"
       [allowPaint]="isDrawing() || isEditMode"
       [isEditMode]="isEditMode"
       [mobileEraseMode]="mobileEraseMode()"
+      (drawCount)="drawCount.set($event)"
     />
   </div>
   <div class="actions">

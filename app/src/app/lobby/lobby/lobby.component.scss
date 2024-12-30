@@ -1,5 +1,14 @@
 @use 'vars';
 
+.pixels-left {
+  width: 100%;
+  height: 4px;
+  .indicator {
+    height: 100%;
+    background: black;
+  }
+}
+
 .lobby-name {
   overflow-wrap: break-word;
   -webkit-line-clamp: 2;
