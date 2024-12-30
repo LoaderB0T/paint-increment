@@ -81,5 +81,10 @@
     },
     "flipToBack": "Flip to back",
     "flipToFront": "Flip to front"
+  },
+  "userInfo": {
+    "title": "User info",
+    "username": "Your name",
+    "email": "Email"
   }
 }

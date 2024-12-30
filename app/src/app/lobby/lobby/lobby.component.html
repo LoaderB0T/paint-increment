@@ -8,13 +8,13 @@
     }
   </h2>
   <h3 class="lobby-name">{{ lobby().name }}</h3>
+  <div class="pixels-left">
+    <div
+      class="indicator"
+      [style.width.%]="(remainingPixels().left / remainingPixels().max) * 100"
+    ></div>
+  </div>
   <div class="content">
-    <div class="pixels-left">
-      <div
-        class="indicator"
-        [style.width.%]="(remainingPixels().left / remainingPixels().max) * 100"
-      ></div>
-    </div>
     <awd-canvas
       [layers]="layers()"
       [settings]="settings()"

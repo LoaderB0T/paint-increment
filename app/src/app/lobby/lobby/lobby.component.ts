@@ -28,6 +28,7 @@ import { LobbyLockService } from './lobby-lock.service';
 import { EditNameComponent } from '../../dialog/edit-name/edit-name.component';
 import { EditPositionComponent } from '../../dialog/edit-position/edit-position.component';
 import { InviteCodeComponent } from '../../dialog/invite-code/invite-code.component';
+import { UserInfoComponent } from '../../dialog/user-info/user-info.component';
 import { CanvasComponent, CanvasSettings, getPixelArray, Layer } from '../canvas/canvas.component';
 
 type LockeyBy = {
@@ -294,11 +295,17 @@ export class LobbyComponent implements OnInit {
     this._router.navigate(['/']);
   }
 
-  protected startDrawing() {
+  protected async startDrawing() {
     const inviteCode = this.inviteCode();
     if (!inviteCode) {
       throw new Error('Invite code is not set');
     }
+
+    const res = await this.ensureUserInfo();
+    if (!res) {
+      return;
+    }
+
     this._lobbyLockService.lock(this.lobby().id, inviteCode);
   }
 
@@ -405,5 +412,14 @@ export class LobbyComponent implements OnInit {
 
   protected togglePencilEraser() {
     this.mobileEraseMode.update(x => !x);
+  }
+
+  private async ensureUserInfo() {
+    if (this._userInfoService.initialized) {
+      return true;
+    }
+    const dialog = this._dialogService.showComponentDialog(UserInfoComponent);
+    const res = await dialog.result;
+    return res ?? false;
   }
 }

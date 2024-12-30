@@ -1,0 +1,25 @@
+<h2>{{ i18n.userInfo_title() }}</h2>
+<div class="content">
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.userInfo_username()"
+    [fontSize]="30"
+    [ngModel]="username()"
+    (ngModelChange)="username.set($event)"
+    name="user_name"
+    #codeTextBox
+  />
+  <awd-textbox
+    inputType="text"
+    [placeholder]="i18n.userInfo_email()"
+    [fontSize]="30"
+    [ngModel]="email()"
+    (ngModelChange)="email.set($event)"
+    name="user_name"
+    #codeTextBox
+  />
+</div>
+<div class="actions">
+  <awd-button data-testid="save-button" (onClick)="save()" [text]="i18n.shared_save()" />
+  <awd-button data-testid="cancel-button" (onClick)="close()" [text]="i18n.shared_cancel()" />
+</div>
