@@ -6,6 +6,10 @@ export interface Config {
       clientId: string;
       clientSecret: string;
     };
+    discord: {
+      clientId: string;
+      clientSecret: string;
+    };
   };
   mail: {
     service: string;

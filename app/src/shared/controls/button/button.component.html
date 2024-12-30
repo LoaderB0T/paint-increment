@@ -1,4 +1,7 @@
 <button (click)="onClick.emit()" [class.border]="border()" [class.active]="active()">
+  @if (img()) {
+    <img [src]="img()" aria-hidden="true" alt="" />
+  }
   {{ text() }}
   @if (icon()) {
     <i class="{{ icon() }}"></i>

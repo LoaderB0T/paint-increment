@@ -1,6 +1,9 @@
 @use 'vars';
 
 button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: vars.$fontFamily;
   font-weight: vars.$fontWeightBold;
   @include vars.fontSize(vars.$fontSizeNormal);
@@ -34,5 +37,9 @@ button {
   }
   &.active {
     color: #ff0099;
+  }
+  img {
+    width: 48px;
+    height: 48px;
   }
 }

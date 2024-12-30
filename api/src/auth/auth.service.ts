@@ -39,6 +39,18 @@ export class SupertokensService {
                   ],
                 },
               },
+              {
+                config: {
+                  thirdPartyId: 'discord',
+                  clients: [
+                    {
+                      // https://discord.com/developers/applications
+                      clientId: configService.config.auth.discord.clientId,
+                      clientSecret: configService.config.auth.discord.clientSecret,
+                    },
+                  ],
+                },
+              },
             ],
           },
         }),

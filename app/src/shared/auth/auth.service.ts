@@ -73,20 +73,20 @@ export class AuthService {
     }
   }
 
-  public async initiateGoogleSignIn() {
+  public async initiateThirdpartySignIn(provider: 'google' | 'discord') {
     try {
       const authUrl = await ThirdParty.getAuthorisationURLWithQueryParamsAndSetState({
-        thirdPartyId: 'google',
-        frontendRedirectURI: `${location.origin}/auth/callback/google`,
+        thirdPartyId: provider,
+        frontendRedirectURI: `${location.origin}/auth/callback`,
       });
-      // we redirect the user to google for auth.
+      // we redirect the user to the thirdparty for auth.
       window.location.assign(authUrl);
     } catch (err: any) {
       this.handleThirdpartyInitiateError(err);
     }
   }
 
-  public async handleGoogleCallback() {
+  public async tryHandleThirdCallback() {
     try {
       const response = await ThirdParty.signInAndUp();
       this.handleThirdpartyCallback(response);

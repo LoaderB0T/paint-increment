@@ -1,14 +1,6 @@
-.auth-base {
-  .actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
-
-    button.svg-button {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-  }
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }

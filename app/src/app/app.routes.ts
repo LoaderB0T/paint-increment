@@ -62,7 +62,7 @@ export const routes: Routes = [
         component: AuthComponent,
       },
       {
-        path: 'callback/:provider',
+        path: 'callback',
         component: AuthCallbackComponent,
       },
     ],

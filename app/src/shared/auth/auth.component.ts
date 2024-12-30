@@ -16,7 +16,10 @@ export class AuthComponent {
   protected readonly i18n = injectI18n();
 
   public google() {
-    this._authService.initiateGoogleSignIn();
+    this._authService.initiateThirdpartySignIn('google');
+  }
+  public discord() {
+    this._authService.initiateThirdpartySignIn('discord');
   }
 
   public back() {

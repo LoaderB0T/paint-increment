@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import Session from 'supertokens-web-js/recipe/session';
 
 import { AuthService } from '../auth.service';
@@ -14,7 +14,6 @@ import { AuthService } from '../auth.service';
 })
 export class AuthCallbackComponent implements OnInit {
   private readonly _router = inject(Router);
-  private readonly _route = inject(ActivatedRoute);
   private readonly _authService = inject(AuthService);
   public isAlreadyLoggedIn = false;
 
@@ -25,11 +24,6 @@ export class AuthCallbackComponent implements OnInit {
       this._router.navigate([redirectTo]);
       return;
     }
-    switch (this._route.snapshot.params['provider']) {
-      case 'google':
-        return this._authService.handleGoogleCallback();
-      default:
-        throw new Error('Unknown provider');
-    }
+    return this._authService.tryHandleThirdCallback();
   }
 }

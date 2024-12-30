@@ -2,7 +2,8 @@
   "auth": {
     "title": "Login",
     "login": {
-      "google": "Login with Google"
+      "google": "Login with Google",
+      "discord": "Login with Discord"
     }
   },
   "shared": {

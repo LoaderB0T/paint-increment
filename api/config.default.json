@@ -1,6 +1,15 @@
 {
   "auth": {
-    "connectionURI": "https://try.supertokens.com"
+    "connectionURI": "https://try.supertokens.com",
+    "apiKey": "abc123",
+    "google": {
+      "clientId": "abc123.apps.googleusercontent.com",
+      "clientSecret": "abc123"
+    },
+    "discord": {
+      "clientId": "abc123",
+      "clientSecret": "abc123"
+    }
   },
   "mail": {
     "service": "gmail",
