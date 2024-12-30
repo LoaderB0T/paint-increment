@@ -14,15 +14,17 @@
   backdrop-filter: brightness(0.85);
 }
 
+$maxWidth: 95vw;
+
 .dialog {
   position: absolute;
   padding: 16px;
-  width: min(400px, 90vw);
+  width: min(400px, $maxWidth);
   height: max-content;
-  left: calc(50% - 0.5 * min(400px, 90vw));
-  top: calc(50% - 0.5 * min(400px, 90vw));
+  left: calc(50% - 0.5 * min(400px, $maxWidth));
+  top: calc(50% - 0.5 * min(400px, $maxWidth));
   border-radius: 4px 4px 14px 14px;
-  min-height: min(400px, 90vw);
+  min-height: min(400px, $maxWidth);
   background: conic-gradient(from 90deg at 1.1px 1.1px, #fffde3 25%, #c9c9c9 0);
   background-size: 25px 25px;
   ::ng-deep > * {
