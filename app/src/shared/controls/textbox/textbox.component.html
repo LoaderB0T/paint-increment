@@ -4,7 +4,6 @@
     <input
       #inputField
       [type]="inputTypeInternal()"
-      [pattern]="numberPattern()"
       [name]="id()"
       [id]="id()"
       (blur)="onBlur()"
@@ -16,7 +15,7 @@
       [attr.data-testid]="name + '-input'"
     />
     @if (firstValidationError(); as error) {
-      <div class="error" [title]="error">|-{{ errorCount() }}</div>
+      <div class="error" [tooltip]="error">|-{{ errorCount() }}</div>
     }
   </div>
 </div>

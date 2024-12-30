@@ -6,8 +6,6 @@ import {
   OnInit,
   computed,
   signal,
-  Self,
-  Optional,
   ElementRef,
   viewChild,
   afterRenderEffect,
@@ -15,24 +13,33 @@ import {
   inject,
   Injector,
   DestroyRef,
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ControlValueAccessor, FormsModule, NgControl, ValidationErrors } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NgControl,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { extractTouched, reTriggerAnimation } from '@shared/utils';
 import { TextareaSelectionBounds } from 'textarea-selection-bounds';
+
+import { TooltipDirective } from '../tooltip';
 
 export type InputType = 'text' | 'password' | 'number' | 'email';
 
 @Component({
+  imports: [CommonModule, FormsModule, TooltipDirective],
   selector: 'awd-textbox',
   templateUrl: './textbox.component.html',
   styleUrls: ['./textbox.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextboxComponent implements ControlValueAccessor, OnInit, AfterViewInit {
-  private readonly _control: NgControl;
+  private readonly _control = inject(NgControl, { self: true });
   private readonly _injector = inject(Injector);
   public readonly fontSize = input<number>(16);
   public readonly formControlName = input<string>('');
@@ -42,9 +49,6 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
   public readonly inputType = input<InputType>('text');
   protected readonly inputTypeInternal = computed(() =>
     this.inputType() === 'number' ? 'text' : this.inputType()
-  );
-  protected readonly numberPattern = computed(() =>
-    this.inputType() === 'number' ? '[0-9]*' : (null as never)
   );
   protected readonly caret = signal<{ top: number; left: number; height: number } | null>(null);
   public readonly icon = input<string>('');
@@ -66,13 +70,16 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
     return keys[0] ?? null;
   });
 
-  constructor(@Self() @Optional() control: NgControl) {
-    if (control) {
-      control.valueAccessor = this;
-    } else {
-      throw new Error('NgControl is required');
-    }
-    this._control = control;
+  constructor() {
+    this._control.valueAccessor = this;
+    const numberValidator = Validators.pattern('^[0-9]*$');
+    effect(() => {
+      if (this.inputType() === 'number') {
+        this._control.control?.addValidators(numberValidator);
+      } else {
+        this._control.control?.removeValidators(numberValidator);
+      }
+    });
 
     afterRenderEffect(() => {
       const el = this._inputElement().nativeElement;
