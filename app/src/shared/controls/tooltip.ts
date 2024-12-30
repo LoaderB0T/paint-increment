@@ -34,6 +34,11 @@ export class TooltipDirective implements OnDestroy {
     this.hide();
   }
 
+  @HostListener('focusout')
+  public onBlur() {
+    this.hide();
+  }
+
   public ngOnDestroy(): void {
     this.hide();
   }

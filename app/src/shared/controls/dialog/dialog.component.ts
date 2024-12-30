@@ -25,7 +25,10 @@ export class DialogComponent implements AfterViewInit, OnDestroy {
   private _topInterval?: NodeJS.Timeout | number;
 
   public ngAfterViewInit(): void {
-    this._dialogElement().nativeElement.focus();
+    const activeElement = document.activeElement;
+    if (activeElement && 'blur' in activeElement && typeof activeElement.blur === 'function') {
+      activeElement.blur();
+    }
     this._topInterval = setInterval(() => {
       const dialogRect = this._dialogElement().nativeElement.getBoundingClientRect();
       const top = dialogRect.top;
