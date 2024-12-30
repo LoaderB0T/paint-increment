@@ -21,7 +21,7 @@ export class DialogComponent implements AfterViewInit, OnDestroy {
   private readonly _dialogElement = viewChild.required<ElementRef<HTMLDivElement>>('dialog');
 
   protected readonly randomTapeSrc = `/tape/tape${Math.floor(Math.random() * 10) + 1}.png`;
-  protected readonly dialogTop = signal(0);
+  protected readonly dialogHeight = signal(0);
   private _topInterval?: NodeJS.Timeout | number;
 
   public ngAfterViewInit(): void {
@@ -31,8 +31,8 @@ export class DialogComponent implements AfterViewInit, OnDestroy {
     }
     this._topInterval = setInterval(() => {
       const dialogRect = this._dialogElement().nativeElement.getBoundingClientRect();
-      const top = dialogRect.top;
-      this.dialogTop.set(top);
+      const height = dialogRect.height;
+      this.dialogHeight.set(height);
     }, 10);
   }
 

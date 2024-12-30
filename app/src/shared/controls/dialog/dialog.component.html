@@ -1,5 +1,5 @@
 <div class="dialog-bg"></div>
-<div #dialog class="dialog">
-  <img class="tape" [style.--dialogTop.px]="dialogTop()" [src]="randomTapeSrc" alt="" />
+<div #dialog class="dialog" [style.--dialogHeight.px]="dialogHeight()">
+  <img class="tape" [src]="randomTapeSrc" alt="" />
   <ng-template #container />
 </div>
