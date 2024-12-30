@@ -36,7 +36,7 @@ export class TooltipDirective implements OnDestroy {
 
   @HostListener('focusout')
   public onBlur() {
-    this.hide();
+    this.hide(true);
   }
 
   public ngOnDestroy(): void {
@@ -90,7 +90,7 @@ export class TooltipDirective implements OnDestroy {
     this._renderer.setStyle(this._tooltip, 'left', `${left}px`);
   }
 
-  private hide() {
+  private hide(instant = false) {
     if (!this._shown) {
       return;
     }
@@ -98,8 +98,11 @@ export class TooltipDirective implements OnDestroy {
     const toRemove = this._tooltip;
     this._renderer.removeClass(toRemove, 'visible');
     this._shown = false;
-    setTimeout(() => {
-      this._renderer.removeChild(this._document.body, toRemove);
-    }, 500);
+    setTimeout(
+      () => {
+        this._renderer.removeChild(this._document.body, toRemove);
+      },
+      instant ? 0 : 500
+    );
   }
 }
