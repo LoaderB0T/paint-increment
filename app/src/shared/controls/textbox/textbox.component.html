@@ -2,6 +2,7 @@
   <label [for]="id()"> {{ placeholder() }}: </label>
   <div class="input-container">
     <input
+      [attr.data-type]="inputType()"
       #inputField
       [type]="inputTypeInternal()"
       [name]="id()"

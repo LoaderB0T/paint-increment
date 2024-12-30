@@ -46,6 +46,9 @@
     &:focus {
       @include vars.squiggly;
     }
+    &[data-type='number'] {
+      width: 75px;
+    }
   }
 
   .error {
