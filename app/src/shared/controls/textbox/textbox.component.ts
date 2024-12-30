@@ -113,8 +113,8 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
   }
 
   protected readonly isDisabled = signal<boolean>(false);
-  protected readonly value = signal<string>('');
-  private _onChange?: (value: string) => void;
+  protected readonly value = signal<string | number>('');
+  private _onChange?: (value: string | number) => void;
   private _onTouched?: () => void;
 
   public ngOnInit(): void {
@@ -151,10 +151,10 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
       });
   }
 
-  public writeValue(obj: string): void {
+  public writeValue(obj: string | number): void {
     this.value.set(obj);
   }
-  public registerOnChange(fn: (value: string) => void): void {
+  public registerOnChange(fn: (value: string | number) => void): void {
     this._onChange = fn;
   }
   public registerOnTouched(fn: () => void): void {
@@ -169,6 +169,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
   }
   protected onFocus() {}
   protected onInput() {
-    this._onChange?.(this.value());
+    const val = this.inputType() === 'number' ? parseInt(`${this.value()}`) : this.value();
+    this._onChange?.(val);
   }
 }
