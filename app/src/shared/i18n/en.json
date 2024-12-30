@@ -16,27 +16,27 @@
   },
   "home": {
     "title": "Welcome to awd paint!",
-    "createLobby": "Create lobby",
-    "myLobbies": "My lobbies"
+    "createLobby": "Start project",
+    "myLobbies": "My projects"
   },
   "newLobby": {
-    "title": "Create new lobby",
-    "name": "Lobby name",
+    "title": "Create new project",
+    "name": "Project name",
     "maxPixels": "Max pixels",
     "size": "Size",
     "timeLimit": "Time limit (minutes)",
     "create": "Create"
   },
   "myLobbies": {
-    "title": "My lobbies",
-    "noLobbies": "You have no lobbies"
+    "title": "My projects",
+    "noLobbies": "You have no projects yet!"
   },
   "lobby": {
-    "title": "Lobby",
+    "title": "Project",
     "editTitle": "Edit contribution",
     "actions": {
       "startDrawing": "Start drawing",
-      "createInvite": "Create invite",
+      "createInvite": "Invite friend",
       "showHistory": "Show history",
       "submitContribution": "Submit contribution",
       "reset": "Reset",
@@ -56,26 +56,27 @@
   },
   "history": {
     "title": "History",
-    "backToLobby": "Back to lobby",
+    "backToLobby": "Back to project",
     "goToDownload": "Go to download"
   },
   "inviteCode": {
-    "title": "Invite code",
+    "title": "Invite link",
     "description": "Share this code with only one of your friends:",
     "copy": "Copy",
+    "regenerate": "New link",
     "copied": "Copied!",
-    "code": "Code",
+    "code": "Link",
     "generateNew": "New"
   },
   "download": {
     "title": "Download",
     "openSettings": "Image settings",
-    "downloadSide": "Download side",
-    "downloadAll": "Download all",
+    "downloadSide": "Download current view",
+    "downloadAll": "Download all contributions",
     "settings": {
       "title": "Image settings",
       "accentColor": "Accent color",
-      "columnCount": "Columns",
+      "columnCount": "Column count",
       "transparentBackground": "Transparent bg",
       "renderYear": "Include year",
       "renderEdges": "Include edges"

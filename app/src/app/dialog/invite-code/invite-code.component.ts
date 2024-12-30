@@ -20,7 +20,7 @@ import { createTimeout, reTriggerAnimation } from '@shared/utils';
 })
 export class InviteCodeComponent extends DialogBase {
   protected readonly i18n = injectI18n();
-  public newInviteCode = output<void>();
+  public readonly newInviteCode = output<void>();
   protected readonly inviteCode = signal('');
   private readonly _codeTextBox = viewChild.required('codeTextBox', { read: ElementRef });
   protected readonly copied = signal(false);
@@ -47,6 +47,10 @@ export class InviteCodeComponent extends DialogBase {
 
   protected copy(): void {
     this.doCopy();
+  }
+
+  protected regenerate(): void {
+    this.newInviteCode.emit();
   }
 
   private doCopy() {

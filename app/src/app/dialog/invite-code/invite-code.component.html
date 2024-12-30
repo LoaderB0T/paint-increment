@@ -22,5 +22,10 @@
 </div>
 <div class="actions">
   <awd-button data-testid="invite-code-button" (onClick)="copy()" [text]="i18n.inviteCode_copy()" />
+  <awd-button
+    data-testid="regenerate-button"
+    (onClick)="regenerate()"
+    [text]="i18n.inviteCode_regenerate()"
+  />
   <awd-button data-testid="close-button" (onClick)="close()" [text]="i18n.shared_close()" />
 </div>

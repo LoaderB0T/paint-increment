@@ -289,6 +289,11 @@ export class LobbyComponent implements OnInit {
     generateCode().then(code => {
       dialog.componentRef.instance.setCode(code);
     });
+    dialog.componentRef.instance.newInviteCode.subscribe(() => {
+      generateCode().then(code => {
+        dialog.componentRef.instance.setCode(code, true);
+      });
+    });
   }
 
   protected navigateHome(): void {
