@@ -42,7 +42,7 @@
     "@nestjs/core": "^10.1.2",
     "@nestjs/platform-express": "^10.1.2",
     "@nestjs/swagger": "^7.1.4",
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.1",
     "mongodb": "^5.8.0",
     "nanoid": "^5.0.9",
     "nodemailer": "^7.0.11",
