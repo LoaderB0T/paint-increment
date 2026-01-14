@@ -12,6 +12,7 @@ RUN npm i -g pnpm
 
 COPY ./api/package.json .
 COPY ./api/pnpm-lock.yaml .
+COPY ./api/pnpm-workspace.yaml .
 RUN node -v
 
 RUN pnpm i
