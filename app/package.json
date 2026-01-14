@@ -11,9 +11,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "codegen-base": "yarn ng-openapi-gen --output ./src/app/.api",
-    "codegen": "yarn codegen-base --input ../api/swagger.json ",
-    "codegen-docker": "yarn codegen-base --input ./swagger.json",
+    "codegen-base": "pnpm ng-openapi-gen --output ./src/app/.api",
+    "codegen": "pnpm codegen-base --input ../api/swagger.json ",
+    "codegen-docker": "pnpm codegen-base --input ./swagger.json",
     "test": "ng test"
   },
   "private": true,
