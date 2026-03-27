@@ -30,8 +30,8 @@ importers:
         specifier: ^5.0.9
         version: 5.0.9
       nodemailer:
-        specifier: ^7.0.11
-        version: 7.0.12
+        specifier: ^8.0.4
+        version: 8.0.4
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
@@ -3056,8 +3056,8 @@ packages:
     resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
     engines: {node: '>=6.0.0'}
 
-  nodemailer@7.0.12:
-    resolution: {integrity: sha512-H+rnK5bX2Pi/6ms3sN4/jRQvYSMltV6vqup/0SFOrxYYY/qoNvhXPlYq3e+Pm9RFJRwrMGbMIwi81M4dxpomhA==}
+  nodemailer@8.0.4:
+    resolution: {integrity: sha512-k+jf6N8PfQJ0Fe8ZhJlgqU5qJU44Lpvp2yvidH3vp1lPnVQMgi4yEEMPXg5eJS1gFIJTVq1NHBk7Ia9ARdSBdQ==}
     engines: {node: '>=6.0.0'}
 
   nopt@6.0.0:
@@ -3321,6 +3321,7 @@ packages:
   prebuild-install@7.1.3:
     resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
     engines: {node: '>=10'}
+    deprecated: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
     hasBin: true
 
   prelude-ls@1.2.1:
@@ -7777,7 +7778,7 @@ snapshots:
 
   nodemailer@6.10.1: {}
 
-  nodemailer@7.0.12: {}
+  nodemailer@8.0.4: {}
 
   nopt@6.0.0:
     dependencies:
