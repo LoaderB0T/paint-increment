@@ -36,7 +36,7 @@
     "socket.io-client": "^4.7.1",
     "supertokens-web-js": "^0.7.1",
     "tslib": "^2.6.1",
-    "uuid": "^9.0.0",
+    "uuid": "^14.0.0",
     "zone.js": "~0.14.2"
   },
   "devDependencies": {
