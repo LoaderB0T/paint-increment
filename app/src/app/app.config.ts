@@ -5,7 +5,7 @@ import {
   provideAppInitializer,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withNoIncrementalHydration } from '@angular/platform-browser';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { ApiConfiguration, provideApi, WsService } from '@shared/api';
 import { AuthService } from '@shared/auth';
@@ -19,8 +19,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes, withViewTransitions()),
-    provideHttpClient(withFetch()),
-    provideClientHydration(withEventReplay()),
+    provideHttpClient(),
+    provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
     provideAppInitializer(async () => {
       const appCfg = inject(ApiConfiguration);
       const authService = inject(AuthService);

@@ -23,3 +23,5 @@ minimumReleaseAgeExclude:
   - '@angular/cli@21.2.22'
   - '@angular/ssr@21.2.22'
   - '@schematics/angular@21.2.22'
+
+minimumReleaseAge: 0

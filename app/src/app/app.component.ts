@@ -1,5 +1,5 @@
 
-import { Component, computed, effect, inject, signal, ViewContainerRef, DOCUMENT } from '@angular/core';
+import { Component, computed, effect, inject, signal, ViewContainerRef, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from '@shared/controls';
 import { fromEvent } from 'rxjs';
@@ -13,6 +13,7 @@ type Cursor = (typeof cursors)[number];
   selector: 'app-root',
   imports: [BaseComponent],
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.scss',
 })
 export class AppComponent {

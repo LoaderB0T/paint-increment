@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonComponent } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
 
@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
   standalone: true,
   imports: [ButtonComponent],
   templateUrl: './auth.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./auth.component.scss'],
 })
 export class AuthComponent {

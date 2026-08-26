@@ -1,5 +1,5 @@
 
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import Session from 'supertokens-web-js/recipe/session';
 
@@ -14,6 +14,7 @@ import { AuthService } from '../auth.service';
 @if (!isAlreadyLoggedIn) {
   Please wait while we sign you in...
 }`,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [],
 })
 export class AuthCallbackComponent implements OnInit {
