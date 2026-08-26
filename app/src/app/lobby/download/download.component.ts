@@ -17,11 +17,11 @@ import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
 import { throwExp } from '@shared/utils';
 import saveAs from 'file-saver';
-import { DownloadSettingsComponent } from 'src/app/dialog/download-settings/download-settings.component';
 
 import { downloadIterations } from './rendering/all-iterations';
 import { renderBack } from './rendering/back';
 import { renderFront } from './rendering/front';
+import { DownloadSettingsComponent } from '../../dialog/download-settings/download-settings.component';
 import { DownloadSettings } from '../../dialog/download-settings/download-settings.model';
 
 @Component({

@@ -22,11 +22,10 @@
     "resolveJsonModule": true,
     "importHelpers": true,
     "target": "ES2023",
-    "baseUrl": "./",
     "module": "ES2022",
     "paths": {
       "@shared/*": [
-        "src/shared/*"
+        "./src/shared/*"
       ]
     }
   },
