@@ -2,7 +2,7 @@
 
 ARG skipBuild=false
 
-FROM node:18
+FROM node:24
 
 # ENV YARN_CACHE_FOLDER=/tmp/yarn-cache
 
@@ -12,6 +12,7 @@ RUN npm i -g pnpm
 
 COPY ./api/package.json .
 COPY ./api/pnpm-lock.yaml .
+COPY ./api/pnpm-workspace.yaml .
 RUN node -v
 
 RUN pnpm i

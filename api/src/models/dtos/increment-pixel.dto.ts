@@ -1,4 +1,4 @@
 export class IncrementPixel {
-  x!: number;
-  y!: number;
+  public x!: number;
+  public y!: number;
 }

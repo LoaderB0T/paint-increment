@@ -1,6 +1,6 @@
 let nanoid: (size?: number) => string;
 
-import('nanoid').then(nanoidModule => {
+void import('nanoid').then(nanoidModule => {
   nanoid = nanoidModule.nanoid;
 });
 

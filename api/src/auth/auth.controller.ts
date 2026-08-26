@@ -10,7 +10,7 @@ import { getUserInfo } from '../util/get-user-info.js';
 export class AuthController {
   @Get('userinfo')
   @UseGuards(new AuthGuard())
-  async getUserInfo(@Session() session: SessionContainer): Promise<UserInfo> {
+  public async getUserInfo(@Session() session: SessionContainer): Promise<UserInfo> {
     const userInfo = await getUserInfo(session.getUserId());
     if (!userInfo) {
       throw new Error('User not found');
@@ -20,7 +20,7 @@ export class AuthController {
 
   @Get('token')
   @UseGuards(new AuthGuard())
-  async getToken(@Session() session: SessionContainer): Promise<Token> {
+  public async getToken(@Session() session: SessionContainer): Promise<Token> {
     const token = session.getAccessToken();
     return { token };
   }

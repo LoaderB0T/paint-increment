@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common';
+
 import {
   afterRenderEffect,
   AfterViewInit,
@@ -9,6 +9,7 @@ import {
   inject,
   signal,
   viewChild,
+  DOCUMENT
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';

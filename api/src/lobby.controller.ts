@@ -42,13 +42,15 @@ export class LobbyController {
   }
 
   @Get('test')
-  async test() {
+  public async test() {
     return 'test';
   }
 
   @Get('my-lobbies')
   @UseGuards(new AuthGuard())
-  async myLobbies(@SessionDecorator() session: SessionContainer): Promise<LobbyPreviewResponse[]> {
+  public async myLobbies(
+    @SessionDecorator() session: SessionContainer
+  ): Promise<LobbyPreviewResponse[]> {
     const userInfo = await getUserInfo(session.getUserId());
     if (!userInfo) {
       throw new Error('User not found');
@@ -57,7 +59,7 @@ export class LobbyController {
   }
 
   @Get(':lobbyId')
-  async getLobby(
+  public async getLobby(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @Param('lobbyId') lobbyId: string,
@@ -71,7 +73,7 @@ export class LobbyController {
 
   @Post('invite')
   @UseGuards(new AuthGuard())
-  async generateInvite(
+  public async generateInvite(
     @Body() request: NewInviteCodeRequestDto,
     @SessionDecorator() session: SessionContainer
   ): Promise<NewInviteCodeResponseDto> {
@@ -80,7 +82,7 @@ export class LobbyController {
   }
 
   @Post('invite/validate')
-  async validateInvite(
+  public async validateInvite(
     @Body() request: ValidateInviteCodeRequestDto
   ): Promise<ValidateInviteCodeResponseDto> {
     return this._lobbyService.inviteValid(request);
@@ -88,7 +90,7 @@ export class LobbyController {
 
   @Post('validateCreator')
   @UseGuards(new AuthGuard())
-  async validateCreator(
+  public async validateCreator(
     @Body() request: ValidateCreatorSecretRequestDto,
     @SessionDecorator() session: SessionContainer
   ): Promise<ValidateCreatorSecretResponseDto> {
@@ -98,7 +100,7 @@ export class LobbyController {
 
   @Post()
   @UseGuards(new AuthGuard())
-  async postLobby(
+  public async postLobby(
     @Body() request: CreateLobbyRequest,
     @SessionDecorator() session: SessionContainer
   ): Promise<LobbyResponse> {
@@ -110,7 +112,7 @@ export class LobbyController {
   }
 
   @Post('increment')
-  async addPointsToLobby(
+  public async addPointsToLobby(
     @Body() request: AddPixelsRequest,
 
     @Req() req: Request,
@@ -123,7 +125,7 @@ export class LobbyController {
 
   @Patch('increment')
   @UseGuards(new AuthGuard())
-  async editLobbyPoints(
+  public async editLobbyPoints(
     @Body() request: EditPixelsRequest,
     @SessionDecorator() session: SessionContainer
   ): Promise<void> {
@@ -136,7 +138,7 @@ export class LobbyController {
 
   @Patch('increment/confirm')
   @UseGuards(new AuthGuard())
-  async confirmIncrement(
+  public async confirmIncrement(
     @Body() request: ConfirmIncrementRequest,
     @SessionDecorator() session: SessionContainer
   ): Promise<void> {
@@ -145,7 +147,7 @@ export class LobbyController {
   }
 
   @Get('accept/:lobbyId/:code')
-  async acceptInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
+  public async acceptInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
     const lobby = await this._lobbyService.acceptInvite(lobbyId, code);
     const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${
       lobby.id
@@ -154,7 +156,7 @@ export class LobbyController {
   }
 
   @Get('reject/:lobbyId/:code')
-  async rejectInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
+  public async rejectInvite(@Param('lobbyId') lobbyId: string, @Param('code') code: string) {
     const lobby = await this._lobbyService.rejectInvite(lobbyId, code);
     const url = `${this._configService.config.clientAddress}/lobby/${safeLobbyName(lobby.name)}/${
       lobby.id

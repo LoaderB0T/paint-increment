@@ -19,6 +19,6 @@ export class SupertokensExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    this.handler(exception, ctx.getRequest<Request>(), resp, ctx.getNext<NextFunction>());
+    void this.handler(exception, ctx.getRequest<Request>(), resp, ctx.getNext<NextFunction>());
   }
 }

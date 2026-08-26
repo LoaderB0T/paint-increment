@@ -2,9 +2,9 @@
   <h2>
     {{ isEditMode ? i18n.lobby_editTitle() : i18n.lobby_title() }}
     @if (lockedInfo().kind !== 'none') {
-      <i class="fa-regular fa-lock-keyhole"></i>
+      <i class="i-tabler-lock"></i>
     } @else if (hasUnconfirmedContribution()) {
-      <i class="fa-regular fa-clock"></i>
+      <i class="i-tabler-clock"></i>
     }
   </h2>
   <h3 class="lobby-name">{{ lobby().name }}</h3>
@@ -30,31 +30,31 @@
         data-testid="edit-save-button"
         (onClick)="saveEdit()"
         [tooltip]="i18n.shared_save()"
-        icon="fa-regular fa-floppy-disk"
+        icon="i-tabler-device-floppy"
       />
       <awd-button
         data-testid="edit-cancel-button"
         (onClick)="navigateBackToHistory()"
         [tooltip]="i18n.shared_cancel()"
-        icon="fa-regular fa-xmark"
+        icon="i-tabler-x"
       />
       <awd-button
         data-testid="reset-button"
         (onClick)="resetImage()"
         [tooltip]="i18n.lobby_actions_reset()"
-        icon="fa-regular fa-trash-xmark"
+        icon="i-tabler-trash-x"
       />
       <awd-button
         data-testid="reset-button"
         (onClick)="changeName()"
         [tooltip]="i18n.lobby_actions_changeName()"
-        icon="fa-regular fa-input-text"
+        icon="i-tabler-cursor-text"
       />
       <awd-button
         data-testid="reset-button"
         (onClick)="changePosition()"
         [tooltip]="i18n.lobby_actions_changePosition()"
-        icon="fa-regular fa-location-dot"
+        icon="i-tabler-map-pin"
       />
     } @else {
       @if (!isDrawing()) {
@@ -62,14 +62,14 @@
           data-testid="back-button"
           (onClick)="navigateHome()"
           [tooltip]="i18n.shared_goHome()"
-          icon="fa-regular fa-house"
+          icon="i-tabler-home"
         />
         @if (inviteCode()) {
           <awd-button
             data-testid="start-drawing-button"
             (onClick)="startDrawing()"
             [tooltip]="i18n.lobby_actions_startDrawing()"
-            icon="fa-regular fa-paintbrush"
+            icon="i-tabler-brush"
           />
         }
         @if (isCreator) {
@@ -77,20 +77,20 @@
             data-testid="create-invite-button"
             (onClick)="createInvite()"
             [tooltip]="i18n.lobby_actions_createInvite()"
-            icon="fa-regular fa-ticket"
+            icon="i-tabler-ticket"
           />
           @if (hasUnconfirmedContribution()) {
             <awd-button
               data-testid="accept-button"
               (onClick)="acceptIteration()"
               [tooltip]="i18n.lobby_actions_accept()"
-              icon="fa-regular fa-check"
+              icon="i-tabler-check"
             />
             <awd-button
               data-testid="reject-button"
               (onClick)="rejectIteration()"
               [tooltip]="i18n.lobby_actions_reject()"
-              icon="fa-regular fa-xmark"
+              icon="i-tabler-x"
             />
           }
         }
@@ -98,20 +98,20 @@
           data-testid="show-history-button"
           (onClick)="showHistory()"
           [tooltip]="i18n.lobby_actions_showHistory()"
-          icon="fa-regular fa-layer-group"
+          icon="i-tabler-stack"
         />
       } @else {
         <awd-button
           data-testid="submit-button"
           (onClick)="submitContribution()"
           [tooltip]="i18n.lobby_actions_submitContribution()"
-          icon="fa-regular fa-square-check"
+          icon="i-tabler-square-check"
         />
         <awd-button
           data-testid="reset-button"
           (onClick)="resetImage()"
           [tooltip]="i18n.lobby_actions_reset()"
-          icon="fa-regular fa-trash-xmark"
+          icon="i-tabler-trash-x"
         />
       }
     }
@@ -121,7 +121,7 @@
         data-testid="toggle-eraser-pencil-toggle-button"
         (onClick)="togglePencilEraser()"
         [tooltip]="i18n.lobby_actions_reset()"
-        icon="fa-regular fa-eraser"
+        icon="i-tabler-eraser"
       />
     }
   </div>

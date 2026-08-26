@@ -1,4 +1,4 @@
 export class UserInfo {
-  email!: string;
-  id!: string;
+  public email!: string;
+  public id!: string;
 }

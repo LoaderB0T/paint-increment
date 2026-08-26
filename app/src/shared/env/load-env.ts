@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { inject } from '@angular/core';
+
+import { inject, DOCUMENT } from '@angular/core';
 
 import { environment } from './environment';
 import { objectKeys } from '../utils';

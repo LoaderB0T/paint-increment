@@ -4,13 +4,13 @@ import { middleware } from 'supertokens-node/framework/express';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  supertokensMiddleware: ReturnType<typeof middleware>;
+  public supertokensMiddleware: ReturnType<typeof middleware>;
 
   constructor() {
     this.supertokensMiddleware = middleware();
   }
 
-  use(req: Request, res: Response, next: () => void) {
+  public use(req: Request, res: Response, next: () => void) {
     return this.supertokensMiddleware(req, res, next);
   }
 }

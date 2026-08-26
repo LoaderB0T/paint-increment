@@ -20,7 +20,7 @@ export class LobbyGateway extends WsGateway {
     this._wsService.listen(client, 'lookAtLobby').subscribe(async data => {
       const uid = await this.getUid(data);
       const user = await this.tryGetUserInfo(data, uid);
-      this._wsService.joinRoom(client, data.lobbyId);
+      await this._wsService.joinRoom(client, data.lobbyId);
       WsState.lockState[data.lobbyId] ??= {
         lookingAtLobby: [],
         lockedBy: null,

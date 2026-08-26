@@ -2,9 +2,9 @@ import { PaintLobbySettings } from './create-lobby-request.dto.js';
 import { IterationModel } from './iteration-model.dto.js';
 
 export class LobbyResponse {
-  id!: string;
-  name!: string;
-  pixelIterations!: IterationModel[];
-  settings!: PaintLobbySettings;
-  isCreator!: boolean;
+  public id!: string;
+  public name!: string;
+  public pixelIterations!: IterationModel[];
+  public settings!: PaintLobbySettings;
+  public isCreator!: boolean;
 }

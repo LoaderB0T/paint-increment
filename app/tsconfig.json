@@ -12,13 +12,13 @@
     "skipLibCheck": true,
     "lib": [
       "ES2023",
-      "ESNext.Promise",
+      "ES2024.Promise",
       "dom"
     ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "importHelpers": true,
     "target": "ES2023",
@@ -28,7 +28,7 @@
       "@shared/*": [
         "src/shared/*"
       ]
-    },
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

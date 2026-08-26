@@ -3,31 +3,42 @@
 ## Installation
 
 ```bash
-$ yarn install
+$ pnpm install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ yarn run start
+$ pnpm start
 
 # watch mode
-$ yarn run start:dev
+$ pnpm start:dev
 
 # production mode
-$ yarn run start:prod
+$ pnpm start:prod
 ```
 
-## Test
+## Lint & format
 
 ```bash
-# unit tests
-$ yarn run test
+# lint (oxlint, type-aware)
+$ pnpm lint
 
-# e2e tests
-$ yarn run test:e2e
+# lint + autofix
+$ pnpm lint:fix
 
-# test coverage
-$ yarn run test:cov
+# format (oxfmt)
+$ pnpm format
+
+# check formatting only
+$ pnpm format:check
+```
+
+## Migrations
+
+```bash
+$ pnpm migrate:status
+$ pnpm migrate:up
+$ pnpm migrate:undo-last
 ```

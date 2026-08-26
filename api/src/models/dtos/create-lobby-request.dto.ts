@@ -1,12 +1,12 @@
 export class PaintLobbySettings {
-  width!: number;
-  height!: number;
-  maxPixels!: number;
-  timeLimit!: number;
+  public width!: number;
+  public height!: number;
+  public maxPixels!: number;
+  public timeLimit!: number;
 }
 
 export class CreateLobbyRequest {
-  name!: string;
-  ownerName!: string;
-  settings!: PaintLobbySettings;
+  public name!: string;
+  public ownerName!: string;
+  public settings!: PaintLobbySettings;
 }

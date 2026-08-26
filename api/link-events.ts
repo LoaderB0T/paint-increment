@@ -19,16 +19,15 @@ const execAsync = (command: string) => {
 const createFileLink = async (linkPath: string, realPath: string): Promise<void> => {
   if (platform() === 'win32') {
     const cmd = `mklink /h "${linkPath}" "${realPath}"`;
-    execAsync(cmd).then(() => {
-      console.log(`Created link ${linkPath} -> ${realPath}`);
-    });
+    await execAsync(cmd);
+    console.log(`Created link ${linkPath} -> ${realPath}`);
   } else {
     await fs.ensureSymlink(realPath, linkPath, 'file');
     console.log(`Created link ${linkPath} -> ${realPath}`);
   }
 };
 
-fs.remove('./src/models/ws-event-definitions.model.ts').then(() => {
+void fs.remove('./src/models/ws-event-definitions.model.ts').then(() => {
   createFileLink(
     './src/models/ws-event-definitions.model.ts',
     '../app/src/shared/api/ws/ws-event-definitions.model.ts'

@@ -13,31 +13,31 @@
       data-testid="submit-button"
       (onClick)="goBackToHistory()"
       [tooltip]="i18n.shared_back()"
-      icon="fa-regular fa-left"
+      icon="i-tabler-arrow-left"
     />
     <awd-button
       data-testid="settings-button"
       (onClick)="openSettings()"
       [tooltip]="i18n.download_openSettings()"
-      icon="fa-regular fa-gear"
+      icon="i-tabler-settings"
     />
     <awd-button
       data-testid="flip-button"
       (onClick)="flip()"
       [tooltip]="frontSide() ? i18n.download_flipToBack() : i18n.download_flipToFront()"
-      icon="fa-regular fa-repeat"
+      icon="i-tabler-repeat"
     />
     <awd-button
       data-testid="download-button"
       (onClick)="download(false)"
       [tooltip]="i18n.download_downloadSide()"
-      icon="fa-regular fa-file-arrow-down"
+      icon="i-tabler-file-download"
     />
     <awd-button
       data-testid="download-all-button"
       (onClick)="download(true)"
       [tooltip]="i18n.download_downloadAll()"
-      icon="fa-regular fa-folder-arrow-down"
+      icon="i-tabler-folder-down"
     />
   </div>
 </div>

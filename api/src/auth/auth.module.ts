@@ -11,7 +11,7 @@ import { ConfigModule } from '../config.module.js';
   controllers: [],
 })
 export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
+  public configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes('*');
   }
 }

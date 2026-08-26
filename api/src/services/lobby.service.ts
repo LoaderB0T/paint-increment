@@ -36,7 +36,7 @@ export class LobbyService {
     this._configService = configService;
   }
 
-  async createLobby(request: CreateLobbyRequest, email: string) {
+  public async createLobby(request: CreateLobbyRequest, email: string) {
     const settings: PaintLobbySettings = {
       height: request.settings.height ?? 128,
       width: request.settings.height ?? 128,
@@ -85,7 +85,7 @@ export class LobbyService {
     return res;
   }
 
-  async generateInvite(
+  public async generateInvite(
     request: NewInviteCodeRequestDto,
     user?: UserInfo
   ): Promise<NewInviteCodeResponseDto> {
@@ -111,7 +111,9 @@ export class LobbyService {
     return { inviteCode: newCode };
   }
 
-  async inviteValid(request: ValidateInviteCodeRequestDto): Promise<ValidateInviteCodeResponseDto> {
+  public async inviteValid(
+    request: ValidateInviteCodeRequestDto
+  ): Promise<ValidateInviteCodeResponseDto> {
     const lobby = await this._dbService.lobbies.findOne({ id: request.lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id${request.lobbyId}`);
@@ -120,7 +122,7 @@ export class LobbyService {
     return { isValid: lobby.inviteCodes.some(x => x === request.inviteCode) };
   }
 
-  async validateCreator(
+  public async validateCreator(
     request: ValidateCreatorSecretRequestDto,
     user?: UserInfo
   ): Promise<ValidateCreatorSecretResponseDto> {
@@ -135,7 +137,7 @@ export class LobbyService {
     return { isValid };
   }
 
-  async getLobby(lobbyId: string, user?: UserInfo): Promise<LobbyResponse> {
+  public async getLobby(lobbyId: string, user?: UserInfo): Promise<LobbyResponse> {
     const lobby = await this._dbService.lobbies.findOne({ id: lobbyId });
     if (!lobby) {
       throw new Error(`Cannot find lobby with id ${lobbyId}`);
@@ -328,7 +330,7 @@ export class LobbyService {
     });
   }
 
-  async confirmIncrement(request: ConfirmIncrementRequest, user?: UserInfo): Promise<void> {
+  public async confirmIncrement(request: ConfirmIncrementRequest, user?: UserInfo): Promise<void> {
     if (!user) {
       throw new Error('Cannot create invite if not logged in');
     }
@@ -359,11 +361,11 @@ export class LobbyService {
     }
   }
 
-  async acceptInvite(lobbyId: string, code: string) {
+  public async acceptInvite(lobbyId: string, code: string) {
     return this.acceptOrReject(lobbyId, code, true);
   }
 
-  async rejectInvite(lobbyId: string, code: string) {
+  public async rejectInvite(lobbyId: string, code: string) {
     return this.acceptOrReject(lobbyId, code, false);
   }
 
@@ -425,14 +427,14 @@ export class LobbyService {
       throw new Error(`Cannot find increment with id ${incrementId}`);
     }
     // pull the increment from the array
-    this._dbService.lobbies.updateOne(
+    await this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
         $pull: { increments: { id: incrementId } },
       }
     );
     // push the increment to the new index
-    this._dbService.lobbies.updateOne(
+    await this._dbService.lobbies.updateOne(
       { id: lobbyId },
       {
         $push: { increments: { $each: [increment], $position: index } },

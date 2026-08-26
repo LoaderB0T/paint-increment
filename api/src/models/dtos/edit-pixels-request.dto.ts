@@ -1,7 +1,7 @@
 import { IncrementPixel } from './increment-pixel.dto.js';
 
 export class EditPixelsRequest {
-  lobbyId!: string;
-  pixels!: IncrementPixel[];
-  incrementId!: string;
+  public lobbyId!: string;
+  public pixels!: IncrementPixel[];
+  public incrementId!: string;
 }

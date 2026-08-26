@@ -1,8 +1,8 @@
 import { IncrementPixel } from './increment-pixel.dto.js';
 
 export class IterationModel {
-  name!: string;
-  id!: string;
-  pixels!: IncrementPixel[];
-  confirmed!: boolean;
+  public name!: string;
+  public id!: string;
+  public pixels!: IncrementPixel[];
+  public confirmed!: boolean;
 }

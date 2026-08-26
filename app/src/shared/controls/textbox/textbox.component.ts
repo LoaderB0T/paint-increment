@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   ChangeDetectionStrategy,
@@ -31,7 +31,7 @@ import { TooltipDirective } from '../tooltip';
 export type InputType = 'text' | 'password' | 'number' | 'email';
 
 @Component({
-  imports: [CommonModule, FormsModule, TooltipDirective],
+  imports: [FormsModule, TooltipDirective],
   selector: 'awd-textbox',
   templateUrl: './textbox.component.html',
   styleUrls: ['./textbox.component.scss'],
@@ -51,8 +51,6 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
     this.inputType() === 'number' ? 'text' : this.inputType()
   );
   protected readonly caret = signal<{ top: number; left: number; height: number } | null>(null);
-  public readonly icon = input<string>('');
-  public readonly icon2 = input<string>('');
   public readonly hidePlaceholderOnInput = input<boolean>(false);
   private readonly _validationStatus = signal<ValidationErrors | null>(null);
   private readonly _inputElement = viewChild.required<ElementRef<HTMLInputElement>>('inputField');

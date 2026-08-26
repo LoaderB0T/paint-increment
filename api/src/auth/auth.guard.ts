@@ -7,7 +7,7 @@ import { verifySession } from 'supertokens-node/recipe/session/framework/express
 export class AuthGuard implements CanActivate {
   constructor(private readonly verifyOptions?: VerifySessionOptions) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const ctx = context.switchToHttp();
 
     let err = undefined;

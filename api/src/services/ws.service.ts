@@ -120,12 +120,12 @@ export class WsService {
     socket.to(room).emit(method as string, payload);
   }
 
-  public joinRoom(socket: Socket, roomName: string): void {
-    socket.join(roomName);
+  public joinRoom(socket: Socket, roomName: string): void | Promise<void> {
+    return socket.join(roomName);
   }
 
-  public leaveRoom(socket: Socket, roomName: string): void {
-    socket.leave(roomName);
+  public leaveRoom(socket: Socket, roomName: string): void | Promise<void> {
+    return socket.leave(roomName);
   }
 
   // public sendToRoom<T extends WsSendMessage>(method: T, payload: ExtractPayload<WsCommunication, T>): void {

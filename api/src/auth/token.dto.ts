@@ -1,3 +1,3 @@
 export class Token {
-  token!: string;
+  public token!: string;
 }

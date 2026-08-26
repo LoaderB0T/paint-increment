@@ -26,7 +26,7 @@ export class IterationEditGateway extends WsGateway {
       if (!iteration) {
         throw new Error('Iteration not found');
       }
-      this._lobbyService.deleteIteration(lobby.id, iteration.id);
+      await this._lobbyService.deleteIteration(lobby.id, iteration.id);
     });
 
     this._wsService.listen(client, 'changeIterationName').subscribe(async data => {
@@ -39,7 +39,7 @@ export class IterationEditGateway extends WsGateway {
       if (!iteration) {
         throw new Error('Iteration not found');
       }
-      this._lobbyService.changeIterationName(lobby.id, iteration.id, data.newName);
+      await this._lobbyService.changeIterationName(lobby.id, iteration.id, data.newName);
     });
 
     this._wsService.listen(client, 'changeIterationIndex').subscribe(async data => {
@@ -53,7 +53,7 @@ export class IterationEditGateway extends WsGateway {
       if (!iteration) {
         throw new Error('Iteration not found');
       }
-      this._lobbyService.changeIterationIndex(lobby.id, iteration.id, data.newIndex);
+      await this._lobbyService.changeIterationIndex(lobby.id, iteration.id, data.newIndex);
     });
   }
 }

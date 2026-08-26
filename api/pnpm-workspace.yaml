@@ -1,2 +1,8 @@
+allowBuilds:
+  '@nestjs/core': true
+  '@scarf/scarf': false
+  canvas: true
+  esbuild: true
 onlyBuiltDependencies:
   - canvas
+  - esbuild
