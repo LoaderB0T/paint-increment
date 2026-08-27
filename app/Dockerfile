@@ -1,4 +1,4 @@
-FROM node:22-alpine3.20 AS base
+FROM node:22-alpine3.24 AS base
 
 RUN npm i -g pnpm
 
@@ -20,7 +20,7 @@ RUN pnpm run codegen
 RUN pnpm run build
 
 
-FROM node:22-alpine
+FROM node:22-alpine3.24
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ COPY ./app/config/nginx.conf /etc/nginx/nginx.conf
 COPY ./app/config/security-headers.conf /etc/nginx/security-headers.conf
 
 COPY --from=builder /app/dist/awd-paint ./
-ENV PORT 80
+ENV PORT=80
 CMD node server/server.mjs
 
 EXPOSE 80

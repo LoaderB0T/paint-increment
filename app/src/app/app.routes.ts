@@ -27,6 +27,11 @@ export const routes: Routes = [
     path: 'lobby',
     children: [
       {
+        path: '',
+        redirectTo: '/',
+        pathMatch: 'full',
+      },
+      {
         path: 'new',
         component: NewLobbyComponent,
         canActivate: [isLoggedInGuard],
