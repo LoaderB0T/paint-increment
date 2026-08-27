@@ -8,7 +8,7 @@ FROM node:24
 
 WORKDIR /app
 
-RUN npm i -g pnpm
+RUN npm i -g pnpm@11.8.0
 
 COPY ./api/package.json .
 COPY ./api/pnpm-lock.yaml .

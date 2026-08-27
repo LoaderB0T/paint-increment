@@ -1,11 +1,12 @@
 FROM node:22-alpine3.24 AS base
 
-RUN npm i -g pnpm
+RUN npm i -g pnpm@11.8.0
 
 WORKDIR /app
 
 COPY ./app/package.json .
 COPY ./app/pnpm-lock.yaml .
+COPY ./app/pnpm-workspace.yaml .
 RUN pnpm i
 
 FROM base AS builder
@@ -24,9 +25,6 @@ FROM node:22-alpine3.24
 
 WORKDIR /app
 
-COPY ./app/config/angular.conf /etc/nginx/angular.conf
-COPY ./app/config/nginx.conf /etc/nginx/nginx.conf
-COPY ./app/config/security-headers.conf /etc/nginx/security-headers.conf
 
 COPY --from=builder /app/dist/awd-paint ./
 ENV PORT=80
