@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:awd-paint": "node dist/awd-paint/server/server.mjs",
-    "codegen": "node --loader ts-node/esm ./tools/codegen.ts",
+    "codegen": "node ./tools/codegen.ts",
     "icons:gen": "node ./tools/icons-gen.mjs",
     "lint": "eslint src"
   },
@@ -63,7 +63,6 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "istanbul-lib-instrument": "^6.0.3",
-    "ts-node": "^10.9.2",
     "typescript": "~6.0.3",
     "vitest": "^4.0.8"
   }
