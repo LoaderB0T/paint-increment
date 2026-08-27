@@ -1,0 +1,53 @@
+<div class="paper-container tutorial">
+  <header class="intro">
+    <h2 class="wrap">{{ i18n.tutorial_title() }}</h2>
+    <p class="lead">{{ i18n.tutorial_intro() }}</p>
+  </header>
+
+  <div class="content">
+    <ol class="sections">
+      @for (section of sections; track $index) {
+        <li class="section">
+          <div #figureBox class="frame" aria-hidden="true">
+            <awd-canvas
+              [layers]="section.layers"
+              [settings]="settings"
+              [isHistory]="true"
+              [allowPaint]="false"
+              [fixedSize]="figureSize()"
+            />
+          </div>
+          <div class="prose">
+            <h3>{{ section.title() }}</h3>
+            <p>{{ section.text() }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+
+    <div class="discover">
+      <awd-button
+        class="to-example"
+        data-testid="see-example-button"
+        (onClick)="navigateToExample()"
+        [text]="i18n.home_seeExample()"
+        icon="i-tabler-stack"
+        [border]="false"
+      />
+    </div>
+  </div>
+
+  <div class="actions">
+    <awd-button
+      data-testid="back-button"
+      (onClick)="navigateHome()"
+      icon="i-tabler-arrow-left"
+      [tooltip]="i18n.tutorial_backHome()"
+    />
+    <awd-button
+      data-testid="create-lobby-button"
+      (onClick)="navigateToNewLobby()"
+      [text]="i18n.home_createLobby()"
+    />
+  </div>
+</div>

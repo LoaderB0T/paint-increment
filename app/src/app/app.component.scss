@@ -8,10 +8,14 @@ $padding: 8px;
   position: fixed;
   z-index: 100000;
   pointer-events: none;
-  width: 100px;
-  height: 100px;
+  // padding keeps the filter bleed inside the border box, so every layer's
+  // view-transition snapshot is exactly 220x220 and the layers stay aligned
+  width: 220px;
+  height: 220px;
+  padding: 60px;
+  clip-path: inset(0);
   transform: translate(-50%, -50%);
-  mix-blend-mode: multiply;
+  filter: url('#ink');
   img {
     transform: scale(0.76) translate(-$padding, -$padding);
     --squiggle-amount: 1.5px;
@@ -20,11 +24,10 @@ $padding: 8px;
   }
   &.bg {
     view-transition-name: cursor-bg;
-    filter: blur(3px) brightness(0.5) contrast(30) brightness(5) invert(1);
-    mix-blend-mode: lighten;
+    filter: blur(3px) brightness(0.5) contrast(30) brightness(5) invert(1) url('#paper');
   }
   &.blur {
     view-transition-name: cursor-blur;
-    filter: blur(2px) brightness(0.5) contrast(5) brightness(50) blur(5px);
+    filter: blur(2px) brightness(0.5) contrast(5) brightness(50) blur(5px) url('#ink');
   }
 }

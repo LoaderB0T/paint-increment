@@ -1,18 +1,15 @@
-
 import {
   Component,
-  ChangeDetectionStrategy,
   input,
   OnInit,
   computed,
   signal,
   ElementRef,
   viewChild,
+  afterNextRender,
   afterRenderEffect,
-  AfterViewInit,
-  inject,
-  Injector,
   DestroyRef,
+  inject,
   effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,7 +20,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { extractTouched, reTriggerAnimation } from '@shared/utils';
+import { reTriggerAnimation } from '@shared/utils';
 import { TextareaSelectionBounds } from 'textarea-selection-bounds';
 
 import { TooltipDirective } from '../tooltip';
@@ -35,12 +32,10 @@ export type InputType = 'text' | 'password' | 'number' | 'email';
   selector: 'awd-textbox',
   templateUrl: './textbox.component.html',
   styleUrls: ['./textbox.component.scss'],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextboxComponent implements ControlValueAccessor, OnInit, AfterViewInit {
+export class TextboxComponent implements ControlValueAccessor, OnInit {
   private readonly _control = inject(NgControl, { self: true });
-  private readonly _injector = inject(Injector);
+  private readonly _destroyRef = inject(DestroyRef);
   public readonly fontSize = input<number>(16);
   public readonly formControlName = input<string>('');
   public readonly name = input<string>('');
@@ -79,12 +74,25 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
       }
     });
 
-    afterRenderEffect(() => {
+    afterNextRender(() => {
+      const control = this._control.control;
+      if (!control) {
+        return;
+      }
+      this.refreshErrors();
+      // `events` covers both status and touched changes
+      control.events.pipe(takeUntilDestroyed(this._destroyRef)).subscribe(() => {
+        this.refreshErrors();
+      });
+    });
+
+    afterRenderEffect(onCleanup => {
       const el = this._inputElement().nativeElement;
 
       const selectionBounds = new TextareaSelectionBounds(el);
 
-      setInterval(() => {
+      // ponytail: 50ms poll, swap for `selectionchange` if it ever shows up in a profile
+      const interval = setInterval(() => {
         const doc = this._inputElement().nativeElement.ownerDocument;
         if (doc.activeElement !== el) {
           this.caret.set(null);
@@ -107,6 +115,7 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
           reTriggerAnimation(el);
         }
       }, 50);
+      onCleanup(() => clearInterval(interval));
     });
   }
 
@@ -131,24 +140,6 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
     this._validationStatus.set(errors);
   }
 
-  public ngAfterViewInit(): void {
-    const control = this._control.control;
-    if (!control) {
-      return;
-    }
-    this.refreshErrors();
-    control.statusChanges
-      ?.pipe(takeUntilDestroyed(this._injector.get(DestroyRef)))
-      .subscribe(() => {
-        this.refreshErrors();
-      });
-    extractTouched(control)
-      .pipe(takeUntilDestroyed(this._injector.get(DestroyRef)))
-      .subscribe(() => {
-        this.refreshErrors();
-      });
-  }
-
   public writeValue(obj: string | number): void {
     this.value.set(obj);
   }
@@ -165,7 +156,6 @@ export class TextboxComponent implements ControlValueAccessor, OnInit, AfterView
   protected onBlur() {
     this._onTouched?.();
   }
-  protected onFocus() {}
   protected onInput() {
     const val = this.inputType() === 'number' ? parseInt(`${this.value()}`) : this.value();
     this._onChange?.(val);

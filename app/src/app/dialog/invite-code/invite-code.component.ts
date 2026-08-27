@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, ElementRef, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent, DialogBase, TextboxComponent } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
@@ -16,7 +9,6 @@ import { createTimeout, reTriggerAnimation } from '@shared/utils';
   selector: 'awd-invite-code',
   templateUrl: 'invite-code.component.html',
   styleUrls: ['invite-code.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InviteCodeComponent extends DialogBase {
   protected readonly i18n = injectI18n();

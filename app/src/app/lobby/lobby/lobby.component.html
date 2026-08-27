@@ -72,7 +72,7 @@
             icon="i-tabler-brush"
           />
         }
-        @if (isCreator) {
+        @if (isCreator()) {
           <awd-button
             data-testid="create-invite-button"
             (onClick)="createInvite()"

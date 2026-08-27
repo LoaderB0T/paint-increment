@@ -1,13 +1,11 @@
-
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
   signal,
   viewChild,
-  DOCUMENT
+  DOCUMENT,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
@@ -29,7 +27,6 @@ import { DownloadSettings } from '../../dialog/download-settings/download-settin
   selector: 'awd-download',
   templateUrl: 'download.component.html',
   styleUrls: ['download.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DownloadComponent {
   private readonly _router = inject(Router);

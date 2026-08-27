@@ -1,11 +1,11 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { AuthService } from '@shared/auth';
 import { assertBody, isBrowser } from '@shared/utils';
 
 import { UserInfo } from './user-info.model';
 import { StorageService } from '../storage';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class UserInfoService {
   private readonly _authService = inject(AuthService);
   private readonly _store = inject(StorageService).init<UserInfo>('user-info', {

@@ -8,7 +8,7 @@
     [ngModel]="value()"
     (ngModelChange)="value.set($event)"
     [disabled]="isDisabled()"
-    [attr.data-testid]="name + '-input'"
+    [attr.data-testid]="id() + '-input'"
   />
   <label [for]="id()">{{ text() }}</label>
 </div>

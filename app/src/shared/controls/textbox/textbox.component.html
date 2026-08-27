@@ -8,12 +8,11 @@
       [name]="id()"
       [id]="id()"
       (blur)="onBlur()"
-      (focus)="onFocus()"
       (input)="onInput()"
       [ngModel]="value()"
       (ngModelChange)="value.set($event)"
       [disabled]="isDisabled()"
-      [attr.data-testid]="name + '-input'"
+      [attr.data-testid]="id() + '-input'"
     />
     @if (firstValidationError(); as error) {
       <div class="error" [tooltip]="error">|-{{ errorCount() }}</div>

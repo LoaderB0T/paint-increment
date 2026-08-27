@@ -1,5 +1,4 @@
-
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { afterNextRender, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import Session from 'supertokens-web-js/recipe/session';
 
@@ -7,28 +6,25 @@ import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-auth',
-  imports: [],
-  template: `@if (isAlreadyLoggedIn) {
-  Already signed in
-}
-@if (!isAlreadyLoggedIn) {
-  Please wait while we sign you in...
-}`,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [],
+  template: `@if (isAlreadyLoggedIn()) {
+      Already signed in
+    } @else {
+      Please wait while we sign you in...
+    }`,
 })
-export class AuthCallbackComponent implements OnInit {
+export class AuthCallbackComponent {
   private readonly _router = inject(Router);
   private readonly _authService = inject(AuthService);
-  public isAlreadyLoggedIn = false;
+  protected readonly isAlreadyLoggedIn = signal(false);
 
-  public async ngOnInit() {
-    const isLoggedIn = await Session.doesSessionExist();
-    if (isLoggedIn) {
-      const redirectTo = localStorage.getItem('returnUrl') || '/';
-      this._router.navigate([redirectTo]);
-      return;
-    }
-    return this._authService.tryHandleThirdCallback();
+  constructor() {
+    afterNextRender(async () => {
+      if (await Session.doesSessionExist()) {
+        this.isAlreadyLoggedIn.set(true);
+        this._router.navigate([localStorage.getItem('returnUrl') || '/']);
+        return;
+      }
+      await this._authService.tryHandleThirdCallback();
+    });
   }
 }

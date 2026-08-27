@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent, DialogBase, TextboxComponent } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
@@ -9,7 +9,6 @@ import { UserInfoService } from '@shared/shared/user-info';
   selector: 'awd-user-info',
   templateUrl: 'user-info.component.html',
   styleUrls: ['user-info.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserInfoComponent extends DialogBase<boolean> {
   protected readonly i18n = injectI18n();

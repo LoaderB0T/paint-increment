@@ -1,0 +1,184 @@
+@use 'vars';
+
+$captionFont: 0.62 * vars.$fontSizeBase;
+$nameFont: 0.78 * vars.$fontSizeBase;
+
+.intro {
+  flex-shrink: 0;
+
+  @include vars.phone {
+    h2 {
+      font-size: vars.$fontSizeBase;
+    }
+  }
+
+  .subtitle {
+    margin: 2px 0 0;
+    font-size: $captionFont;
+    color: vars.$colorContent3;
+    text-wrap: pretty;
+
+    @include vars.phone {
+      font-size: vars.$fontSizeSmallPhone * 0.85;
+    }
+  }
+}
+
+.frame {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border: 3px solid black;
+    outline: 4px white solid;
+    border-radius: 16px;
+    @include vars.static-squiggle(m);
+  }
+
+  awd-canvas {
+    line-height: 0;
+  }
+}
+
+.finished {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 26px;
+
+  .big-frame {
+    width: min(340px, 76%, 34vh);
+
+    &::before {
+      inset: -12px;
+      border-width: 4px;
+      border-radius: 22px;
+      @include vars.static-squiggle(l);
+    }
+  }
+
+  // Offset by most of the box: the asset is a tape strip inside a square of transparency.
+  .tape {
+    position: absolute;
+    width: 150px;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.18));
+    z-index: 1;
+
+    &.tape-left {
+      top: -84px;
+      left: -80px;
+      rotate: -40deg;
+    }
+    &.tape-right {
+      top: -84px;
+      right: -80px;
+      rotate: 40deg;
+    }
+
+    @include vars.phone {
+      width: 92px;
+
+      &.tape-left {
+        top: -48px;
+        left: -14px;
+      }
+      &.tape-right {
+        top: -48px;
+        right: -14px;
+      }
+    }
+  }
+
+  .caption {
+    margin: 26px 0 0;
+    font-size: $nameFont;
+    font-weight: vars.$fontWeightBold;
+    text-align: center;
+
+    @include vars.phone {
+      margin-top: 18px;
+      font-size: 0.62 * vars.$fontSizeBase;
+    }
+  }
+}
+
+.list-title {
+  margin: 34px 0 14px;
+  color: vars.$colorContent3;
+
+  @include vars.phone {
+    margin: 24px 0 10px;
+    font-size: 0.72 * vars.$fontSizeBase;
+  }
+}
+
+.contributions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 26px 22px;
+  // The hand-drawn frames sit 7px outside their box.
+  padding: 0 8px;
+
+  @include vars.phone {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 20px 14px;
+  }
+}
+
+.contribution {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  // Explicit, so the frame does not collapse onto a canvas that is waiting for the
+  // frame to be measured.
+  .frame {
+    width: 100%;
+  }
+
+  .who {
+    margin: 14px 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    font-size: $nameFont;
+    font-weight: vars.$fontWeightBold;
+
+    .no {
+      color: vars.$colorContent3;
+    }
+  }
+
+  .what {
+    margin: 0;
+    font-size: $captionFont;
+    color: vars.$colorContent2;
+    text-align: center;
+    text-wrap: pretty;
+
+    .px {
+      display: block;
+      white-space: nowrap;
+      color: vars.$colorContent3;
+    }
+  }
+
+  @include vars.phone {
+    .who {
+      font-size: 0.6 * vars.$fontSizeBase;
+    }
+    .what {
+      font-size: vars.$fontSizeSmallPhone * 0.85;
+    }
+  }
+}

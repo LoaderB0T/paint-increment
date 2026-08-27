@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { AuthService } from '@shared/api';
 import { environment } from '@shared/env';
 import { assertBody, isBrowser } from '@shared/utils';
@@ -9,9 +9,7 @@ import Session from 'supertokens-web-js/recipe/session';
 import { IdService } from './id.service';
 import { ExtractPayload, WsCommunication, WsReceiveMessage, WsSendMessage } from '../ws';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class WsService {
   private readonly _idService = inject(IdService);
   private readonly _authService = inject(AuthService);

@@ -1,83 +1,42 @@
-import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
-import { SubscriptionManager, throwExp } from '@shared/utils';
+import { ComponentRef, Service, Type, ViewContainerRef } from '@angular/core';
+import { throwExp } from '@shared/utils';
 
 import { DialogBase } from './dialog-base.component';
 import { DialogComponent } from './dialog.component';
+
+type DialogResult<C> = C extends DialogBase<infer D> ? D : never;
 
 type DialogHandle<C extends DialogBase<unknown>, T> = {
   componentRef: ComponentRef<C>;
   result: Promise<T | null>;
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DialogService {
-  private __rootViewContainer?: ViewContainerRef;
-  private readonly _subMgrs = new Array<{ id: string; mgr: SubscriptionManager }>();
-
-  private get _rootViewContainer() {
-    return this.__rootViewContainer ?? throwExp('RootViewContainerRef not set');
-  }
-
-  public dialogVisible: boolean = false;
-
-  public hideAllDialogs() {
-    this._rootViewContainer?.clear();
-    this._subMgrs.forEach(subMgr => {
-      subMgr.mgr.unsubscribeAll();
-    });
-    this._subMgrs.length = 0;
-    this.dialogVisible = false;
-  }
+  private _rootViewContainer?: ViewContainerRef;
 
   public setRootViewContainerRef(viewContainerRef: ViewContainerRef) {
-    this.__rootViewContainer = viewContainerRef;
+    this._rootViewContainer = viewContainerRef;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public showComponentDialog<T extends DialogBase<any>>(
-    componentType: new (...args: unknown[]) => T
-  ): DialogHandle<T, T extends DialogBase<infer D> ? D : never> {
-    if (!this._rootViewContainer) {
-      throw new Error('setRootViewContainerRef has not been called yet');
-    }
+    componentType: Type<T>
+  ): DialogHandle<T, DialogResult<T>> {
+    const root =
+      this._rootViewContainer ?? throwExp('setRootViewContainerRef has not been called yet');
 
-    const prom = Promise.withResolvers<T extends DialogBase<infer D> ? D : never | null>();
-
-    const newId = this.getRandomId();
-
-    this._subMgrs.push({ id: newId, mgr: new SubscriptionManager() });
-    const hostComponent = this._rootViewContainer.createComponent(DialogComponent);
+    const hostComponent = root.createComponent(DialogComponent);
     const componentRef = hostComponent.instance.container().createComponent(componentType);
 
-    if ('result' in componentRef.instance) {
-      componentRef.instance.result.then(res => {
-        prom.resolve(res ?? null);
-        const indexToRemove = this._rootViewContainer.indexOf(hostComponent.hostView);
-        if (indexToRemove > -1) {
-          this._rootViewContainer.remove(indexToRemove);
-        }
-        if (this._rootViewContainer.length === 0) {
-          this.dialogVisible = false;
-        }
-      });
-    } else {
-      console.error(
-        'This Component does not implement the DialogBase Class:',
-        componentRef.instance
-      );
-      throw new Error('This Component does not implement the DialogBase Class');
-    }
+    const result = componentRef.instance.result.then(res => {
+      const indexToRemove = root.indexOf(hostComponent.hostView);
+      if (indexToRemove > -1) {
+        root.remove(indexToRemove);
+      }
+      return (res ?? null) as DialogResult<T> | null;
+    });
 
-    this.dialogVisible = true;
-    return {
-      componentRef,
-      result: prom.promise,
-    };
-  }
-
-  private getRandomId(): string {
-    return Math.random().toString(36).substring(2, 11);
+    return { componentRef, result };
   }
 }

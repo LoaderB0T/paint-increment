@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, linkedSignal } from '@angular/core';
+import { Component, inject, input, linkedSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
@@ -12,7 +12,6 @@ import { IterationEditService } from '../../lobby/iteration-edit.service';
   selector: 'awd-edit-position',
   templateUrl: 'edit-position.component.html',
   styleUrls: ['edit-position.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditPositionComponent extends DialogBase {
   protected readonly i18n = injectI18n();

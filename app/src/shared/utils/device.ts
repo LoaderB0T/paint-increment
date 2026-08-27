@@ -1,10 +1,8 @@
 import { isPlatformServer } from '@angular/common';
-import { inject, Injectable, PLATFORM_ID, REQUEST } from '@angular/core';
+import { inject, Service, PLATFORM_ID, REQUEST } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DeviceService extends DeviceDetectorService {
   private readonly _request = inject(REQUEST, { optional: true });
   constructor() {

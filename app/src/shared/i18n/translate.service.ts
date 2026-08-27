@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { BaseTranslateService } from '@ngneers/signal-translate';
 
 import type translations from './en.json';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TranslateService extends BaseTranslateService<typeof translations> {
   constructor() {
     super(['en'], 'en');

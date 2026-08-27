@@ -1,0 +1,105 @@
+@use 'vars';
+
+$bodyFont: 0.68 * vars.$fontSizeBase;
+
+.intro {
+  flex-shrink: 0;
+
+  .lead {
+    margin: 4px 0 0;
+    max-width: 60ch;
+    font-size: 0.8 * vars.$fontSizeBase;
+    color: vars.$colorContent2;
+    text-wrap: pretty;
+  }
+
+  @include vars.phone {
+    h2 {
+      font-size: vars.$fontSizeBase;
+    }
+    .lead {
+      font-size: vars.$fontSizeSmallPhone;
+    }
+  }
+}
+
+.sections {
+  list-style: none;
+  margin: 14px 0 0;
+  // The hand-drawn frames sit 6px outside their box.
+  padding: 0 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 44px;
+
+  @media (max-width: 899px) {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+}
+
+.section {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+
+  @include vars.phone {
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 3px solid black;
+      outline: 4px white solid;
+      border-radius: 14px;
+      @include vars.static-squiggle(m);
+    }
+
+    awd-canvas {
+      line-height: 0;
+    }
+  }
+
+  .prose {
+    h3 {
+      margin: 0 0 4px;
+      font-size: 0.82 * vars.$fontSizeBase;
+    }
+    p {
+      margin: 0;
+      font-size: $bodyFont;
+      color: vars.$colorContent2;
+      text-wrap: pretty;
+    }
+
+    @include vars.phone {
+      h3 {
+        font-size: 0.66 * vars.$fontSizeBase;
+      }
+      p {
+        font-size: vars.$fontSizeSmallPhone * 0.9;
+      }
+    }
+  }
+}
+
+.discover {
+  display: flex;
+  justify-content: center;
+  margin: 28px 0 10px;
+
+  awd-button {
+    --font-size-override: #{0.78 * vars.$fontSizeBase};
+  }
+}

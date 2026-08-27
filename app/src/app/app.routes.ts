@@ -16,6 +16,14 @@ export const routes: Routes = [
     component: HomeComponent,
   },
   {
+    path: 'tutorial',
+    loadComponent: () => import('./tutorial/tutorial.component').then(m => m.TutorialComponent),
+  },
+  {
+    path: 'example',
+    loadComponent: () => import('./example/example.component').then(m => m.ExampleComponent),
+  },
+  {
     path: 'lobby',
     children: [
       {

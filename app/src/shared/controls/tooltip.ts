@@ -1,47 +1,46 @@
-
 import {
+  DestroyRef,
   Directive,
   ElementRef,
-  HostListener,
-  Input,
-  OnDestroy,
   Renderer2,
   inject,
-  DOCUMENT
+  input,
+  DOCUMENT,
 } from '@angular/core';
 
 @Directive({
   selector: '[tooltip]',
-  standalone: true,
+  host: {
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()',
+    '(focusout)': 'onBlur()',
+  },
 })
-export class TooltipDirective implements OnDestroy {
+export class TooltipDirective {
   private readonly _renderer = inject(Renderer2);
   private readonly _document = inject(DOCUMENT);
   private readonly _el = inject(ElementRef<HTMLElement>);
   private _tooltip?: HTMLSpanElement;
   private _shown: boolean = false;
 
-  @Input('tooltip') tooltipTitle: string = '';
+  public readonly tooltipTitle = input('', { alias: 'tooltip' });
 
-  @HostListener('mouseenter')
-  public onMouseEnter() {
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.hide(true));
+  }
+
+  protected onMouseEnter() {
     if (!this._shown) {
       this.show();
     }
   }
 
-  @HostListener('mouseleave')
-  public onMouseLeave() {
+  protected onMouseLeave() {
     this.hide();
   }
 
-  @HostListener('focusout')
-  public onBlur() {
+  protected onBlur() {
     this.hide(true);
-  }
-
-  public ngOnDestroy(): void {
-    this.hide();
   }
 
   private show() {
@@ -52,7 +51,7 @@ export class TooltipDirective implements OnDestroy {
     const tooltip = this._renderer.createElement('span') as HTMLSpanElement;
 
     this._tooltip = tooltip;
-    tooltip.innerText = this.tooltipTitle;
+    tooltip.innerText = this.tooltipTitle();
     tooltip.classList.add('tooltip');
     setTimeout(() => {
       tooltip.classList.add('visible');

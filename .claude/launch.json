@@ -1,0 +1,9 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "awd-paint",
+      "url": "http://localhost:4200"
+    }
+  ]
+}

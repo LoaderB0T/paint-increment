@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  OnInit,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { Component, computed, effect, inject, signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse, LobbyService } from '@shared/api';
@@ -47,9 +38,8 @@ type Store = {
   selector: 'awd-lobby',
   templateUrl: 'lobby.component.html',
   styleUrls: ['lobby.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LobbyComponent implements OnInit {
+export class LobbyComponent {
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _lobbyService = inject(LobbyService);
@@ -104,9 +94,7 @@ export class LobbyComponent implements OnInit {
     this._committedLayer(),
   ]);
 
-  protected get isCreator(): boolean {
-    return !!this.lobby().isCreator;
-  }
+  protected readonly isCreator = computed(() => !!this.lobby().isCreator);
 
   private readonly _isLocked = toSignal(this._lobbyLockService.lobbyLocked(), {
     initialValue: {
@@ -132,6 +120,7 @@ export class LobbyComponent implements OnInit {
 
   constructor() {
     this.prepareLayers();
+    this._lobbyLockService.lookingAtLobby(this.lobby().id);
 
     effect(() => {
       if (!this._isLockedByMe() && !this.isEditMode) {
@@ -217,10 +206,6 @@ export class LobbyComponent implements OnInit {
         this.invalidateInviteCode();
       }
     }
-  }
-
-  public ngOnInit(): void {
-    this._lobbyLockService.lookingAtLobby(this.lobby().id);
   }
 
   private resetLayer(layer: WritableSignal<Layer>) {

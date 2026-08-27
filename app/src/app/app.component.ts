@@ -1,5 +1,12 @@
-
-import { Component, computed, effect, inject, signal, ViewContainerRef, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ViewContainerRef,
+  DOCUMENT,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DialogService } from '@shared/controls';
 import { fromEvent } from 'rxjs';
@@ -13,13 +20,14 @@ type Cursor = (typeof cursors)[number];
   selector: 'app-root',
   imports: [BaseComponent],
   templateUrl: './app.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   protected readonly squigglyCount = Array.from({ length: 20 }, (_, i) => i);
-  private readonly _mouseMove = toSignal(fromEvent(inject(DOCUMENT), 'pointermove'));
-  private readonly _mouseLeave = toSignal(fromEvent(inject(DOCUMENT), 'pointerleave'));
+  private readonly _mouseMove = toSignal(fromEvent<PointerEvent>(inject(DOCUMENT), 'pointermove'));
+  private readonly _mouseLeave = toSignal(
+    fromEvent<PointerEvent>(inject(DOCUMENT), 'pointerleave')
+  );
   private readonly _cursorKind = signal<Cursor>('default');
   protected readonly cursorUrl = computed(() => `cursor_${this._cursorKind()}.png`);
   protected readonly cursorPos = signal({ top: -100, left: -100 });
@@ -27,7 +35,7 @@ export class AppComponent {
   constructor() {
     inject(DialogService).setRootViewContainerRef(inject(ViewContainerRef));
     effect(() => {
-      const evt = this._mouseMove() as PointerEvent | undefined;
+      const evt = this._mouseMove();
       if (!evt) {
         return;
       }
@@ -45,8 +53,7 @@ export class AppComponent {
       this._cursorKind.set(cursors.some(x => x === cursorVar) ? (cursorVar as Cursor) : 'default');
     });
     effect(() => {
-      const evt = this._mouseLeave() as PointerEvent | undefined;
-      if (!evt) {
+      if (!this._mouseLeave()) {
         return;
       }
       this.cursorPos.set({ top: -100, left: -100 });

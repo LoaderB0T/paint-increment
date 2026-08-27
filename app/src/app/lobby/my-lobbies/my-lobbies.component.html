@@ -2,7 +2,7 @@
   <h2>{{ i18n.myLobbies_title() }}</h2>
   <div class="content">
     <ul>
-      @for (lobby of lobbies(); track lobby.id) {
+      @for (lobby of lobbies.value(); track lobby.id) {
         <li>
           <a [routerLink]="lobby.link">{{ lobby.name }}</a>
         </li>

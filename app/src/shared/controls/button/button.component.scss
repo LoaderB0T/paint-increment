@@ -1,43 +1,156 @@
 @use 'vars';
 
+$padCompact: 2px;
+$padBordered: 16px;
+
+:host {
+  --marker: #{vars.$colorMarker};
+
+  // Two thick strokes tilted against each other, so where they cross drifts along the
+  // length: they always overlap, but the doubled band wanders and changes thickness the way
+  // two real passes of a marker do. Cycling the pair per sibling keeps two buttons side by
+  // side from looking stamped from the same die -- CSS cannot roll dice, so position in the
+  // row is the seed.
+  --swipe-top: 178.4deg;
+  --swipe-bottom: 181.6deg;
+}
+:host(:nth-of-type(3n + 2)) {
+  --swipe-top: 181.5deg;
+  --swipe-bottom: 178.6deg;
+}
+:host(:nth-of-type(3n)) {
+  --swipe-top: 179.2deg;
+  --swipe-bottom: 181.2deg;
+}
+
 button {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
   font-family: vars.$fontFamily;
   font-weight: vars.$fontWeightBold;
   @include vars.fontSize(vars.$fontSizeNormal);
+  // Form controls do not inherit colour on their own, so a caller cannot tint a button
+  // without this.
+  color: inherit;
   border: none;
-  position: relative;
   background: transparent;
-  padding: 2px;
+  padding: $padCompact;
   user-select: none;
   --cursor: pointer;
-  &:hover,
-  &:active,
-  &:focus {
-    @include vars.squiggly;
-    outline: none;
+
+  // Two thick marker strokes, one colour. Multiplying them is what darkens where they
+  // cross, so the deeper core is the ink doubling up rather than a second pen. Lives on the
+  // button rather than the label so the label's contrast boost cannot shift the colour.
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    height: 1.1em;
+    transform: translateY(-50%);
+    left: calc(#{$padCompact} - 0.3em);
+    right: calc(#{$padCompact} - 0.25em);
+    background-repeat: no-repeat;
+    // Strokes multiply against each other, then the whole swipe multiplies onto the paper,
+    // so the grain reads through it and each crossing compounds.
+    background-blend-mode: multiply;
+    mix-blend-mode: multiply;
+    // Bottom then top, each a band of stops inside a full-height box because that is what
+    // lets the angle tilt it. They are deliberately thick enough to overlap by roughly a
+    // third even before the tilts are applied. Each runs 90% of the width from the opposite
+    // side, so neither end of the swipe lines up: two passes that started and stopped in
+    // different places.
+    background-image:
+      linear-gradient(
+        var(--swipe-bottom),
+        transparent 32%,
+        var(--marker) 32%,
+        var(--marker) 100%,
+        transparent 100%
+      ),
+      linear-gradient(
+        var(--swipe-top),
+        transparent 0,
+        var(--marker) 0,
+        var(--marker) 68%,
+        transparent 68%
+      );
+    background-size:
+      90% 100%,
+      90% 100%;
+    background-position:
+      100% 0,
+      0 0;
+    // A swipe eases on where the tip touches down and stops where it is lifted, so only the
+    // leading end fades. The displacement filter is what keeps the lifted end ragged.
+    mask-image: linear-gradient(90deg, transparent 0, #000 6px, #000 100%);
+    // Displacement only, and barely any blur: a soft edge would wash out the boundary
+    // between one pass and two, and that boundary is the whole point.
+    filter: url('#markerEdge') blur(0.2px);
+    pointer-events: none;
   }
-  @include vars.static-squiggle(s);
-  &.border {
-    padding: 16px;
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border: 5px solid black;
-      outline: 5px white solid;
-      border-radius: 40px;
-      @include vars.static-squiggle(l);
+
+  // The hand-drawn box is now the focus ring, and every button gets one.
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: -7px;
+    border: 5px solid black;
+    outline: 5px white solid;
+    border-radius: 40px;
+    @include vars.static-squiggle(l);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    &::after {
+      opacity: 1;
     }
   }
-  &.active {
-    color: #ff0099;
+
+  &.border {
+    padding: $padBordered;
+
+    &::before {
+      left: calc(#{$padBordered} - 0.3em);
+      right: calc(#{$padBordered} - 0.25em);
+    }
+    &::after {
+      inset: 0;
+    }
   }
+
+  // "On" is a different pen, not different ink: recolouring the label would fight the
+  // marker underneath it.
+  &.active {
+    --marker: #{vars.$colorMarkerActive};
+  }
+
+  .label {
+    position: relative;
+    // Above the swipe and the focus ring, and still blending onto the paper: only an
+    // isolating ancestor would break that, and there is none.
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    // The custom cursor is resolved from whatever the pointer is actually over, and that is
+    // this element rather than the button. It is a span, so the global `span` rule would
+    // otherwise hand a button's own label the text cursor.
+    --cursor: pointer;
+    @include vars.static-squiggle(s);
+  }
+
+  &:hover .label,
+  &:active .label,
+  &:focus-visible .label {
+    @include vars.squiggly;
+  }
+
   img {
     width: 48px;
     height: 48px;

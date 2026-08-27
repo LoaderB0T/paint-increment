@@ -1,22 +1,11 @@
-
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  OnInit,
-  computed,
-  signal,
-  inject,
-} from '@angular/core';
+import { Component, input, OnInit, computed, signal, inject } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NgControl } from '@angular/forms';
 
 @Component({
   selector: 'awd-checkbox',
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
-  standalone: true,
   imports: [FormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckboxComponent implements ControlValueAccessor, OnInit {
   private readonly _control = inject(NgControl, { self: true });

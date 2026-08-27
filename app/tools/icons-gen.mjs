@@ -25,6 +25,7 @@ const ICONS = [
   'eraser',
   'file-download',
   'folder-down',
+  'help',
   'home',
   'lock',
   'map-pin',

@@ -14,4 +14,21 @@ $colorContent3: rgb(67, 67, 108);
 $colorAccent1: rgb(255, 0, 82);
 $colorAccent2: rgb(255, 160, 30);
 
+// Highlighter ink, and opaque on purpose. These are transmittances, not tints: the strokes
+// are composited with multiply, so one pass over white paper lands near this value, two
+// crossing passes land on its square, three on its cube. That is how the ink actually
+// behaves, and it is why translucent values would not work -- multiply weights its result
+// by the product of both alphas, so semi-transparent strokes barely darken where they
+// cross. Pink is the default marker; amber comes out for a toggle that is on.
+$colorMarker: rgb(255, 205, 222);
+$colorMarkerActive: rgb(255, 214, 166);
+
+// The marker as it actually renders on paper, halfway between one stroke and two crossing.
+// Selection needs the rendered tone rather than a transmittance, because `::selection`
+// composites normally instead of multiplying, and it lands between the two passes because a
+// selection is one large unbroken block -- matching the doubled core exactly reads hotter
+// than the buttons do at the same value. Keep the two in step by hand: `::selection` accepts
+// no blend mode that would derive it for us.
+$colorSelection: rgb(250, 177, 199);
+
 $colorError: rgb(238, 31, 16);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CreateLobbyRequest, LobbyService } from '@shared/api';
@@ -12,14 +12,11 @@ import { assertBody, objectKeys, safeLobbyName } from '@shared/utils';
   imports: [ReactiveFormsModule, TextboxComponent, ButtonComponent, TooltipDirective],
   templateUrl: 'new-lobby.component.html',
   styleUrls: ['new-lobby.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewLobbyComponent {
   private readonly _lobbyService = inject(LobbyService);
   private readonly _router = inject(Router);
   protected readonly i18n = injectI18n();
-  constructor() {}
-
   protected readonly form = new FormGroup({
     name: new FormControl('', [
       Validators.required,

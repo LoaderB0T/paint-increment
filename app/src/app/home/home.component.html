@@ -1,6 +1,59 @@
-<div class="paper-container">
-  <h2 class="wrap">{{ i18n.home_title() }}</h2>
-  <div class="content"></div>
+<div class="paper-container welcome">
+  <header class="intro">
+    <h2 class="wrap">{{ i18n.home_title() }}</h2>
+    <p class="lead">{{ i18n.home_lead() }}</p>
+  </header>
+
+  <div class="content">
+    <h3 class="strip-title wrap">{{ i18n.home_stepsTitle() }}</h3>
+
+    <ol class="strip">
+      @for (stage of stages(); track stage.step; let last = $last) {
+        <li class="stage">
+          @if (!last) {
+            <span class="pass" aria-hidden="true"><i class="i-tabler-arrow-right"></i></span>
+          }
+          <img class="tape" [src]="stage.tape" alt="" aria-hidden="true" />
+          <!-- The step title and text carry the meaning; the sheet illustrates it. -->
+          <div #stageBox class="frame" aria-hidden="true">
+            <awd-canvas
+              [layers]="stage.layers"
+              [settings]="settings"
+              [isHistory]="true"
+              [allowPaint]="false"
+              [fixedSize]="stageSize()"
+            />
+          </div>
+          <p class="step">
+            <span class="step-no" aria-hidden="true">{{ stage.step }}.</span>
+            <span class="step-title">{{ stage.title }}</span>
+          </p>
+          <p class="step-text">{{ stage.text }}</p>
+        </li>
+      }
+    </ol>
+
+    <p class="aside">{{ i18n.home_exampleNote() }}</p>
+
+    <div class="discover">
+      <awd-button
+        class="to-example"
+        data-testid="see-example-button"
+        (onClick)="navigateToExample()"
+        [text]="i18n.home_seeExample()"
+        icon="i-tabler-stack"
+        [border]="false"
+      />
+      <awd-button
+        data-testid="tutorial-button"
+        (onClick)="navigateToTutorial()"
+        [text]="i18n.home_howItWorks()"
+        icon="i-tabler-help"
+        [border]="false"
+      />
+    </div>
+  </div>
+
   <div class="actions">
     <awd-button
       data-testid="create-lobby-button"

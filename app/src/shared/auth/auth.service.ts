@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { isBrowser } from '@shared/utils';
 import SuperTokens from 'supertokens-web-js';
@@ -8,7 +8,7 @@ import ThirdParty from 'supertokens-web-js/recipe/thirdparty';
 import { AuthService as ApiAuthService } from '../api';
 import { environment } from '../env';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AuthService {
   private readonly _isBrowser = isBrowser();
   private readonly _router = inject(Router);

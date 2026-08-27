@@ -1,15 +1,13 @@
-
 import {
+  afterNextRender,
   afterRenderEffect,
-  AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
   inject,
   signal,
   viewChild,
-  DOCUMENT
+  DOCUMENT,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
@@ -31,9 +29,8 @@ const flexGap = 16;
   selector: 'awd-history',
   templateUrl: 'history.component.html',
   styleUrls: ['history.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistoryComponent implements AfterViewInit {
+export class HistoryComponent {
   private readonly _document = inject(DOCUMENT);
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
@@ -85,19 +82,20 @@ export class HistoryComponent implements AfterViewInit {
   });
 
   constructor() {
-    afterRenderEffect(() => {
+    afterRenderEffect(onCleanup => {
       const el = this._content().nativeElement;
       const resizeObserver = new ResizeObserver(() => {
         this._maxWidth.set(el.clientWidth);
       });
       resizeObserver.observe(el);
+      onCleanup(() => resizeObserver.disconnect());
     });
-  }
 
-  public ngAfterViewInit(): void {
-    if (this._document.body.clientWidth < 400) {
-      this.zoom.set(1);
-    }
+    afterNextRender(() => {
+      if (this._document.body.clientWidth < 400) {
+        this.zoom.set(1);
+      }
+    });
   }
 
   protected gotWheel(event: WheelEvent): void {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, linkedSignal } from '@angular/core';
+import { Component, inject, input, linkedSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LobbyResponse } from '@shared/api';
 import { ButtonComponent, DialogBase, TextboxComponent } from '@shared/controls';
@@ -11,7 +11,6 @@ import { IterationEditService } from '../../lobby/iteration-edit.service';
   selector: 'awd-edit-name',
   templateUrl: 'edit-name.component.html',
   styleUrls: ['edit-name.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditNameComponent extends DialogBase {
   protected readonly i18n = injectI18n();

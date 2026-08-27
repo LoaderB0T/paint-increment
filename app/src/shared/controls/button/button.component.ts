@@ -1,14 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'awd-button',
   templateUrl: 'button.component.html',
   styleUrls: ['button.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonComponent {
-  constructor() {}
-
   public readonly text = input<string>();
   public readonly icon = input<string>();
   public readonly border = input<boolean>(true);

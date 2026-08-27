@@ -1,7 +1,7 @@
-import { inject, Injectable, REQUEST } from '@angular/core';
+import { inject, Service, REQUEST } from '@angular/core';
 import { isBrowser } from '@shared/utils';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CookieService {
   private readonly _request = inject(REQUEST);
   private readonly _isBrowser = isBrowser();

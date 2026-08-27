@@ -1,0 +1,68 @@
+<div class="paper-container example">
+  <header class="intro">
+    <h2 class="wrap">{{ i18n.example_title() }}</h2>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </header>
+
+  <div class="content">
+    <section class="finished">
+      <div
+        #bigBox
+        class="frame big-frame"
+        role="img"
+        [attr.aria-label]="i18n.example_finished() + ' — ' + project.name"
+      >
+        <img class="tape tape-left" src="/tape/tape4.png" alt="" aria-hidden="true" />
+        <img class="tape tape-right" src="/tape/tape7.png" alt="" aria-hidden="true" />
+        <awd-canvas
+          [layers]="finishedLayers"
+          [settings]="settings"
+          [isHistory]="true"
+          [allowPaint]="false"
+          [fixedSize]="bigSize()"
+        />
+      </div>
+      <p class="caption">{{ i18n.example_finished() }} — “{{ project.name }}”</p>
+    </section>
+
+    <h3 class="list-title wrap">{{ i18n.example_contributionsTitle() }}</h3>
+
+    <ol class="contributions">
+      @for (contribution of contributions; track contribution.step) {
+        <li class="contribution">
+          <div #thumbBox class="frame" aria-hidden="true">
+            <awd-canvas
+              [layers]="contribution.layers"
+              [settings]="settings"
+              [isHistory]="true"
+              [allowPaint]="false"
+              [fixedSize]="thumbSize()"
+            />
+          </div>
+          <p class="who">
+            <span class="no" aria-hidden="true">{{ contribution.step }}.</span>
+            <span class="name">{{ contribution.name }}</span>
+          </p>
+          <p class="what">
+            {{ i18n.example_drewLabel() }} {{ contribution.drew }}
+            <span class="px">{{ contribution.pixelCount }}{{ i18n.example_pixelsLabel() }}</span>
+          </p>
+        </li>
+      }
+    </ol>
+  </div>
+
+  <div class="actions">
+    <awd-button
+      data-testid="back-button"
+      (onClick)="navigateHome()"
+      icon="i-tabler-arrow-left"
+      [tooltip]="i18n.example_backHome()"
+    />
+    <awd-button
+      data-testid="start-own-button"
+      (onClick)="navigateToNewLobby()"
+      [text]="i18n.example_cta()"
+    />
+  </div>
+</div>

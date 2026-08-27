@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { LobbyResponse, WsService } from '@shared/api';
 import { throwExp } from '@shared/utils';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class IterationEditService {
   private readonly _wsService = inject(WsService);
 

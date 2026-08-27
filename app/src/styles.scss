@@ -73,6 +73,15 @@ a {
   @include vars.squiggly;
 }
 
+// Selection is the same ink a button gets highlighted with. Only the tone carries over:
+// `::selection` accepts colour, background-color and text-shadow and nothing else, so the
+// layered strokes, the mask and the displacement filter are all off the table here.
+::selection {
+  background-color: vars.$colorSelection;
+  // Captions and headings run in other inks; selected text settles on one.
+  color: vars.$colorContent1;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -95,10 +104,17 @@ a {
 ::view-transition-group(cursor-bg) {
   animation: none;
 }
-::view-transition-group(cursor-blur),
-::view-transition-group(cursor-bg) {
-  margin-top: -14px; // For some reason, the cursor-bg is off while doing view transitions
-  margin-left: -8px;
+// The cursor looks the same before and after, and the cross fade adds the two snapshots
+// with plus-lighter, which doubles up the shadow - keep the new one only.
+::view-transition-old(cursor),
+::view-transition-old(cursor-blur),
+::view-transition-old(cursor-bg) {
+  display: none;
+}
+::view-transition-new(cursor),
+::view-transition-new(cursor-blur),
+::view-transition-new(cursor-bg) {
+  animation: none;
 }
 
 @keyframes in-paper {

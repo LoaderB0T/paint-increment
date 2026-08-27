@@ -1,16 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { WsService } from '@shared/api';
 import { UserInfoService } from '@shared/shared/user-info';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LobbyLockService {
-  private readonly _wsService: WsService;
-  private readonly _userInfoService: UserInfoService;
-
-  constructor(wsService: WsService, userInfoService: UserInfoService) {
-    this._wsService = wsService;
-    this._userInfoService = userInfoService;
-  }
+  private readonly _wsService = inject(WsService);
+  private readonly _userInfoService = inject(UserInfoService);
 
   public lock(lobbyId: string, inviteCode: string): void {
     this._wsService.send('lockLobby', { lobbyId, name: this._userInfoService.name, inviteCode });

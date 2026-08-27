@@ -1,6 +1,5 @@
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -34,7 +33,6 @@ export function getPixelArray(width: number, height: number): boolean[][] {
   selector: 'awd-canvas',
   templateUrl: 'canvas.component.html',
   styleUrls: ['canvas.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CanvasComponent {
   private readonly _recentDraws = new Array<{ x: number; y: number; erase: boolean }>();
@@ -81,7 +79,7 @@ export class CanvasComponent {
       untracked(() => this.drawPixels());
     });
 
-    afterRenderEffect(() => {
+    afterRenderEffect(onCleanup => {
       if (this.fixedSize()) {
         this._canvas().nativeElement.style.width = `${this.fixedSize()}px`;
         this._canvas().nativeElement.style.height = `${this.fixedSize()}px`;
@@ -96,9 +94,10 @@ export class CanvasComponent {
         this._canvas().nativeElement.style.height = `${min}px`;
       });
       resize.observe(container);
+      onCleanup(() => resize.disconnect());
     });
 
-    afterRenderEffect(() => {
+    afterRenderEffect(onCleanup => {
       if (this.isHistory()) {
         return;
       }
@@ -121,6 +120,7 @@ export class CanvasComponent {
           pinchOffsetX = this.offsetX();
           pinchOffsetY = this.offsetY();
         });
+        onCleanup(() => hammertime.destroy());
       }
     });
   }

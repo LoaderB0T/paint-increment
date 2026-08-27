@@ -1,9 +1,9 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { throwExp } from '@shared/utils';
 
 import { CookieService } from './cookie.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class StorageService {
   private readonly _cookieService = inject(CookieService);
 

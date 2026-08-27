@@ -17,7 +17,21 @@
   "home": {
     "title": "Welcome to awd paint!",
     "createLobby": "Start project",
-    "myLobbies": "My projects"
+    "myLobbies": "My projects",
+    "lead": "One canvas, passed from friend to friend. Everybody adds a few pixels — nobody draws it alone.",
+    "stepsTitle": "How a project grows",
+    "step1Title": "You start it",
+    "step1Text": "Pick a canvas size and how many pixels each friend gets. Draw the first bit yourself.",
+    "step2Title": "Pass it on",
+    "step2Text": "Send the invite link to one friend at a time. Only the invited person can draw.",
+    "step3Title": "They add to it",
+    "step3Text": "They spend their pixels on your canvas, but never over yours. You accept or reject.",
+    "step4Title": "Then print it",
+    "step4Text": "Download the finished picture, with every contributor’s name on the back.",
+    "exampleNote": "Those four sheets are one real example project, sixteen contributions deep.",
+    "seeExample": "See all sixteen",
+    "howItWorks": "How it works",
+    "stageCaption": "after {{count}}"
   },
   "newLobby": {
     "title": "Create new project",
@@ -88,5 +102,32 @@
     "title": "User info",
     "username": "Your name",
     "email": "Email"
+  },
+  "tutorial": {
+    "title": "How it works",
+    "intro": "A project is one shared canvas. It only ever has one pair of hands on it at a time, and it grows one contribution at a time.",
+    "s1Title": "1. Start a project",
+    "s1Text": "You choose the canvas size, the pixel budget every contributor gets, and how long somebody may hold the canvas before it is handed back. You own the project, so you draw first.",
+    "s2Title": "2. Invite one friend",
+    "s2Text": "Generate an invite link and send it to a single person. While they are drawing, the canvas is locked to them — everybody else sees that it is taken, and by whom. Need a second contributor? Generate a fresh link.",
+    "s3Title": "3. They spend their pixels",
+    "s3Text": "Your friend sees everything already on the canvas and adds to it. They cannot paint over an existing pixel and they cannot exceed the pixel budget, so every contribution stays visible in the finished picture.",
+    "s4Title": "4. You have the last word",
+    "s4Text": "A new contribution arrives as a draft. Accept it and it becomes part of the picture; reject it and the canvas goes back to how it was.",
+    "s5Title": "5. The history keeps every hand",
+    "s5Text": "The history view shows the project one contribution at a time, newest additions in red. You can rename a contribution, move it up or down the order, or reopen it and edit the pixels.",
+    "s6Title": "6. Take it off the screen",
+    "s6Text": "Download the picture as a print: the front carries the artwork and the year, the back carries every contributor’s name. You can also export all contributions at once.",
+    "backHome": "Back"
+  },
+  "example": {
+    "title": "Example project",
+    "subtitle": "“{{name}}” — {{count}} contributions, {{pixels}} pixels, all invented so you can see a finished one.",
+    "finished": "The finished picture",
+    "contributionsTitle": "Every contribution, in order",
+    "drewLabel": "added",
+    "pixelsLabel": "px",
+    "cta": "Start your own",
+    "backHome": "Back"
   }
 }
