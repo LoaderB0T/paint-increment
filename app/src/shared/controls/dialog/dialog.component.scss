@@ -17,7 +17,9 @@
 $maxWidth: 95vw;
 
 .dialog {
-  position: absolute;
+  // fixed, not absolute: the rip animation throws the paper past the bottom of the page and
+  // an absolutely positioned element grows the document's scroll area while it does
+  position: fixed;
   padding: 16px;
   width: min(400px, $maxWidth);
   height: max-content;
@@ -31,12 +33,9 @@ $maxWidth: 95vw;
     display: contents;
   }
   transition: box-shadow 0.2s ease;
-  box-shadow: 5px 10px 7px rgba(33, 33, 33, 0.7);
+  box-shadow: 2px 4px 5px rgba(33, 33, 33, 0.4);
   &.dialog:hover {
-    box-shadow: 0 10px 20px rgba(33, 33, 33, 0.7);
-    .tape {
-      filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2)) drop-shadow(0 -15px 15px rgba(0, 0, 0, 0.2));
-    }
+    box-shadow: 2px 4px 5px rgba(33, 33, 33, 0.5);
   }
   .tape {
     display: block;
@@ -48,5 +47,137 @@ $maxWidth: 95vw;
     pointer-events: none;
     transition: filter 0.2s ease;
     filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+  }
+}
+
+// --- enter / leave animations ---------------------------------------------
+// paper gets slapped onto the page, then the tape is pressed on top of it.
+
+@keyframes paper-slap {
+  0% {
+    // held below the page and close to the viewer, as if in a hand
+    opacity: 0;
+    transform: perspective(900px) translate3d(-10px, 90px, 200px) rotateX(-26deg) rotateY(6deg)
+      rotate(-4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(900px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotate(0deg);
+  }
+}
+
+@keyframes tape-press {
+  0% {
+    opacity: 0;
+    transform: perspective(600px) scale(0.4) rotateX(48deg) translateY(-46px)
+      rotate(calc(var(--tapeTilt, 0deg) + 7deg));
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(600px) scale(0.4) rotateX(0deg) translateY(0)
+      rotate(var(--tapeTilt, 0deg));
+  }
+}
+
+@keyframes bg-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// leaving: the tape is what gets ripped - peeled off its LEFT end, twisted towards the viewer and
+// flicked away up-left (positive rotateY is what brings the left edge forward, measured not
+// guessed). Once it lets go, the note just falls.
+@keyframes tape-rip {
+  0% {
+    opacity: 1;
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+    transform: perspective(1600px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg)
+      rotate(var(--tapeTilt, 0deg)) scale(0.4);
+  }
+  100% {
+    // scale(0.4) LAST so the rotations act on the tape's 320px visual size rather than the source
+    // image's 800px box, and a long perspective on top: together they keep the near end's growth
+    // to a believable ~1.1x instead of blowing the corner past the projection plane
+    opacity: 0;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1));
+    transform: perspective(1600px) translate3d(-140px, -95px, 55px) rotateX(-14deg)
+      rotateY(calc(var(--ripSpin, 1) * 28deg))
+      rotate(calc(var(--tapeTilt, 0deg) - var(--ripSpin, 1) * 14deg)) scale(0.4);
+  }
+}
+
+// A plain accelerating fall with a bit of lean. One keyframe pair, so one continuous curve.
+@keyframes note-drop {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(0, 140%) rotate(calc(var(--ripSpin, 1) * -7deg));
+  }
+}
+
+// Its own animation so the fade stays linear while the fall accelerates.
+@keyframes note-fade {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bg-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.dialog-bg {
+  animation: bg-in 0.2s ease-out both;
+}
+
+.dialog {
+  // backwards, not both: a lingering transform would re-parent the position:fixed text caret
+  animation: paper-slap 0.42s cubic-bezier(0.2, 0.68, 0.22, 1) backwards;
+  transform-origin: top center;
+
+  .tape {
+    // no transform-origin override here: the tape image's own centre already sits on the
+    // paper's top edge, and moving the origin shifts where the 0.4 scale lands it
+    animation: tape-press 0.28s 0.22s cubic-bezier(0.34, 1.16, 0.64, 1) both;
+  }
+}
+
+:host(.leaving) {
+  .dialog-bg {
+    animation: bg-out 0.3s 0.1s ease-in both;
+  }
+
+  .dialog {
+    // starts just after the tape has begun to give, and keeps falling once it is gone
+    animation:
+      note-drop 0.42s 0.08s cubic-bezier(0.4, 0, 0.85, 0.45) both,
+      note-fade 0.42s 0.08s linear both;
+    pointer-events: none;
+
+    .tape {
+      animation: tape-rip 0.3s cubic-bezier(0.3, 0.5, 0.7, 0.85) both;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-bg,
+  .dialog,
+  .dialog .tape,
+  :host(.leaving) .dialog-bg,
+  :host(.leaving) .dialog,
+  :host(.leaving) .dialog .tape {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
   }
 }

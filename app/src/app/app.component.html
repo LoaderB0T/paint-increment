@@ -19,7 +19,14 @@
          matrix is linear and would drop the blurred halo outside the artwork's own box -->
     <feComposite in2="SourceGraphic" operator="in" />
   </filter>
-  <filter id="paper" color-interpolation-filters="sRGB" x="-50%" y="-50%" width="200%" height="200%">
+  <filter
+    id="paper"
+    color-interpolation-filters="sRGB"
+    x="-50%"
+    y="-50%"
+    width="200%"
+    height="200%"
+  >
     <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0" />
     <!-- lighten keeps the darker backdrop in mid tones; the gamma curve keeps the halo edge
          from washing the shadow out the way a plain alpha ramp would -->

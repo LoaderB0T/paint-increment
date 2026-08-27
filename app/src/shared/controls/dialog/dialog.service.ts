@@ -29,7 +29,8 @@ export class DialogService {
     const hostComponent = root.createComponent(DialogComponent);
     const componentRef = hostComponent.instance.container().createComponent(componentType);
 
-    const result = componentRef.instance.result.then(res => {
+    const result = componentRef.instance.result.then(async res => {
+      await hostComponent.instance.playExit();
       const indexToRemove = root.indexOf(hostComponent.hostView);
       if (indexToRemove > -1) {
         root.remove(indexToRemove);
