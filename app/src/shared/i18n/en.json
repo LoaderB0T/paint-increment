@@ -4,9 +4,14 @@
     "login": {
       "google": "Login with Google",
       "discord": "Login with Discord"
+    },
+    "callback": {
+      "signingIn": "Signing you in",
+      "alreadySignedIn": "Already signed in"
     }
   },
   "shared": {
+    "loading": "Loading",
     "back": "Back",
     "goHome": "Go home",
     "close": "Close",

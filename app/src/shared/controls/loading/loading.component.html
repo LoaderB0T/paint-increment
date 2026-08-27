@@ -1,0 +1,23 @@
+<!--
+  Keep in sync with the boot loader inlined in src/index.html - that copy has to paint
+  before any JS runs, so it cannot import this one. Same geometry, same timings.
+-->
+<svg viewBox="0 0 120 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <filter id="awd-loading-wobble">
+    <feTurbulence baseFrequency="0.05" numOctaves="2" seed="3" result="n" />
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2" />
+  </filter>
+  <g filter="url(#awd-loading-wobble)">
+    <path class="dot dot-0" pathLength="100" d="M24 32a4 4 0 1 0 .1 0" />
+    <path class="dot dot-1" pathLength="100" d="M60 32a4 4 0 1 0 .1 0" />
+    <path class="dot dot-2" pathLength="100" d="M96 32a4 4 0 1 0 .1 0" />
+    <g class="nib">
+      <path d="M22 25 L27.91 19.17 L24.1 16.97 Z" />
+      <path d="M24.1 16.97 L27.91 19.17 L37.41 2.72 L33.6 0.52 Z" />
+    </g>
+  </g>
+</svg>
+@if (label()) {
+  <!-- skip when the caller already renders its own visible status text -->
+  <span class="sr-only" role="status">{{ label() }}</span>
+}

@@ -1,6 +1,14 @@
 <div class="paper-container">
   <h2>{{ i18n.download_title() }}</h2>
   <div class="content">
+    @if (rendering()) {
+      <awd-loading
+        class="preview-loading"
+        [label]="i18n.shared_loading()"
+        animate.enter="fade-in-late"
+        animate.leave="fade-out"
+      />
+    }
     <canvas
       #canvas
       [width]="canvasSize().width"

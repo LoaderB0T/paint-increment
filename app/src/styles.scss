@@ -73,6 +73,30 @@ a {
   @include vars.squiggly;
 }
 
+// Enter/leave fades for `animate.enter` / `animate.leave`. Global because component
+// styles are scoped and Angular applies these classes from the template.
+// `fade-in-late` is for loading indicators: the delay means work that finishes quickly
+// never flashes an indicator, and `backwards` keeps it invisible until the delay is up.
+.fade-in {
+  animation: awd-fade-in 250ms ease-out;
+}
+.fade-in-late {
+  animation: awd-fade-in 300ms ease-out 200ms backwards;
+}
+.fade-out {
+  animation: awd-fade-out 350ms ease-out forwards;
+}
+@keyframes awd-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes awd-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
 // Selection is the same ink a button gets highlighted with. Only the tone carries over:
 // `::selection` accepts colour, background-color and text-shadow and nothing else, so the
 // layered strokes, the mask and the displacement filter are all off the table here.

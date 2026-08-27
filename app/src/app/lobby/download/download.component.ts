@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LobbyResponse } from '@shared/api';
-import { ButtonComponent, DialogService } from '@shared/controls';
+import { ButtonComponent, DialogService, LoadingComponent } from '@shared/controls';
 import { TooltipDirective } from '@shared/controls/tooltip';
 import { injectI18n } from '@shared/i18n';
 import { StorageService } from '@shared/shared/storage';
@@ -23,7 +23,7 @@ import { DownloadSettingsComponent } from '../../dialog/download-settings/downlo
 import { DownloadSettings } from '../../dialog/download-settings/download-settings.model';
 
 @Component({
-  imports: [ButtonComponent, TooltipDirective],
+  imports: [ButtonComponent, TooltipDirective, LoadingComponent],
   selector: 'awd-download',
   templateUrl: 'download.component.html',
   styleUrls: ['download.component.scss'],
@@ -38,6 +38,8 @@ export class DownloadComponent {
 
   protected readonly canvasSize = signal({ width: 0, height: 0 });
   protected readonly frontSide = signal(true);
+  /** renderFront/renderBack await a webfont and redraw the whole sheet. */
+  protected readonly rendering = signal(true);
   private readonly _canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly _settings = inject(StorageService).init<DownloadSettings>('download-settings', {
     accentColor: '#00ff00',
@@ -74,27 +76,18 @@ export class DownloadComponent {
   }
 
   private refreshPreview() {
-    if (this.frontSide()) {
-      renderFront(this._lobby, this._settings.forceValue, this._document).then(canvas => {
-        const ctx =
-          this._canvas().nativeElement.getContext('2d') ?? throwExp('Canvas not supported');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        this.canvasSize.set({ width: canvas.width, height: canvas.height });
-        setTimeout(() => {
-          ctx.drawImage(canvas, 0, 0);
-        });
+    this.rendering.set(true);
+    const render = this.frontSide() ? renderFront : renderBack;
+    render(this._lobby, this._settings.forceValue, this._document).then(canvas => {
+      const ctx =
+        this._canvas().nativeElement.getContext('2d') ?? throwExp('Canvas not supported');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      this.canvasSize.set({ width: canvas.width, height: canvas.height });
+      setTimeout(() => {
+        ctx.drawImage(canvas, 0, 0);
+        this.rendering.set(false);
       });
-    } else {
-      renderBack(this._lobby, this._settings.forceValue, this._document).then(canvas => {
-        const ctx =
-          this._canvas().nativeElement.getContext('2d') ?? throwExp('Canvas not supported');
-        this.canvasSize.set({ width: canvas.width, height: canvas.height });
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        setTimeout(() => {
-          ctx.drawImage(canvas, 0, 0);
-        });
-      });
-    }
+    });
   }
 
   protected download(all: boolean) {

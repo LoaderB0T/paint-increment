@@ -16,15 +16,29 @@
 
 $maxWidth: 95vw;
 
-.dialog {
-  // fixed, not absolute: the rip animation throws the paper past the bottom of the page and
-  // an absolutely positioned element grows the document's scroll area while it does
+// Centring layer. This used to be done by measuring the dialog's height in JS and feeding it
+// into a top: calc(); that left the first painted frame positioned with a height of 0, i.e. the
+// note's top edge at the middle of the viewport, which flickered before the measurement landed.
+// Flexbox needs no measurement, so there is no wrong first frame to hide.
+.dialog-layout {
   position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  // let clicks through to the backdrop, so hit testing behaves as it did before this layer
+  pointer-events: none;
+}
+
+.dialog {
+  position: relative;
+  pointer-events: auto;
   padding: 16px;
   width: min(400px, $maxWidth);
   height: max-content;
-  left: calc(50% - 0.5 * min(400px, $maxWidth));
-  top: max(16px, calc(50% - 0.5 * var(--dialogHeight)));
+  // keeps a note taller than the viewport fully on screen; its .content scrolls instead
+  max-height: 100%;
   border-radius: 4px 4px 14px 14px;
   min-height: min(400px, $maxWidth);
   background: conic-gradient(from 90deg at 1.1px 1.1px, #fffde3 25%, #c9c9c9 0);

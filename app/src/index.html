@@ -12,8 +12,146 @@
       href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@100..800&display=swap"
       rel="stylesheet"
     />
+    <!--
+      Boot loader. Hand copy of awd-loading (src/shared/controls/loading) - it has to paint
+      before any bundle is fetched, so it cannot be the component. Keep the two in sync.
+      Two modes, picked by the script below: a full-screen cover when the shell is empty
+      (client-rendered routes), a corner badge when the server already sent content and
+      only hydration is outstanding.
+
+      Note the cover can only paint this early in a production build - `ng serve` emits
+      styles.css as a render-blocking <link>, which stops the browser painting anything
+      until it lands. Production inlines the critical CSS and defers the rest.
+    -->
+    <style>
+      #awd-boot {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: grid;
+        place-items: center;
+        background: rgb(230, 232, 240);
+        opacity: 0;
+        /* fade-out is the slow one, so a slow connection does not end in a hard cut */
+        transition: opacity 0.45s ease-out;
+      }
+      #awd-boot[hidden] {
+        display: none;
+      }
+      /* delayed fade-in: a fast boot finishes before the loader is ever visible */
+      #awd-boot.in {
+        opacity: 1;
+        transition: opacity 0.3s ease-out 0.15s;
+      }
+      #awd-boot svg {
+        width: min(40vw, 200px);
+        overflow: visible;
+      }
+      /* content is already on screen and readable - annotate, do not cover */
+      #awd-boot.corner {
+        inset: 10px 12px auto auto;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(80, 80, 80, 0.1);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+      }
+      #awd-boot.corner svg {
+        width: 56px;
+      }
+      #awd-boot path {
+        fill: none;
+        stroke: rgb(13, 13, 18);
+        stroke-width: 10;
+        stroke-linecap: round;
+        /* gap must outrun the path, and the hidden offset must clear the dash end -
+           at exactly 100 a zero-length dash still paints its round cap as a dot */
+        stroke-dasharray: 100 200;
+        stroke-dashoffset: 101;
+      }
+      #awd-boot .nib path {
+        fill: rgb(13, 13, 18);
+        stroke: none;
+      }
+      #awd-boot .nib {
+        animation: awd-boot-nib 1.8s linear infinite;
+      }
+      .dot-0 {
+        animation: awd-boot-d0 1.8s linear infinite;
+      }
+      .dot-1 {
+        animation: awd-boot-d1 1.8s linear infinite;
+      }
+      .dot-2 {
+        animation: awd-boot-d2 1.8s linear infinite;
+      }
+      @keyframes awd-boot-d0 {
+        0%, 6% { stroke-dashoffset: 101; }
+        14%, 78% { stroke-dashoffset: 0; }
+        86%, 100% { stroke-dashoffset: 101; }
+      }
+      @keyframes awd-boot-d1 {
+        0%, 20% { stroke-dashoffset: 101; }
+        28%, 64% { stroke-dashoffset: 0; }
+        72%, 100% { stroke-dashoffset: 101; }
+      }
+      @keyframes awd-boot-d2 {
+        0%, 34% { stroke-dashoffset: 101; }
+        42%, 50% { stroke-dashoffset: 0; }
+        58%, 100% { stroke-dashoffset: 101; }
+      }
+      @keyframes awd-boot-nib {
+        0% { transform: translate(-20px, 8px); opacity: 0; }
+        6% { transform: translate(0, 0); opacity: 1; }
+        14% { transform: translate(0, 0); }
+        20%, 28% { transform: translate(36px, 0); }
+        34%, 42% { transform: translate(72px, 0); }
+        46% { transform: translate(76px, -4px); }
+        50%, 58% { transform: translate(72px, 0); }
+        64%, 72% { transform: translate(36px, 0); }
+        78%, 86% { transform: translate(0, 0); opacity: 1; }
+        100% { transform: translate(-20px, 8px); opacity: 0; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #awd-boot path, #awd-boot .nib { animation: none; }
+        #awd-boot path { stroke-dashoffset: 0; }
+        #awd-boot .nib { opacity: 0; }
+      }
+    </style>
   </head>
   <body>
+    <div id="awd-boot" hidden>
+      <svg viewBox="0 0 120 44" xmlns="http://www.w3.org/2000/svg" role="status" aria-label="Loading">
+        <filter id="awd-boot-wobble">
+          <feTurbulence baseFrequency="0.05" numOctaves="2" seed="3" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2" />
+        </filter>
+        <g filter="url(#awd-boot-wobble)">
+          <path class="dot-0" pathLength="100" d="M24 32a4 4 0 1 0 .1 0" />
+          <path class="dot-1" pathLength="100" d="M60 32a4 4 0 1 0 .1 0" />
+          <path class="dot-2" pathLength="100" d="M96 32a4 4 0 1 0 .1 0" />
+          <g class="nib">
+            <path d="M22 25 L27.91 19.17 L24.1 16.97 Z" />
+            <path d="M24.1 16.97 L27.91 19.17 L37.41 2.72 L33.6 0.52 Z" />
+          </g>
+        </g>
+      </svg>
+    </div>
     <app-root></app-root>
+    <script>
+      // Server-rendered routes already have their content in <app-root> by the time the
+      // parser gets here. That content is readable but not yet interactive, so it gets
+      // the corner badge; an empty shell gets the full-screen cover.
+      (function () {
+        var el = document.getElementById('awd-boot');
+        if (document.querySelector('app-root').firstElementChild) {
+          el.classList.add('corner');
+        }
+        el.hidden = false;
+        requestAnimationFrame(function () {
+          el.classList.add('in');
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -1,3 +1,13 @@
+.content {
+  position: relative;
+}
+// Overlays the canvas rather than replacing it, so the sheet does not jump on a re-render.
+.preview-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(230, 232, 240, 0.85);
+}
 canvas {
   width: 100%;
   margin: auto;

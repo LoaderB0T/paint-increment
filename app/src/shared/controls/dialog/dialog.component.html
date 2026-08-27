@@ -1,10 +1,7 @@
 <div class="dialog-bg"></div>
-<div
-  #dialog
-  class="dialog"
-  [style.--dialogHeight.px]="dialogHeight()"
-  [style.--ripSpin]="randomRipSpin"
->
-  <img class="tape" [src]="randomTapeSrc" [style.--tapeTilt.deg]="randomTapeTilt" alt="" />
-  <ng-template #container />
+<div class="dialog-layout">
+  <div class="dialog" [style.--ripSpin]="randomRipSpin">
+    <img class="tape" [src]="randomTapeSrc" [style.--tapeTilt.deg]="randomTapeTilt" alt="" />
+    <ng-template #container />
+  </div>
 </div>

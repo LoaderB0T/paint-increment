@@ -1,7 +1,7 @@
 import { Component, inject, resource } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { LobbyPreviewResponse, LobbyService } from '@shared/api';
-import { ButtonComponent } from '@shared/controls';
+import { ButtonComponent, LoadingComponent } from '@shared/controls';
 import { injectI18n } from '@shared/i18n';
 import { assertBody, safeLobbyName } from '@shared/utils';
 
@@ -11,7 +11,7 @@ type LobbyVM = LobbyPreviewResponse & {
 
 @Component({
   selector: 'awd-my-lobbies',
-  imports: [ButtonComponent, RouterLink],
+  imports: [ButtonComponent, RouterLink, LoadingComponent],
   templateUrl: 'my-lobbies.component.html',
   styleUrls: ['my-lobbies.component.scss'],
 })

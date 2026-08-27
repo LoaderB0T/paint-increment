@@ -1,0 +1,144 @@
+@use 'vars';
+
+// One cycle: nib enters, draws the three dots left to right, sweeps back erasing them,
+// leaves. Every dot's draw window is a hold in the nib's travel, so the pen is always
+// standing still on the dot it is drawing.
+$cycle: 1800ms;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: vars.$colorContent1;
+}
+
+svg {
+  display: block; // inline svg would add a baseline gap under the artwork
+  width: var(--awd-loading-size, 120px);
+  height: auto;
+  overflow: visible;
+}
+
+.dot {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 10;
+  stroke-linecap: round;
+  // The gap has to outrun the path, and the hidden offset has to clear the dash end:
+  // at exactly 100 a zero-length dash still paints its round cap as a visible dot.
+  stroke-dasharray: 100 200;
+  stroke-dashoffset: 101;
+}
+
+.nib {
+  fill: currentColor;
+  animation: awd-loading-nib $cycle linear infinite;
+}
+
+@for $i from 0 through 2 {
+  @keyframes awd-loading-dot-#{$i} {
+    0%,
+    #{6 + 14 * $i}% {
+      stroke-dashoffset: 101;
+    }
+    #{14 + 14 * $i}%,
+    #{78 - 14 * $i}% {
+      stroke-dashoffset: 0;
+    }
+    #{86 - 14 * $i}%,
+    100% {
+      stroke-dashoffset: 101;
+    }
+  }
+  .dot-#{$i} {
+    animation: awd-loading-dot-#{$i} $cycle linear infinite;
+  }
+}
+
+@keyframes awd-loading-nib {
+  0% {
+    transform: translate(-20px, 8px);
+    opacity: 0;
+  }
+  6% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  14% {
+    transform: translate(0, 0);
+  }
+  20%,
+  28% {
+    transform: translate(36px, 0);
+  }
+  34%,
+  42% {
+    transform: translate(72px, 0);
+  }
+  46% {
+    transform: translate(76px, -4px);
+  }
+  50%,
+  58% {
+    transform: translate(72px, 0);
+  }
+  64%,
+  72% {
+    transform: translate(36px, 0);
+  }
+  78%,
+  86% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-20px, 8px);
+    opacity: 0;
+  }
+}
+
+// Sizes are set on the host so a caller can drop the component anywhere without
+// reaching into its internals.
+:host(.s) {
+  --awd-loading-size: 64px;
+}
+:host(.l) {
+  --awd-loading-size: 200px;
+}
+
+// Background work while the page is already usable: a badge out of the way, never a
+// cover. Mirrors #awd-boot.corner in index.html - keep the two in step.
+:host(.corner) {
+  position: fixed;
+  top: 10px;
+  right: 12px;
+  z-index: 9998;
+  --awd-loading-size: 56px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(80, 80, 80, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .nib {
+    animation: none;
+  }
+  .dot {
+    stroke-dashoffset: 0;
+  }
+  .nib {
+    opacity: 0;
+  }
+}

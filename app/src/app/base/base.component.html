@@ -8,3 +8,14 @@
     </div>
   </div>
 </div>
+
+<!-- The page being navigated away from is still readable, so this annotates rather
+     than covers. `fade-in-late` keeps a fast resolver from flashing it. -->
+@if (navigating()) {
+  <awd-loading
+    class="corner"
+    [label]="i18n.shared_loading()"
+    animate.enter="fade-in-late"
+    animate.leave="fade-out"
+  />
+}

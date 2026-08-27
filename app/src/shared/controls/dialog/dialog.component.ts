@@ -1,10 +1,8 @@
 import {
   afterNextRender,
-  afterRenderEffect,
   Component,
   ElementRef,
   inject,
-  signal,
   viewChild,
   ViewContainerRef,
   DOCUMENT,
@@ -22,7 +20,6 @@ export class DialogComponent {
   private readonly _document = inject(DOCUMENT);
   private readonly _hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
   public readonly container = viewChild.required('container', { read: ViewContainerRef });
-  private readonly _dialogElement = viewChild.required<ElementRef<HTMLDivElement>>('dialog');
 
   protected readonly randomTapeSrc = `/tape/tape${Math.floor(Math.random() * 10) + 1}.png`;
   // a hand never sticks a note on dead straight, so the tape sits at its own small angle. The
@@ -31,7 +28,6 @@ export class DialogComponent {
   protected readonly randomTapeTilt = Math.random() * 7 - 3.5;
   // nobody rips a note off twice the same way, so vary how far it spins on the way out
   protected readonly randomRipSpin = 0.75 + Math.random() * 0.5;
-  protected readonly dialogHeight = signal(0);
 
   constructor() {
     afterNextRender(() => {
@@ -39,17 +35,6 @@ export class DialogComponent {
       if (activeElement instanceof HTMLElement) {
         activeElement.blur();
       }
-    });
-
-    afterRenderEffect(onCleanup => {
-      const el = this._dialogElement().nativeElement;
-      const observer = new ResizeObserver(() => {
-        // offsetHeight, not getBoundingClientRect(): the latter reports the projected height of
-        // the 3D enter/leave transforms and would shift the dialog's top mid-animation
-        this.dialogHeight.set(el.offsetHeight);
-      });
-      observer.observe(el);
-      onCleanup(() => observer.disconnect());
     });
   }
 
