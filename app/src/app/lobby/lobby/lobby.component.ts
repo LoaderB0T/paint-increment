@@ -124,15 +124,18 @@ export class LobbyComponent {
     this.prepareLayers();
     this._lobbyLockService.lookingAtLobby(this.lobby().id);
 
+    // Reset when the lobby stops being ours, i.e. on the transition out of a
+    // reservation - not on the initial value. `_isLockedByMe` starts out false, so
+    // acting on that value alone threw away the invite code that initInviteToken was
+    // still validating: on the server it turned into a 302 that dropped ?invite=
+    // before the client ever saw it, and in the browser it came down to whether the
+    // effect or the validation request won the race (Chromium won it, WebKit did not).
+    let wasLockedByMe = false;
     effect(() => {
-      // Browser only: on the server the lock signals never move off their initial
-      // value, so this fires during SSR, and resetLobby -> invalidateInviteCode
-      // navigates. The server turns that navigation into a 302 that drops
-      // ?invite=, so the client never sees the code and nobody can draw.
-      if (!this._isBrowser) {
-        return;
-      }
-      if (!this._isLockedByMe() && !this.isEditMode) {
+      const lockedByMe = this._isLockedByMe();
+      const lostLock = wasLockedByMe && !lockedByMe;
+      wasLockedByMe = lockedByMe;
+      if (lostLock && !this.isEditMode) {
         this.resetLobby();
       }
     });
@@ -211,6 +214,7 @@ export class LobbyComponent {
           };
           return store;
         });
+        this.stripInviteFromUrl();
       } else {
         this.invalidateInviteCode();
       }
@@ -254,6 +258,14 @@ export class LobbyComponent {
       delete store.inviteCodes?.[this.lobby().id];
       return store;
     });
+    this.stripInviteFromUrl();
+  }
+
+  /** The code lives in the store from here on, so keep it out of the address bar. */
+  private stripInviteFromUrl() {
+    if (!this._isBrowser) {
+      return;
+    }
     this._router.navigate([], {
       relativeTo: this._activatedRoute,
       queryParams: { invite: null },

@@ -13,9 +13,6 @@
     background: white;
     height: 100%;
     width: 100%;
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    transform: scale(var(--zoom)) translateX(var(--offsetX)) translateY(var(--offsetY));
     &.is-drawing {
       cursor: crosshair;
     }

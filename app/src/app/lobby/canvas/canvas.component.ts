@@ -24,6 +24,9 @@ export type CanvasSettings = {
 };
 
 const canvasPatternColor = '#e3e3e3';
+// Ceiling for the backing store, so a canvas on a huge display cannot allocate an
+// absurd buffer. Past it the browser scales the result again.
+const maxBackingSize = 4096;
 
 export function getPixelArray(width: number, height: number): boolean[][] {
   return Array.from({ length: width }, () => Array.from({ length: height }, () => false));
@@ -46,6 +49,28 @@ export class CanvasComponent {
   protected readonly zoom = signal(1);
   protected readonly offsetX = signal(0);
   protected readonly offsetY = signal(0);
+  /** CSS size of the element and the backing store resolution it is drawn at. */
+  private readonly _size = signal({ css: 0, backing: 0 });
+
+  /**
+   * Where a painted pixel lands in backing-store pixels. This reproduces what the CSS
+   * `scale(zoom) translate(offset)` used to do - transform-origin at the centre, the
+   * translation applied in the scaled space - except the browser no longer has to
+   * interpolate anything, because the drawing already happens at device resolution.
+   */
+  private readonly _view = computed(() => {
+    const { css, backing } = this._size();
+    const zoom = this.zoom();
+    const perCss = css ? backing / css : 1;
+    return {
+      backing,
+      perCss,
+      cellX: (backing * zoom) / this.settings().width,
+      cellY: (backing * zoom) / this.settings().height,
+      panX: (backing * (1 - zoom)) / 2 + perCss * this.offsetX() * zoom,
+      panY: (backing * (1 - zoom)) / 2 + perCss * this.offsetY() * zoom,
+    };
+  });
   public readonly mobileEraseMode = input(false);
   public readonly isHistory = input(false);
   public readonly settings = input.required<Required<CanvasSettings>>();
@@ -76,22 +101,19 @@ export class CanvasComponent {
   constructor() {
     afterRenderEffect(() => {
       this.layers(); // Trigger computed
+      this._view(); // pan, zoom and resolution all move the pixels
       untracked(() => this.drawPixels());
     });
 
     afterRenderEffect(onCleanup => {
       if (this.fixedSize()) {
-        this._canvas().nativeElement.style.width = `${this.fixedSize()}px`;
-        this._canvas().nativeElement.style.height = `${this.fixedSize()}px`;
+        this.applySize(this.fixedSize());
         return;
       }
       const container = this._canvasContainer().nativeElement;
       const resize = new ResizeObserver(() => {
-        const bounds = container.getBoundingClientRect();
-        const { width, height } = bounds;
-        const min = Math.min(width, height);
-        this._canvas().nativeElement.style.width = `${min}px`;
-        this._canvas().nativeElement.style.height = `${min}px`;
+        const { width, height } = container.getBoundingClientRect();
+        this.applySize(Math.min(width, height));
       });
       resize.observe(container);
       onCleanup(() => resize.disconnect());
@@ -125,14 +147,65 @@ export class CanvasComponent {
     });
   }
 
+  private applySize(cssSize: number) {
+    if (cssSize <= 0) {
+      return;
+    }
+    const canvas = this._canvas().nativeElement;
+    canvas.style.width = `${cssSize}px`;
+    canvas.style.height = `${cssSize}px`;
+
+    const dpr = canvas.ownerDocument.defaultView?.devicePixelRatio ?? 1;
+    // One backing pixel per painted pixel is the floor: below it we would throw away
+    // information, so the store stays at grid resolution and the browser downscales it.
+    const grid = Math.max(this.settings().width, this.settings().height);
+    const backing = Math.min(maxBackingSize, Math.max(grid, Math.round(cssSize * dpr)));
+    if (canvas.width !== backing || canvas.height !== backing) {
+      canvas.width = backing;
+      canvas.height = backing;
+    }
+    this._size.set({ css: cssSize, backing });
+    untracked(() => this.drawPixels());
+  }
+
+  /**
+   * A painted pixel as a backing-store rect, snapped to whole pixels so block edges
+   * stay hard however the cell size divides.
+   */
+  private fillCell(x: number, y: number) {
+    const { cellX, cellY, panX, panY } = this._view();
+    const left = Math.round(panX + x * cellX);
+    const top = Math.round(panY + y * cellY);
+    this._ctx().fillRect(
+      left,
+      top,
+      Math.round(panX + (x + 1) * cellX) - left,
+      Math.round(panY + (y + 1) * cellY) - top
+    );
+  }
+
+  /**
+   * The painted pixels that can actually land on the canvas. Panning and zooming now
+   * redraw (they used to be a CSS transform the compositor handled), so at high zoom
+   * this keeps the work proportional to what is on screen rather than to the grid.
+   */
+  private visibleRange() {
+    const { cellX, cellY, panX, panY, backing } = this._view();
+    const clamp = (value: number, max: number) => Math.max(0, Math.min(max, value));
+    return {
+      x0: clamp(Math.floor(-panX / cellX), this.settings().width),
+      x1: clamp(Math.ceil((backing - panX) / cellX), this.settings().width),
+      y0: clamp(Math.floor(-panY / cellY), this.settings().height),
+      y1: clamp(Math.ceil((backing - panY) / cellY), this.settings().height),
+    };
+  }
+
   private getRealCoordinates(offsetX: number, offsetY: number) {
-    const x = Math.floor(
-      (offsetX / this._canvas().nativeElement.clientWidth) * this.settings().width
-    );
-    const y = Math.floor(
-      (offsetY / this._canvas().nativeElement.clientHeight) * this.settings().height
-    );
-    return { x, y };
+    const { cellX, cellY, panX, panY, perCss } = this._view();
+    return {
+      x: Math.floor((offsetX * perCss - panX) / cellX),
+      y: Math.floor((offsetY * perCss - panY) / cellY),
+    };
   }
 
   protected gotWheel(event: WheelEvent) {
@@ -289,21 +362,23 @@ export class CanvasComponent {
 
   private drawLayer(layer: Layer) {
     this._ctx().fillStyle = layer.color;
-    for (let x = 0; x < this.settings().width; x++) {
-      for (let y = 0; y < this.settings().height; y++) {
+    const { x0, x1, y0, y1 } = this.visibleRange();
+    for (let x = x0; x < x1; x++) {
+      for (let y = y0; y < y1; y++) {
         if (layer.pixels[x][y]) {
-          this._ctx().fillRect(x, y, 1, 1);
+          this.fillCell(x, y);
         }
       }
     }
   }
 
   private drawCanvasPattern() {
-    for (let x = 0; x < this.settings().width; x++) {
-      for (let y = 0; y < this.settings().height; y++) {
+    const { x0, x1, y0, y1 } = this.visibleRange();
+    for (let x = x0; x < x1; x++) {
+      for (let y = y0; y < y1; y++) {
         if ((x + y) % 2 === 0) {
           this._ctx().fillStyle = canvasPatternColor;
-          this._ctx().fillRect(x, y, 1, 1);
+          this.fillCell(x, y);
         }
       }
     }
@@ -313,8 +388,12 @@ export class CanvasComponent {
     if (!this._canvas() || !this._canvasContainer()) {
       throw new Error('Canvas or canvasContainer not initialized yet');
     }
+    const { backing } = this._view();
+    if (!backing) {
+      return;
+    }
     this._ctx().fillStyle = '#ffffff';
-    this._ctx().fillRect(0, 0, this.settings().width, this.settings().height);
+    this._ctx().fillRect(0, 0, backing, backing);
     if (this.settings().canvasPattern) {
       this.drawCanvasPattern();
     }
@@ -359,6 +438,6 @@ export class CanvasComponent {
     } else {
       this._ctx().fillStyle = this.isEditMode() ? '#FF0042' : 'black';
     }
-    this._ctx().fillRect(x, y, 1, 1);
+    this.fillCell(x, y);
   }
 }
