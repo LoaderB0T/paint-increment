@@ -167,6 +167,11 @@ a {
   flex-direction: column;
   .content {
     overflow-y: auto;
+    // Always reserve the gutter. The panes inside size their content off this
+    // element's clientWidth (history does it from a ResizeObserver), so letting the
+    // scrollbar come and go feeds width changes back into the content height and the
+    // scrollbar oscillates forever at the viewport sizes where it is borderline.
+    scrollbar-gutter: stable;
     flex-grow: 1;
   }
   .actions {

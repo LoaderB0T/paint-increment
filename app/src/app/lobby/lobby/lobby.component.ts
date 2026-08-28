@@ -10,6 +10,7 @@ import { UserInfoService } from '@shared/shared/user-info';
 import {
   assertBody,
   DeviceService,
+  isBrowser,
   pixelArrayToIncrementPixel,
   safeLobbyName,
 } from '@shared/utils';
@@ -47,6 +48,7 @@ export class LobbyComponent {
   private readonly _userInfoService = inject(UserInfoService);
   private readonly _dialogService = inject(DialogService);
   private readonly _deviceService = inject(DeviceService);
+  private readonly _isBrowser = isBrowser();
   private readonly _store = inject(StorageService).init<Store>('lobby', {});
   protected readonly i18n = injectI18n();
   protected readonly lobby = signal(
@@ -123,6 +125,13 @@ export class LobbyComponent {
     this._lobbyLockService.lookingAtLobby(this.lobby().id);
 
     effect(() => {
+      // Browser only: on the server the lock signals never move off their initial
+      // value, so this fires during SSR, and resetLobby -> invalidateInviteCode
+      // navigates. The server turns that navigation into a 302 that drops
+      // ?invite=, so the client never sees the code and nobody can draw.
+      if (!this._isBrowser) {
+        return;
+      }
       if (!this._isLockedByMe() && !this.isEditMode) {
         this.resetLobby();
       }
