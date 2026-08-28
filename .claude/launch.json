@@ -4,6 +4,26 @@
     {
       "name": "awd-paint",
       "url": "http://localhost:4200"
+    },
+    {
+      "name": "awd-paint-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "-C",
+        "app",
+        "start"
+      ],
+      "port": 4200
+    },
+    {
+      "name": "awd-paint-api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "-C",
+        "api",
+        "start"
+      ],
+      "port": 3000
     }
   ]
 }

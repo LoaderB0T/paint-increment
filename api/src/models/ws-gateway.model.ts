@@ -44,7 +44,11 @@ export abstract class WsGateway {
   ): Promise<UserInfo | undefined> {
     const uid = resolvedUid ?? (await this.getUid(data));
 
-    const res = await getUserInfo(uid);
+    // Anonymous contributors arrive with a client-generated uid, which is no
+    // supertokens user - getUserInfo throws on those. "try" means undefined here:
+    // the throw escapes the gateway's async subscribe callback, and an unhandled
+    // rejection takes the whole process down.
+    const res = await getUserInfo(uid).catch(() => undefined);
 
     return res
       ? {
